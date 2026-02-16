@@ -25,6 +25,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 import org.springframework.security.authentication.BadCredentialsException;
@@ -49,6 +54,12 @@ public class AuthController {
 		this.authService = authService;
 	}
 
+	@Operation(summary = "Authenticate user", description = "Login with username and password to obtain a JWT token")
+	@ApiResponses(value = {
+		@ApiResponse(responseCode = "200", description = "Successfully authenticated",
+			content = @Content(schema = @Schema(implementation = JwtResponse.class))),
+		@ApiResponse(responseCode = "400", description = "Invalid credentials")
+	})
 	@PostMapping("/signin")
 	public ResponseEntity authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
 		try{
@@ -68,13 +79,23 @@ public class AuthController {
 		}
 	}
 
+	@Operation(summary = "Validate JWT token", description = "Check if a JWT token is valid and not expired")
+	@ApiResponses(value = {
+		@ApiResponse(responseCode = "200", description = "Token validation result"),
+		@ApiResponse(responseCode = "400", description = "Invalid token format")
+	})
 	@GetMapping("/validate")
 	public ResponseEntity<Boolean> validateToken(@RequestParam String token) {
 		Boolean isValid = jwtUtils.validateJwtToken(token);
 		return ResponseEntity.ok(isValid);
 	}
 
-	
+	@Operation(summary = "Register new user", description = "Create a new user account in the system")
+	@ApiResponses(value = {
+		@ApiResponse(responseCode = "200", description = "User registered successfully",
+			content = @Content(schema = @Schema(implementation = MessageResponse.class))),
+		@ApiResponse(responseCode = "400", description = "Username already exists")
+	})
 	@PostMapping("/signup")	
 	public ResponseEntity<MessageResponse> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
 		if (userService.existsUser(signUpRequest.getUsername()).equals(true)) {
