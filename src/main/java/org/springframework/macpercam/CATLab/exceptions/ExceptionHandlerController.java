@@ -1,4 +1,4 @@
-package org.springframework.macpercams.CATLab.exceptions;
+package org.springframework.macpercam.CATLab.exceptions;
 
 import java.util.Date;
 import java.util.HashMap;
