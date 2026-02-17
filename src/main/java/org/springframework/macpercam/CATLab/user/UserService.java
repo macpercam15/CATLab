@@ -33,10 +33,8 @@ public class UserService {
 
 	private UserRepository userRepository;
 
-	private VetService vetService;
-
 	@Autowired
-	public UserService(UserRepository userRepository, VetService vetService) {
+	public UserService(UserRepository userRepository) {
 		this.userRepository = userRepository;
 	}
 
@@ -89,12 +87,12 @@ public class UserService {
 		return toUpdate;
 	}
 
-	@Transactional
-	public void deleteUser(Integer id) {
-		User toDelete = findUser(id);
-		deleteRelations(id, toDelete.getAuthority().getAuthority());
-		this.userRepository.delete(toDelete);
-	}
+	// @Transactional
+	// public void deleteUser(Integer id) {
+	// 	User toDelete = findUser(id);
+	// 	deleteRelations(id, toDelete.getAuthority().getAuthority());
+	// 	this.userRepository.delete(toDelete);
+	// }
 
 // 	private void deleteRelations(Integer id, String auth) {
 // 		switch (auth) {
