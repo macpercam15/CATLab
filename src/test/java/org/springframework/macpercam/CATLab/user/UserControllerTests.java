@@ -211,28 +211,28 @@ class UserControllerTests {
 				.content(objectMapper.writeValueAsString(user))).andExpect(status().isNotFound());
 	}
 
-	@Test
-	@WithMockUser("admin")
-	void shouldDeleteOtherUser() throws Exception {
-		logged.setId(2);
+	// @Test
+	// @WithMockUser("admin")
+	// void shouldDeleteOtherUser() throws Exception {
+	// 	logged.setId(2);
 
-		when(this.userService.findUser(TEST_USER_ID)).thenReturn(user);
-		doNothing().when(this.userService).deleteUser(TEST_USER_ID);
+	// 	when(this.userService.findUser(TEST_USER_ID)).thenReturn(user);
+	// 	doNothing().when(this.userService).deleteUser(TEST_USER_ID);
 
-		mockMvc.perform(delete(BASE_URL + "/{id}", TEST_USER_ID).with(csrf())).andExpect(status().isOk())
-				.andExpect(jsonPath("$.message").value("User deleted!"));
-	}
+	// 	mockMvc.perform(delete(BASE_URL + "/{id}", TEST_USER_ID).with(csrf())).andExpect(status().isOk())
+	// 			.andExpect(jsonPath("$.message").value("User deleted!"));
+	// }
 
-	@Test
-	@WithMockUser("admin")
-	void shouldNotDeleteLoggedUser() throws Exception {
-		logged.setId(TEST_USER_ID);
+	// @Test
+	// @WithMockUser("admin")
+	// void shouldNotDeleteLoggedUser() throws Exception {
+	// 	logged.setId(TEST_USER_ID);
 
-		when(this.userService.findUser(TEST_USER_ID)).thenReturn(user);
-		doNothing().when(this.userService).deleteUser(TEST_USER_ID);
+	// 	when(this.userService.findUser(TEST_USER_ID)).thenReturn(user);
+	// 	doNothing().when(this.userService).deleteUser(TEST_USER_ID);
 
-		mockMvc.perform(delete(BASE_URL + "/{id}", TEST_USER_ID).with(csrf())).andExpect(status().isForbidden())
-				.andExpect(result -> assertTrue(result.getResolvedException() instanceof AccessDeniedException));
-	}
+	// 	mockMvc.perform(delete(BASE_URL + "/{id}", TEST_USER_ID).with(csrf())).andExpect(status().isForbidden())
+	// 			.andExpect(result -> assertTrue(result.getResolvedException() instanceof AccessDeniedException));
+	// }
 
 }

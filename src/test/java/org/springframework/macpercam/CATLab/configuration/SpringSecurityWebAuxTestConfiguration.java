@@ -39,7 +39,7 @@ public class SpringSecurityWebAuxTestConfiguration {
         // );
 
         return new InMemoryUserDetailsManager(Arrays.asList(
-        		ownerActiveUser, adminActiveUser, vetActiveUser
+        		adminActiveUser
         ));
     }
 }
