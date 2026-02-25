@@ -43,6 +43,7 @@ public class SecurityConfiguration {
 
 	private static final String ADMIN = "ADMIN";
 	private static final String PROFESOR = "PROFESOR";
+	private static final String ESTUDIANTE = "ESTUDIANTE";
 
 
 	@Bean
@@ -93,6 +94,9 @@ public class SecurityConfiguration {
 
             // API restringida para profesores
             .requestMatchers("/api/profesores/**").hasAnyAuthority(PROFESOR, ADMIN)
+
+			 // API restringida para estudiantes
+			 .requestMatchers("/api/estudiantes/**").hasAnyAuthority(ESTUDIANTE, ADMIN)
 
 			// Otras reglas de controal de acceso:
 			// .requestMatchers("/api/v1/clinicOwners/**").hasAnyAuthority(ADMIN, CLINIC_OWNER)

@@ -8,6 +8,9 @@ INSERT INTO appusers(id,username,password,authority) VALUES (1,'admin1','$2a$10$
 INSERT INTO appusers(id,username,password,authority) VALUES (2,'profesor1','$2a$12$sdWOmoYag/jQkD6P0BnAQeRaZ65qxN1a//s/jKZ1rZ1jorr/9clky',2);
 INSERT INTO profesores(id, first_name, last_name, dni, user_id) VALUES (1, 'Profe', 'Seño','12345678A', 2);
 
+INSERT INTO appusers(id,username,password,authority) VALUES (3,'estudiante1','$2a$12$iTYRfDeDd3prIIytTzWOWOpw1ayxATLT10HqfJ94sDpVoKhqGK9dq',3);
+INSERT INTO estudiantes(id, first_name, last_name, dni, user_id) VALUES (1, 'Estudiante', 'Uno','87654321B', 3);
+
 -- -- Three clinic owners, with password "clinic_owner"
 -- INSERT INTO authorities(id,authority) VALUES (2,'CLINIC_OWNER');
 -- INSERT INTO appusers(id,username,password,authority) VALUES (2,'clinicOwner1','$2a$10$t.I/C4cjUdUWzqlFlSddLeh9SbZ6d8wR7mdbeIRghT355/KRKZPAi',2);
