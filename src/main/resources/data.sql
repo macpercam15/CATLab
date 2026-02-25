@@ -1,6 +1,12 @@
 -- One admin user, named admin1 with passwor 4dm1n and authority admin
 INSERT INTO authorities(id,authority) VALUES (1,'ADMIN');
+INSERT INTO authorities(id,authority) VALUES (2,'PROFESOR');
+INSERT INTO authorities(id,authority) VALUES (3,'ESTUDIANTE');
+
 INSERT INTO appusers(id,username,password,authority) VALUES (1,'admin1','$2a$10$nMmTWAhPTqXqLDJTag3prumFrAJpsYtroxf0ojesFYq0k4PmcbWUS',1);
+
+INSERT INTO appusers(id,username,password,authority) VALUES (2,'profesor1','$2a$12$sdWOmoYag/jQkD6P0BnAQeRaZ65qxN1a//s/jKZ1rZ1jorr/9clky',2);
+INSERT INTO profesores(id, first_name, last_name, dni, user_id) VALUES (1, 'Profe', 'Seño','12345678A', 2);
 
 -- -- Three clinic owners, with password "clinic_owner"
 -- INSERT INTO authorities(id,authority) VALUES (2,'CLINIC_OWNER');

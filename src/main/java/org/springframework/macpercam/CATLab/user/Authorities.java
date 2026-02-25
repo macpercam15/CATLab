@@ -16,9 +16,9 @@ import lombok.Setter;
 @Table(name = "authorities")
 public class Authorities extends BaseEntity{
 	
-	@Enumerated(EnumType.STRING)
-	@Column(length = 20, nullable = false)
-	private Role authority;
+	// @Enumerated(EnumType.STRING)
+	@Column(length = 20, unique=true, nullable = false)
+	String authority;
 	
 	
 }

@@ -42,7 +42,7 @@ public class SecurityConfiguration {
 	DataSource dataSource;
 
 	private static final String ADMIN = "ADMIN";
-	private static final String CLINIC_OWNER = "CLINIC_OWNER";
+	private static final String PROFESOR = "PROFESOR";
 
 
 	@Bean
@@ -90,6 +90,9 @@ public class SecurityConfiguration {
             // .requestMatchers("/api/v1/owners/**").hasAuthority(ADMIN)
             // .requestMatchers("/api/v1/pets/stats").hasAuthority(ADMIN)
             // .requestMatchers("/api/v1/vets/stats").hasAuthority(ADMIN)
+
+            // API restringida para profesores
+            .requestMatchers("/api/profesores/**").hasAnyAuthority(PROFESOR, ADMIN)
 
 			// Otras reglas de controal de acceso:
 			// .requestMatchers("/api/v1/clinicOwners/**").hasAnyAuthority(ADMIN, CLINIC_OWNER)
