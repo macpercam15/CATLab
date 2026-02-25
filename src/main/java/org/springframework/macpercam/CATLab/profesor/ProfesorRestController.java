@@ -70,7 +70,7 @@ public class ProfesorRestController {
 
 	@PutMapping(value = "{profesorId}")
 	@ResponseStatus(HttpStatus.OK)
-	public ResponseEntity<Profesor> update(@PathVariable("profesorId") int profesorId, @RequestBody @Valid Profesor profesor) {
+	public ResponseEntity<Profesor> update(@PathVariable("profesorId") int profesorId, @RequestBody @Valid ProfesorUpdateDTO profesor) {
 		RestPreconditions.checkNotNull(profesorService.findProfesorById(profesorId), "Profesor", "ID", profesorId);
 		return new ResponseEntity<>(this.profesorService.updateProfesor(profesor, profesorId), HttpStatus.OK);
 	}

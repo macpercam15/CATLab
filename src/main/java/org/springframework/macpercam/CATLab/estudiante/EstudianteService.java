@@ -47,10 +47,25 @@ public class EstudianteService {
 	}
 
 	@Transactional
-	public Estudiante updateEstudiante(Estudiante estudiante, int id) throws DataAccessException {
+	public Estudiante updateEstudiante(EstudianteUpdateDTO estudiante, int id) throws DataAccessException {
 		Estudiante toUpdate = findEstudianteById(id);
-		BeanUtils.copyProperties(estudiante, toUpdate, "id", "user");
-		return saveEstudiante(toUpdate);
+		if (estudiante.getFirstName() != null) {
+        toUpdate.setFirstName(estudiante.getFirstName());
+    }
+
+    if (estudiante.getLastName() != null) {
+        toUpdate.setLastName(estudiante.getLastName());
+    }
+
+    if (estudiante.getDni() != null) {
+        toUpdate.setDni(estudiante.getDni());
+    }
+
+    if (estudiante.getPhoneNumber() != null) {
+        toUpdate.setPhoneNumber(estudiante.getPhoneNumber());
+    }
+
+    return saveEstudiante(toUpdate);
 	}
 
 	@Transactional

@@ -53,10 +53,25 @@ public class ProfesorService {
 	}
 
 	@Transactional
-	public Profesor updateProfesor(Profesor profesor, int id) throws DataAccessException {
+	public Profesor updateProfesor(ProfesorUpdateDTO profesor, int id) throws DataAccessException {
 		Profesor toUpdate = findProfesorById(id);
-		BeanUtils.copyProperties(profesor, toUpdate, "id", "user");
-		return saveProfesor(toUpdate);
+		if (profesor.getFirstName() != null) {
+        toUpdate.setFirstName(profesor.getFirstName());
+    }
+
+    if (profesor.getLastName() != null) {
+        toUpdate.setLastName(profesor.getLastName());
+    }
+
+    if (profesor.getDni() != null) {
+        toUpdate.setDni(profesor.getDni());
+    }
+
+    if (profesor.getPhoneNumber() != null) {
+        toUpdate.setPhoneNumber(profesor.getPhoneNumber());
+    }
+
+    return saveProfesor(toUpdate);
 	}
 
 	@Transactional
