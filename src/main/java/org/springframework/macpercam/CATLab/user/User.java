@@ -27,14 +27,14 @@ public class User extends BaseEntity {
 	@JoinColumn(name = "authority")
 	Authorities authority;
 
-	public Boolean hasAuthority(String auth) {
-		return authority.getAuthority().equals(auth);
+	public Boolean hasAuthority(Role role) {
+		return authority.getAuthority() == role;
 	}
 
-	public Boolean hasAnyAuthority(String... authorities) {
+	public Boolean hasAnyAuthority(Role... roles) {
 		Boolean cond = false;
-		for (String auth : authorities) {
-			if (auth.equals(authority.getAuthority()))
+		for (Role role : roles) {
+			if (role == authority.getAuthority())
 				cond = true;
 		}
 		return cond;

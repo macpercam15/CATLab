@@ -4,6 +4,8 @@ import org.springframework.macpercam.CATLab.model.BaseEntity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
@@ -14,13 +16,9 @@ import lombok.Setter;
 @Table(name = "authorities")
 public class Authorities extends BaseEntity{
 	
-//	@ManyToOne
-//	@JoinColumn(name = "username")
-//	User user;
-	
-//	@Enumerated(EnumType.STRING)
-	@Column(length = 20,unique=true, nullable = false)
-	String authority;
+	@Enumerated(EnumType.STRING)
+	@Column(length = 20, nullable = false)
+	private Role authority;
 	
 	
 }
