@@ -18,6 +18,7 @@ export default function UserEditAdmin() {
     authority: null,
   };
   const id = getIdFromUrl(2);
+  const [password, setPassword] = useState("");
   const [message, setMessage] = useState(null);
   const [visible, setVisible] = useState(false);
   const [user, setUser] = useFetchState(
@@ -40,26 +41,41 @@ export default function UserEditAdmin() {
     } else setUser({ ...user, [name]: value });
   }
 
-  function handleSubmit(event) {
-    event.preventDefault();
+ function handleSubmit(event) {
+  event.preventDefault();
 
-    fetch("/api/v1/users" + (user.id ? "/" + user.id : ""), {
-      method: user.id ? "PUT" : "POST",
-      headers: {
-        Authorization: `Bearer ${jwt}`,
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(user),
+  const payload = {
+    username: user.username,
+    authority: user.authority,
+  };
+
+  // Solo enviar password si se ha escrito algo
+  if (password && password.trim() !== "") {
+    payload.password = password;
+  }
+
+  fetch("/api/v1/users" + (user.id ? "/" + user.id : ""), {
+    method: user.id ? "PUT" : "POST",
+    headers: {
+      Authorization: `Bearer ${jwt}`,
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  })
+    .then((response) => response.json())
+    .then((json) => {
+      if (json.message) {
+        setMessage(json.message);
+        setVisible(true);
+      } else {
+        window.location.href = "/users";
+      }
     })
-      .then((response) => response.json())
-      .then((json) => {
-        if (json.message) {
-          setMessage(json.message);
-          setVisible(true);
-        } else window.location.href = "/users";
-      })
-      .catch((message) => alert(message));
+    .catch((error) => {
+      console.error(error);
+      alert("Error al guardar el usuario");
+    });
   }
 
   const modal = getErrorModal(setVisible, visible, message);
@@ -68,6 +84,8 @@ export default function UserEditAdmin() {
       {auth.authority}
     </option>
   ));
+
+  const isEdit = !!user.id;
 
   return (
     <div className="auth-page-container">
@@ -95,11 +113,14 @@ export default function UserEditAdmin() {
             </Label>
             <Input
               type="password"
-              required
-              name="password"
-              id="password"
-              value={user.password || ""}
-              onChange={handleChange}
+              required={!isEdit} // obligatorio solo al crear
+              placeholder={
+                isEdit
+                  ? "Leave empty to keep current password"
+                  : "Enter password"
+              }
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               className="custom-input"
             />
           </div>

@@ -19,6 +19,7 @@ import java.util.Optional;
 
 import jakarta.validation.Valid;
 
+import org.apache.coyote.BadRequestException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -29,6 +30,7 @@ import org.springframework.macpercam.CATLab.profesor.ProfesorService;
 import org.springframework.macpercam.CATLab.estudiante.EstudianteService;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,18 +40,25 @@ public class UserService {
 	private UserRepository userRepository;
 	private ProfesorService profesorService;
 	private EstudianteService estudianteService;
+	private final PasswordEncoder encoder;
 
 	@Autowired
-	public UserService(UserRepository userRepository, ProfesorService profesorService, EstudianteService estudianteService) {
+	public UserService(UserRepository userRepository, ProfesorService profesorService, EstudianteService estudianteService, PasswordEncoder encoder) {
 		this.userRepository = userRepository;
 		this.profesorService = profesorService;
 		this.estudianteService = estudianteService;
+		this.encoder = encoder;
 	}
 
 	@Transactional
-	public User saveUser(User user) throws DataAccessException {
-		userRepository.save(user);
-		return user;
+	public User saveUser(User request) {
+		User user;
+		user = new User();
+		user.setUsername(request.getUsername());
+		user.setPassword(encoder.encode(request.getPassword())); // encode siempre
+		user.setAuthority(request.getAuthority());
+
+		return userRepository.save(user);
 	}
 
 	@Transactional(readOnly = true)
@@ -89,10 +98,26 @@ public class UserService {
 	@Transactional
 	public User updateUser(@Valid User user, Integer idToUpdate) {
 		User toUpdate = findUser(idToUpdate);
-		BeanUtils.copyProperties(user, toUpdate, "id");
-		userRepository.save(toUpdate);
 
-		return toUpdate;
+		// Username
+		if (!user.getUsername().equals(toUpdate.getUsername())) {
+			toUpdate.setUsername(user.getUsername());
+		}
+
+		// Password
+		if (user.getPassword() != null && !user.getPassword().isBlank()) {
+			// Solo si la contraseña enviada no coincide con la anterior (en caso de que el frontend envíe texto plano)
+			if (!encoder.matches(user.getPassword(), toUpdate.getPassword())) {
+				toUpdate.setPassword(encoder.encode(user.getPassword()));
+			}
+		}
+
+		// Authority / rol
+		if (user.getAuthority() != null && !user.getAuthority().equals(toUpdate.getAuthority())) {
+			toUpdate.setAuthority(user.getAuthority());
+		}
+
+		return userRepository.save(toUpdate);
 	}
 
 	@Transactional
