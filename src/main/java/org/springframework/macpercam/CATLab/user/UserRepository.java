@@ -8,9 +8,9 @@ import org.springframework.data.repository.CrudRepository;
 
 public interface UserRepository extends  CrudRepository<User, Integer>{
 	
-//	@Modifying
-//	@Query("DELETE FROM Owner o WHERE o.user.username = :username")
-//	void deleteOwnerOfUser(String username);
+	@Modifying
+	@Query("DELETE FROM Profesor p WHERE p.user.username = :username")
+	void deleteProfesorOfUser(String username);
 //	
 //	@Modifying
 //	@Query("DELETE FROM Pet p WHERE p.owner.id = :id")
@@ -34,12 +34,12 @@ public interface UserRepository extends  CrudRepository<User, Integer>{
 	@Query("SELECT u FROM User u WHERE u.authority.authority = :auth")
 	Iterable<User> findAllByAuthority(String auth);
 	
-	// @Query("DELETE FROM Owner o WHERE o.user.id = :userId")
-	// @Modifying
-	// void deleteOwnerRelation(int userId);
+	@Query("DELETE FROM Profesor p WHERE p.user.id = :userId")
+	@Modifying
+	void deleteProfesorRelation(int userId);
 	
-	// @Query("DELETE FROM Vet v WHERE v.user.id = :userId")
-	// @Modifying
-	// void deleteVetRelation(int userId);
+	@Query("DELETE FROM Estudiante e WHERE e.user.id = :userId")
+	@Modifying
+	void deleteEstudianteRelation(int userId);
 	
 }

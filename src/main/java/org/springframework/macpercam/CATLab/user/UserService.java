@@ -22,7 +22,11 @@ import jakarta.validation.Valid;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
+import org.springframework.macpercam.CATLab.estudiante.Estudiante;
 import org.springframework.macpercam.CATLab.exceptions.ResourceNotFoundException;
+import org.springframework.macpercam.CATLab.profesor.Profesor;
+import org.springframework.macpercam.CATLab.profesor.ProfesorService;
+import org.springframework.macpercam.CATLab.estudiante.EstudianteService;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -32,10 +36,14 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserService {
 
 	private UserRepository userRepository;
+	private ProfesorService profesorService;
+	private EstudianteService estudianteService;
 
 	@Autowired
-	public UserService(UserRepository userRepository) {
+	public UserService(UserRepository userRepository, ProfesorService profesorService, EstudianteService estudianteService) {
 		this.userRepository = userRepository;
+		this.profesorService = profesorService;
+		this.estudianteService = estudianteService;
 	}
 
 	@Transactional
@@ -87,32 +95,33 @@ public class UserService {
 		return toUpdate;
 	}
 
-	// @Transactional
-	// public void deleteUser(Integer id) {
-	// 	User toDelete = findUser(id);
-	// 	deleteRelations(id, toDelete.getAuthority().getAuthority());
-	// 	this.userRepository.delete(toDelete);
-	// }
+	@Transactional
+	public void deleteUser(Integer id) {
+		User toDelete = findUser(id);
+		deleteRelations(id, toDelete.getAuthority().getAuthority());
+		this.userRepository.delete(toDelete);
+	}
 
-// 	private void deleteRelations(Integer id, String auth) {
-// 		switch (auth) {
-// 		case "OWNER":
-// //			Optional<Owner> owner = ownerService.optFindOwnerByUser(id);
-// //			if (owner.isPresent())
-// //				ownerService.deleteOwner(owner.get().getId());
-// 			this.userRepository.deleteOwnerRelation(id);
-// 			break;
-// 		case "VET":
-// 			Optional<Vet> vet = vetService.optFindVetByUser(id);
-// 			if (vet.isPresent()) {
-// 				vetService.deleteVet(vet.get().getId());
-// 			}
-// 			break;
-// 		default:
-// 			// The only relations that have user are Owner and Vet
-// 			break;
-// 		}
+	private void deleteRelations(Integer id, String auth) {
+		switch (auth) {
+		case "PROFESOR":
+			Optional<Profesor> profesor = profesorService.findProfesorByUserId(id);
+			if (profesor.isPresent())
+				profesorService.deleteProfesor(profesor.get().getId());
+			this.userRepository.deleteProfesorRelation(id);
+			break;
+		case "ESTUDIANTE":
+			Optional<Estudiante> estudiante = estudianteService.findEstudianteByUserId(id);
+			if (estudiante.isPresent()) {
+				estudianteService.deleteEstudiante(estudiante.get().getId());
+			}
+			this.userRepository.deleteEstudianteRelation(id);
+			break;
+		// default:
+		// 	// The only relations that have user are Owner and Vet
+		// 	break;
+		}
 
-// 	}
+	}
 
 }
