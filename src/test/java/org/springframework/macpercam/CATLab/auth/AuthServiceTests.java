@@ -69,7 +69,6 @@ public class AuthServiceTests {
 		SignupRequest request = new SignupRequest();
 		request.setAddress("prueba");
 		request.setAuthority(auth);
-		request.setCity("prueba");
 		request.setFirstName("prueba");
 		request.setLastName("prueba");
 		request.setPassword("prueba");
