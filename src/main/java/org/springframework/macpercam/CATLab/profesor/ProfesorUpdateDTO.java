@@ -13,6 +13,6 @@ public class ProfesorUpdateDTO {
     private String firstName;
     private String lastName;
     private String dni;
-    private Integer phoneNumber;
+    private String phoneNumber;
 
 }
