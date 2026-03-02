@@ -1,8 +1,8 @@
 import { formValidators } from "../../../validators/formValidators";
-import { registerFormClinicOwnerInputs } from "./registerFormClinicOwnerInputs";
+import { registerFormProfesorInputs } from "./registerFormProfesorInputs";
 
 export const registerFormVetInputs = [
-  ...registerFormClinicOwnerInputs,
+  ...registerFormProfesorInputs,
   {
     tag: "City",
     name: "city",

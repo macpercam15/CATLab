@@ -4,7 +4,7 @@ import tokenService from "../../services/token.service";
 import FormGenerator from "../../components/formGenerator/formGenerator";
 import { registerFormOwnerInputs } from "./form/registerFormOwnerInputs";
 import { registerFormVetInputs } from "./form/registerFormVetInputs";
-import { registerFormClinicOwnerInputs } from "./form/registerFormClinicOwnerInputs";
+import { registerFormProfesorInputs } from "./form/registerFormProfesorInputs";
 import { useEffect, useRef, useState } from "react";
 
 export default function Register() {
@@ -62,7 +62,7 @@ export default function Register() {
               else {
                 tokenService.setUser(data);
                 tokenService.updateLocalAccessToken(data.token);
-                window.location.href = "/dashboard";
+                window.location.href = "/";
               }
             })
             .catch((message) => {
@@ -113,7 +113,7 @@ export default function Register() {
             inputs={
               type === "Owner" ? registerFormOwnerInputs 
               : type === "Vet" ? registerFormVetInputs
-              : registerFormClinicOwnerInputs
+              : registerFormProfesorInputs
             }
             onSubmit={handleSubmit}
             numberOfColumns={1}
@@ -149,10 +149,10 @@ export default function Register() {
             </button>
             <button
               className="auth-button"
-              value="Clinic Owner"
+              value="Profesor"
               onClick={handleButtonClick}
             >
-              Clinic Owner
+              Profesor
             </button>
           </div>
         </div>
