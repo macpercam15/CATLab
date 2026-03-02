@@ -7,10 +7,14 @@ import jakarta.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.macpercam.CATLab.auth.payload.request.SignupRequest;
+import org.springframework.macpercam.CATLab.estudiante.Estudiante;
+import org.springframework.macpercam.CATLab.profesor.Profesor;
 import org.springframework.macpercam.CATLab.user.Authorities;
 import org.springframework.macpercam.CATLab.user.AuthoritiesService;
 import org.springframework.macpercam.CATLab.user.User;
 import org.springframework.macpercam.CATLab.user.UserService;
+import org.springframework.macpercam.CATLab.profesor.ProfesorService;
+import org.springframework.macpercam.CATLab.estudiante.EstudianteService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -20,12 +24,17 @@ public class AuthService {
 	private final PasswordEncoder encoder;
 	private final AuthoritiesService authoritiesService;
 	private final UserService userService;
+	private final ProfesorService profesorService;
+	private final EstudianteService estudianteService;
 
 	@Autowired
-	public AuthService(PasswordEncoder encoder, AuthoritiesService authoritiesService, UserService userService) {
+	public AuthService(PasswordEncoder encoder, AuthoritiesService authoritiesService, UserService userService, 
+		ProfesorService profesorService, EstudianteService estudianteService) {
 		this.encoder = encoder;
 		this.authoritiesService = authoritiesService;
 		this.userService = userService;
+		this.profesorService = profesorService;
+		this.estudianteService = estudianteService;
 	}
 
 	@Transactional
@@ -46,6 +55,25 @@ public class AuthService {
 			role = authoritiesService.findByAuthority("PROFESOR");
 			user.setAuthority(role);
 			userService.saveUser(user);
+			Profesor profesor = new Profesor();
+			profesor.setFirstName(request.getFirstName());
+			profesor.setLastName(request.getLastName());
+			profesor.setDni(request.getDni());
+			profesor.setPhoneNumber(request.getTelephone());
+			profesor.setUser(user);
+			profesorService.saveProfesor(profesor);
+			break;
+		case "estudiante":
+			role = authoritiesService.findByAuthority("ESTUDIANTE");
+			user.setAuthority(role);
+			userService.saveUser(user);
+			Estudiante estudiante = new Estudiante();
+			estudiante.setFirstName(request.getFirstName());
+			estudiante.setLastName(request.getLastName());
+			estudiante.setDni(request.getDni());
+			estudiante.setPhoneNumber(request.getTelephone());
+			estudiante.setUser(user);
+			estudianteService.saveEstudiante(estudiante);
 			break;
 		// case "vet":
 		// 	role = authoritiesService.findByAuthority("VET");

@@ -2,8 +2,7 @@ import "../../static/css/auth/authButton.css";
 import "../../static/css/auth/authPage.css";
 import tokenService from "../../services/token.service";
 import FormGenerator from "../../components/formGenerator/formGenerator";
-import { registerFormOwnerInputs } from "./form/registerFormOwnerInputs";
-import { registerFormVetInputs } from "./form/registerFormVetInputs";
+import { registerFormEstudianteInputs } from "./form/registerFormEstudianteInputs";
 import { registerFormProfesorInputs } from "./form/registerFormProfesorInputs";
 import { useEffect, useRef, useState } from "react";
 
@@ -75,33 +74,11 @@ export default function Register() {
       });
   }
 
-  useEffect(() => {
-    if (type === "Owner" || type === "Vet") {
-      if (registerFormOwnerInputs[5].values.length === 1){
-        fetch("/api/v1/clinics")
-        .then(function (response) {
-          if (response.status === 200) {
-            return response.json();
-          } else {
-            return response.json();
-          }
-        })
-        .then(function (data) {
-          setClinics(data);
-          if (data.length !== 0) {
-            let clinicNames = data.map((clinic) => {
-              return clinic.name;
-            });
-
-            registerFormOwnerInputs[5].values = ["None", ...clinicNames];
-          }
-        })
-        .catch((message) => {
-          alert(message);
-        });
-      }
-    }
-  }, [type]);
+  // useEffect(() => {
+  //   if (type === "Estudiante") {
+      
+  //   }
+  // }, [type]);
 
   if (type) {
     return (
@@ -111,8 +88,7 @@ export default function Register() {
           <FormGenerator
             ref={registerFormRef}
             inputs={
-              type === "Owner" ? registerFormOwnerInputs 
-              : type === "Vet" ? registerFormVetInputs
+              type === "Estudiante" ? registerFormEstudianteInputs 
               : registerFormProfesorInputs
             }
             onSubmit={handleSubmit}
@@ -135,17 +111,10 @@ export default function Register() {
           <div className="options-row">
             <button
               className="auth-button"
-              value="Owner"
+              value="Estudiante"
               onClick={handleButtonClick}
             >
-              Owner
-            </button>
-            <button
-              className="auth-button"
-              value="Vet"
-              onClick={handleButtonClick}
-            >
-              Vet
+              Estudiante
             </button>
             <button
               className="auth-button"

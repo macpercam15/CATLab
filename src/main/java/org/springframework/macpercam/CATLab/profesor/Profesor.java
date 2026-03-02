@@ -27,8 +27,8 @@ public class Profesor extends Person {
     @Column(unique = true)
     String dni;
 
-    @Digits(fraction = 0, integer = 9)
-    Integer phoneNumber;
+    
+    String phoneNumber;
 
     @OneToOne(cascade = {CascadeType.DETACH, CascadeType.REFRESH, CascadeType.PERSIST})
     @JoinColumn(name = "user_id", referencedColumnName = "id")
