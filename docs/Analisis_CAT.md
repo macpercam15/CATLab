@@ -8,8 +8,7 @@
 
 1. [Metadatos del Documento](#1-metadatos-del-documento)
 2. [Introducción](#2-introducción)
-   - 2.1 [¿Qué es?](#21-¿qué-es?)
-   - 2.2 [Objetivo del análisis](#22-objetivo-del-análisis)
+   - 2.1 [¿Qué es una herramienta CAT?](#21-¿qué-es-una-herramienta-cat?)
 3. [Análisis de herramientas](#3-análisis-de-herramientas)
    - 3.1 [Herramienta 1](#31-herramienta-1)
    - 3.2 [Herramienta 2](#32-herramienta-2)
@@ -43,15 +42,13 @@
 
 ## 2. Introducción
 
-_Describe brevemente el propósito de este documento. ¿Qué se analiza, diseña o planifica aquí? ¿Por qué es relevante para el proyecto?_
+En este documento se analizarán otras herramientas CAT existentes en el mercado con el objetivo de conocer en profundidad sus funcionalidades esenciales, así como identificar sus fortalezas para poder aprovecharlas y sus debilidades en lo que respecta al ámbito educativo, con el fin de abordarlas.
 
-### 2.1 ¿Qué es?
+### 2.1 ¿Qué es una herramienta CAT?
 
-_¿Qué se pretende conseguir con este documento?_
+Las herramientas CAT(Computer Assisted Translation) son softwares que ayudan a los traductores profesionales a trabajar de forma más eficiente. Permitiendo utilizar distintos formatos, glosarios o memorias de traducción, que ayudan a mantener la homogeneidad en las traducciones.
 
-### 2.2 Objetivo del análisis
-
-_¿A qué parte del proyecto afecta? ¿Qué queda fuera del alcance de este documento?_
+La mayoría de los traductores profesionales y las agencias de traducción trabajan actualmente con herramientas CAT; por ello, es importante que los estudiantes de traducción aprendan durante su formación a utilizar estas herramientas, al menos en sus aspectos fundamentales.
 
 [Índice](#índice)
 
@@ -120,11 +117,9 @@ _Lista todas las fuentes, documentos o recursos consultados para elaborar este d
 
 ## 8. Historial de Cambios
 
-_Registra aquí todas las modificaciones realizadas al documento._
-
-| Versión | Fecha       | Autor(es)         | Descripción del cambio               |
-|---------|-------------|-------------------|--------------------------------------|
-| 1.0     | YYYY-MM-DD  | [Nombre]          | Creación inicial del documento       |
-| 1.1     | YYYY-MM-DD  | [Nombre]          | [Descripción del cambio realizado]   |
+| Versión | Fecha       | Descripción del cambio               |
+|---------|-------------|--------------------------------------|
+| 1.0     | 07-03-2026  | Creación inicial del documento       |
+| 1.1     | YYYY-MM-DD  | [Descripción del cambio realizado]   |
 
 [Índice](#índice)
