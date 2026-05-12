@@ -3,6 +3,7 @@ import { Navbar, NavbarBrand, NavLink, NavItem, Nav, NavbarText, NavbarToggler, 
 import { Link } from 'react-router-dom';
 import tokenService from './services/token.service';
 import jwt_decode from "jwt-decode";
+import logo from './static/images/logo-blanco.png';
 
 function AppNavbar() {
     const [roles, setRoles] = useState([]);
@@ -54,13 +55,24 @@ function AppNavbar() {
         publicLinks = (
             <>
                 <NavItem>
-                    <NavLink style={{ color: "white" }} id="docs" tag={Link} to="/docs">Docs</NavLink>
+                    <NavLink style={{ 
+                        color: "white", 
+                        fontSize: "1.8rem", 
+                        fontFamily: "Anonymous Pro" 
+                    }} 
+                    id="docs" 
+                    tag={Link} 
+                    to="https://github.com/macpercam15/CATLab">
+                        <img alt="github" src={require('./static/images/logo-github.png')} style={{ height: 40, width: 40, marginRight: 10 }} />
+                        GitHub
+                    </NavLink> 
                 </NavItem>
                 <NavItem>
-                    <NavLink style={{ color: "white" }} id="register" tag={Link} to="/register">Register</NavLink>
-                </NavItem>
-                <NavItem>
-                    <NavLink style={{ color: "white" }} id="login" tag={Link} to="/login">Login</NavLink>
+                    <NavLink style={{ 
+                        color: "white", 
+                        fontSize: "1.8rem", 
+                        fontFamily: "Anonymous Pro" 
+                    }} id="login" tag={Link} to="/login">Login</NavLink>
                 </NavItem>
             </>
         )
@@ -72,11 +84,11 @@ function AppNavbar() {
         userLogout = (
             <>
                 <NavItem>
-                    <NavLink style={{ color: "white" }} id="docs" tag={Link} to="/docs">Docs</NavLink>
+                    <NavLink style={{ color: "white", fontSize: "1.5rem", fontFamily: "Anonymous Pro", fontWeight: "bold" }} id="docs" tag={Link} to="/docs">Docs</NavLink>
                 </NavItem>
-                <NavbarText style={{ color: "white" }} className="justify-content-end">{username}</NavbarText>
+                <NavbarText style={{ color: "white", fontSize: "1.5rem", fontFamily: "Anonymous Pro", fontWeight: "bold" }} className="justify-content-end">{username}</NavbarText>
                 <NavItem className="d-flex">
-                    <NavLink style={{ color: "white" }} id="logout" tag={Link} to="/logout">Logout</NavLink>
+                    <NavLink style={{ color: "white", fontSize: "1.5rem", fontFamily: "Anonymous Pro", fontWeight: "bold" }} id="logout" tag={Link} to="/logout">Logout</NavLink>
                 </NavItem>
             </>
         )
@@ -85,9 +97,24 @@ function AppNavbar() {
 
     return (
         <div>
-            <Navbar expand="md" dark color="dark">
-                <NavbarBrand href="/">
-                    <img alt="logo" src="/logo1-recortado.png" style={{ height: 40, width: 40 }} />
+            <Navbar expand="md" dark 
+                style={{backgroundColor: '#0F766E',
+                        paddingLeft: "3px",
+                        paddingRight: "3px",
+                        paddingTop: "3px",
+                        paddingBottom: "3px",
+                        fontFamily: "'Anonymous Pro', monospace"}}>
+                <NavbarBrand href="/"
+                    style={{ 
+                        color: "white", 
+                        fontSize: "2.8rem", 
+                        fontWeight: "bold", 
+                        display: "flex", 
+                        alignItems: "center", 
+                        gap: "10px", 
+                        fontFamily: "'Anonymous Pro', monospace" 
+                    }}>
+                    <img alt="logo" src={logo} style={{ height: 70, width: 70 }} />
                     CATLab
                 </NavbarBrand>
                 <NavbarToggler onClick={toggleNavbar} className="ms-2" />
