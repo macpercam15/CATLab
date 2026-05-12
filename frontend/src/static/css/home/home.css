@@ -1,36 +1,128 @@
-.home-page-container{
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: -1;
-    background-color: rgb(192, 225, 225);
-    background-size: cover;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
+@import url('https://fonts.googleapis.com/css2?family=Anonymous+Pro:wght@400;700&display=swap');
 
-.hero-div{
-    background-color: rgba(255, 255, 255, 0.3);
-    padding: 2rem;
-    border-radius: 25px;
-    backdrop-filter: blur(10px);
+.home-page-container {
+    min-height: 100vh;
+    width: 100%;
+    background-color: #F8F9FA;
+
     display: flex;
     flex-direction: column;
-    justify-content: center;
     align-items: center;
+
+    padding-top: 30px;
+    padding-bottom: 80px;
+
+    font-family: 'Anonymous Pro', monospace;
 }
 
-.hero-div h1{
-    font-size: 3rem;
-    font-weight: 700;
-    color: #2f324f;
+/* HERO */
+
+.hero-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
     text-align: center;
-    text-transform: uppercase;
 }
 
-.hero-div h3{
-    text-align: center;
+.logo-img {
+    width: 300px;
+    height: auto;
+}
+
+.hero-section h1 {
+    font-size: 7rem;
+    font-weight: 1000;
+    font-family: 'Anonymous Pro', monospace;
+    color: #202124;
+    margin: 0;
+}
+
+.hero-subtitle {
+    font-size: 2.5rem;
+    font-weight: 1000;
+    font-family: 'Anonymous Pro', monospace;
+    color: #718096;
+}
+
+.hero-button {
+    background-color: #0F766E;
+    color: white;
+    border: none;
+    border-radius: 999px;
+
+    padding: 10px 40px;
+
+    font-size: 2.5rem;
+    font-weight: 550;
+    font-family: 'Anonymous Pro', monospace;
+
+    cursor: pointer;
+
+    transition: 0.2s ease;
+}
+
+.hero-button:hover {
+    transform: scale(1.05);
+    background-color: #0D9488;
+    opacity: 0.95;
+}
+
+/* FEATURES */
+
+.features-section {
+    width: 100%;
+    max-width: 1300px;
+
+    margin-top: 120px;
+
+    display: flex;
+    justify-content: center;
+    gap: 80px;
+
+    padding: 0 40px;
+}
+
+.feature-card {
+    width: 320px;
+}
+
+.feature-card h2 {
+    font-size: 2.5rem;
+    font-family: 'Anonymous Pro', monospace;
+    font-weight: bold;
+    color: #000000;
+    margin-bottom: 10px;
+    line-height: 1.1;
+}
+
+.feature-card p {
+    font-size: 1.8rem;
+    font-family: 'Anonymous Pro', monospace;
+    line-height: 1.25;
+    color: #222;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 1000px) {
+
+    .features-section {
+        flex-direction: column;
+        align-items: center;
+        gap: 50px;
+    }
+
+    .feature-card {
+        width: 90%;
+        text-align: center;
+    }
+
+    .hero-section h1 {
+        font-size: 4rem;
+    }
+
+    .hero-subtitle {
+        font-size: 1.4rem;
+    }
 }
