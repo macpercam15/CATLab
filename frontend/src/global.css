@@ -1,4 +1,7 @@
-:root{
+/* 1. IMPORTACIÓN (Siempre arriba del todo) */
+@import url('https://fonts.googleapis.com/css2?family=Anonymous+Pro:wght@400;700&display=swap');
+/* 2. VARIABLES */
+:root {
     --main-red-color: #c42323;
     --main-blue-color: #2333c4;
     --main-green-color: #23c483;
@@ -7,15 +10,11 @@
     --red-shadow-color: rgba(229, 46, 46, 0.4);
 }
 
-@font-face {
-    font-family: 'american-typewriter'; /*a name to be used later*/
-    src: url('./static/fonts/American\ Typewriter\ Bold.ttf'); /*URL to font*/
+/* 3. ESTILOS GLOBALES */
+body {
+    font-family: 'Anonymous Pro', monospace;
+    margin: 0;
 }
 
-* {
-    font-family: 'american-typewriter';
-}
-
-/* div {
-    border: 1px dotted red;
-} */
+/* De aquí en adelante, CUALQUIER div, h1, h2 o p que se cree 
+   ya tendrá la fuente 'Anonymous Pro' por defecto. */

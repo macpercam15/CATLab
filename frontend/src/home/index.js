@@ -21,7 +21,12 @@ export default function Home() {
                     Empowering the next generation of translators.
                 </p>
 
-                <button className="hero-button">
+                <button
+                    className="hero-button"
+                    onClick={() => {
+                        window.location.href = '/login';
+                    }}
+                >
                     Get Started!
                 </button>
 
