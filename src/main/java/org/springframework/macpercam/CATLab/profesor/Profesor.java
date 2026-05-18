@@ -23,13 +23,6 @@ import lombok.Setter;
 @Table(name = "profesores")
 public class Profesor extends Person {
 
-    @NotEmpty
-    @Column(unique = true)
-    String dni;
-
-    
-    String phoneNumber;
-
     @OneToOne(cascade = {CascadeType.DETACH, CascadeType.REFRESH, CascadeType.PERSIST})
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     @OnDelete(action = OnDeleteAction.CASCADE)
