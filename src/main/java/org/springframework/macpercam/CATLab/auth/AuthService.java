@@ -58,8 +58,6 @@ public class AuthService {
 			Profesor profesor = new Profesor();
 			profesor.setFirstName(request.getFirstName());
 			profesor.setLastName(request.getLastName());
-			profesor.setDni(request.getDni());
-			profesor.setPhoneNumber(request.getTelephone());
 			profesor.setUser(user);
 			profesorService.saveProfesor(profesor);
 			break;
@@ -70,8 +68,6 @@ public class AuthService {
 			Estudiante estudiante = new Estudiante();
 			estudiante.setFirstName(request.getFirstName());
 			estudiante.setLastName(request.getLastName());
-			estudiante.setDni(request.getDni());
-			estudiante.setPhoneNumber(request.getTelephone());
 			estudiante.setUser(user);
 			estudianteService.saveEstudiante(estudiante);
 			break;

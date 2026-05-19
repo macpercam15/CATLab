@@ -63,14 +63,6 @@ public class ProfesorService {
         toUpdate.setLastName(profesor.getLastName());
     }
 
-    if (profesor.getDni() != null) {
-        toUpdate.setDni(profesor.getDni());
-    }
-
-    if (profesor.getPhoneNumber() != null) {
-        toUpdate.setPhoneNumber(profesor.getPhoneNumber());
-    }
-
     return saveProfesor(toUpdate);
 	}
 

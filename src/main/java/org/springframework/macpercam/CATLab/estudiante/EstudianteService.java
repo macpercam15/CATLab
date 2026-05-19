@@ -57,14 +57,6 @@ public class EstudianteService {
         toUpdate.setLastName(estudiante.getLastName());
     }
 
-    if (estudiante.getDni() != null) {
-        toUpdate.setDni(estudiante.getDni());
-    }
-
-    if (estudiante.getPhoneNumber() != null) {
-        toUpdate.setPhoneNumber(estudiante.getPhoneNumber());
-    }
-
     return saveEstudiante(toUpdate);
 	}
 
