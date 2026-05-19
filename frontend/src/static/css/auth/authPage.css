@@ -16,6 +16,14 @@
   font-family: 'Anonymous Pro', monospace;
 }
 
+.login-card-right .auth-alert {
+  width: 90%;
+  margin: 0 0 1rem 0;
+  border-radius: 12px;
+  font-size: 1.3rem;
+  padding: 0.6rem 1rem;
+}
+
 .login-card-left {
   background-color: #6EA6A2CC;
 

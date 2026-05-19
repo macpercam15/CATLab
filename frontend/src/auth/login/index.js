@@ -34,8 +34,6 @@ export default function Login() {
 
   return (
     <div className="auth-page-container">
-      {message ? <Alert color="primary">{message}</Alert> : <></>}
-
         <div className="login-card-left">
           <h2>Looking to join us?</h2>
           <p>Accounts are managed by administrators.</p>
@@ -55,6 +53,11 @@ export default function Login() {
         </div>
 
         <div className="login-card-right">
+          {message ? (
+            <Alert className="auth-alert" color="danger">
+              {message}
+            </Alert>
+          ) : null}
           <h1>Login</h1>
 
           <FormGenerator 

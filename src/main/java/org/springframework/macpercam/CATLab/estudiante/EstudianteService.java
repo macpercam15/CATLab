@@ -40,6 +40,11 @@ public class EstudianteService {
         return pr.findByUser(userId);
     }
 
+    @Transactional(readOnly = true)
+    public Optional<Estudiante> findEstudianteByEmail(String email) throws DataAccessException {
+        return pr.findByEmail(email);
+    }
+
     @Transactional
 	public Estudiante saveEstudiante(Estudiante estudiante) throws DataAccessException {
 		pr.save(estudiante);

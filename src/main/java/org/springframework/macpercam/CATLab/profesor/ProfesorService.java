@@ -46,6 +46,11 @@ public class ProfesorService {
         return pr.findByUser(userId);
     }
 
+    @Transactional(readOnly = true)
+    public Optional<Profesor> findProfesorByEmail(String email) throws DataAccessException {
+        return pr.findByEmail(email);
+    }
+
     @Transactional
 	public Profesor saveProfesor(Profesor profesor) throws DataAccessException {
 		pr.save(profesor);

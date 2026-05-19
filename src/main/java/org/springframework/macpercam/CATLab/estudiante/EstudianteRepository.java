@@ -22,4 +22,7 @@ public interface EstudianteRepository extends CrudRepository<Estudiante, Integer
     @Query("SELECT p.user.authority FROM Estudiante p WHERE p.id = :estudianteId")
     public Authorities findAuthorityByEstudianteId(int estudianteId);
 
+    @Query("SELECT DISTINCT estudiante FROM Estudiante estudiante WHERE estudiante.email = :email")
+    public java.util.Optional<Estudiante> findByEmail(@org.springframework.data.repository.query.Param("email") String email);
+
 }

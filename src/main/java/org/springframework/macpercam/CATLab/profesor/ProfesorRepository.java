@@ -22,4 +22,7 @@ public interface ProfesorRepository extends CrudRepository<Profesor, Integer> {
     @Query("SELECT p.user.authority FROM Profesor p WHERE p.id = :profesorId")
     public Authorities findAuthorityByProfesorId(int profesorId);
 
+    @Query("SELECT DISTINCT profesor FROM Profesor profesor WHERE profesor.email = :email")
+    public java.util.Optional<Profesor> findByEmail(@org.springframework.data.repository.query.Param("email") String email);
+
 }

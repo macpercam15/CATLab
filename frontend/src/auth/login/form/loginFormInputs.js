@@ -2,7 +2,7 @@ import { formValidators } from "../../../validators/formValidators";
 
 export const loginFormInputs = [
   {
-    tag: "Email",
+    tag: "Username",
     name: "username",
     type: "text",
     defaultValue: "",
