@@ -5,7 +5,6 @@ import { ErrorBoundary } from "react-error-boundary";
 import AppNavbar from "./AppNavbar";
 import Home from "./home";
 import PrivateRoute from "./privateRoute";
-import Register from "./auth/register";
 import Login from "./auth/login";
 import Logout from "./auth/logout";
 import tokenService from "./services/token.service";
@@ -65,7 +64,6 @@ function App() {
   if (!jwt) {
     publicRoutes = (
       <>        
-        <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
       </>
     )
