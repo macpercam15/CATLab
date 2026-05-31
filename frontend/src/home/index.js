@@ -53,6 +53,7 @@ export default function Home() {
     }, []);
 
     const isStudent = role === 'ESTUDIANTE' || role === 'STUDENT' || role === 'STUDENT_ROLE';
+    const isTeacher = role === 'PROFESOR' || role === 'TEACHER' || role === 'TEACHER_ROLE';
 
     return (
         <div className="home-page-container">
@@ -98,6 +99,22 @@ export default function Home() {
                             </button>
                         </div>
                     </div>
+                ) : isTeacher ? (
+                    <div className="teacher-hero-buttons">
+                        <button
+                            className="teacher-primary"
+                            onClick={() => alert('Funcionalidad "Proyectos" no implementada aun')}
+                        >
+                            Projects
+                        </button>
+
+                        <button
+                            className="teacher-outline"
+                            onClick={() => alert('Funcionalidad "Mis estudiantes" no implementada aun')}
+                        >
+                            My students
+                        </button>
+                    </div>
                 ) : (
                     <button
                         className="hero-button"
@@ -111,7 +128,7 @@ export default function Home() {
 
             </section>
 
-            {!isStudent && (
+            {!isStudent && !isTeacher && (
                 <section className="features-section">
 
                     <div className="feature-card">

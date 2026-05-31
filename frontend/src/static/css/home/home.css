@@ -76,21 +76,25 @@
 }
 
 .student-primary {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     background-color: #0F766E;
     color: white;
-    border: 3px solid transparent;
+    border: 6px solid #0F766E;
     border-radius: 999px;
-    padding: 10px 40px;
+    padding: 5px 40px;
+    width: 290px;
     font-size: 2.1rem;
     font-weight: 700;
     cursor: pointer;
-    box-shadow: 0 8px 22px rgba(15,118,110,0.16);
     white-space: nowrap;
 }
 
 .student-primary:hover {
     transform: translateY(-3px);
     background-color: #0D9488;
+    border: 6px solid #0D9488;
 }
 
 .student-secondary-row {
@@ -106,10 +110,14 @@
 }
 
 .student-outline {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     background-color: transparent;
-    border: 3px solid #0F766E;
+    border: 6px solid #0F766E;
     border-radius: 999px;
-    padding: 10px 40px;
+    padding: 5px 40px;
+    width: 290px;
     font-size: 2.1rem;
     font-weight: 700;
     cursor: pointer;
@@ -118,6 +126,58 @@
 }
 
 .student-outline:hover {
+    background-color: rgba(15,118,110,0.06);
+}
+
+/* Teacher hero buttons (logged-in teacher view) */
+.teacher-hero-buttons {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 70px;
+    margin-top: 25px;
+}
+
+.teacher-primary {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #0F766E;
+    color: white;
+    border: 6px solid #0F766E;
+    border-radius: 999px;
+    padding: 5px 40px;
+    width: 290px;
+    font-size: 2.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    white-space: nowrap;
+    text-align: center;
+}
+
+.teacher-primary:hover {
+    transform: translateY(-3px);
+    background-color: #0D9488;
+    border: 6px solid #0D9488;
+}
+
+.teacher-outline {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: transparent;
+    border: 6px solid #0F766E;
+    border-radius: 999px;
+    padding: 5px 40px;
+    width: 290px;
+    font-size: 2.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.teacher-outline:hover {
     background-color: rgba(15,118,110,0.06);
 }
 
@@ -132,6 +192,7 @@
     }
 
     .student-outline {
+        border: 6px solid #0F766E;
     }
 }
 
