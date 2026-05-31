@@ -18,6 +18,8 @@ export default function UserEditAdmin() {
     authority: null,
   };
   const id = getIdFromUrl(2);
+  const [email, setEmail] = useState("");
+  const [classNameValue, setClassNameValue] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState(null);
   const [visible, setVisible] = useState(false);
@@ -88,13 +90,31 @@ export default function UserEditAdmin() {
   const isEdit = !!user.id;
 
   return (
-    <div className="auth-page-container">
-      {<h2>{user.id ? "Edit User" : "Add User"}</h2>}
-      {modal}
-      <div className="auth-form-container">
-        <Form onSubmit={handleSubmit}>
-          <div className="custom-form-input">
-            <Label for="username" className="custom-form-input-label">
+    <div className="admin-user-form-page">
+      <div className="admin-user-form-card">
+        <h1 className="admin-user-form-title">
+          {isEdit ? "Edit user" : "New user"}
+        </h1>
+        {modal}
+        <Form onSubmit={handleSubmit} className="admin-user-form">
+          {!isEdit && (
+            <div className="admin-user-form-group">
+              <Label for="email" className="admin-user-form-label">
+                Email
+              </Label>
+              <Input
+                type="email"
+                name="email"
+                id="email"
+                value={email}
+                onChange={(event) => setEmail(event.target.value)}
+                placeholder="email@test.com"
+                className="admin-user-form-input"
+              />
+            </div>
+          )}
+          <div className="admin-user-form-group">
+            <Label for="username" className="admin-user-form-label">
               Username
             </Label>
             <Input
@@ -104,30 +124,14 @@ export default function UserEditAdmin() {
               id="username"
               value={user.username || ""}
               onChange={handleChange}
-              className="custom-input"
+              placeholder="username"
+              className="admin-user-form-input"
             />
           </div>
-          <div className="custom-form-input">
-            <Label for="lastName" className="custom-form-input-label">
-              Password
+          <div className="admin-user-form-group">
+            <Label for="authority" className="admin-user-form-label">
+              Role
             </Label>
-            <Input
-              type="password"
-              required={!isEdit} // obligatorio solo al crear
-              placeholder={
-                isEdit
-                  ? "Leave empty to keep current password"
-                  : "Enter password"
-              }
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="custom-input"
-            />
-          </div>
-          <Label for="authority" className="custom-form-input-label">
-            Authority
-          </Label>
-          <div className="custom-form-input">
             {user.id ? (
               <Input
                 type="select"
@@ -136,7 +140,7 @@ export default function UserEditAdmin() {
                 id="authority"
                 value={user.authority?.id || ""}
                 onChange={handleChange}
-                className="custom-input"
+                className="admin-user-form-input admin-user-form-select"
               >
                 <option value="">None</option>
                 {authOptions}
@@ -149,20 +153,53 @@ export default function UserEditAdmin() {
                 id="authority"
                 value={user.authority?.id || ""}
                 onChange={handleChange}
-                className="custom-input"
+                className="admin-user-form-input admin-user-form-select"
               >
                 <option value="">None</option>
                 {authOptions}
               </Input>
             )}
+            {!isEdit && (
+              <div className="admin-user-form-note">
+                Password will be set automatically based on role.
+              </div>
+            )}
           </div>
-          <div className="custom-button-row">
-            <button className="auth-button">Save</button>
-            <Link
-              to={`/users`}
-              className="auth-button"
-              style={{ textDecoration: "none" }}
-            >
+          {!isEdit && (
+            <div className="admin-user-form-group">
+              <Label for="className" className="admin-user-form-label">
+                Class
+              </Label>
+              <Input
+                type="text"
+                name="className"
+                id="className"
+                value={classNameValue}
+                onChange={(event) => setClassNameValue(event.target.value)}
+                placeholder="class-name"
+                className="admin-user-form-input"
+              />
+            </div>
+          )}
+          {isEdit && (
+            <div className="admin-user-form-group">
+              <Label for="password" className="admin-user-form-label">
+                Password
+              </Label>
+              <Input
+                type="password"
+                name="password"
+                id="password"
+                placeholder="Leave empty to keep current password"
+                value={password}
+                onChange={(event) => setPassword(event.target.value)}
+                className="admin-user-form-input"
+              />
+            </div>
+          )}
+          <div className="admin-user-form-actions">
+            <button className="admin-user-form-button">Save</button>
+            <Link to={`/users`} className="admin-user-form-button outline">
               Cancel
             </Link>
           </div>
