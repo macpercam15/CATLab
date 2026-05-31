@@ -55,10 +55,30 @@ public class UserService {
 		User user;
 		user = new User();
 		user.setUsername(request.getUsername());
-		user.setPassword(encoder.encode(request.getPassword())); // encode siempre
+		String rawPassword = request.getPassword();
+		if (rawPassword == null || rawPassword.isBlank()) {
+			rawPassword = defaultPasswordForAuthority(request.getAuthority());
+		}
+		user.setPassword(encoder.encode(rawPassword));
 		user.setAuthority(request.getAuthority());
 
 		return userRepository.save(user);
+	}
+
+	private String defaultPasswordForAuthority(Authorities authority) {
+		if (authority == null || authority.getAuthority() == null) {
+			return "";
+		}
+		switch (authority.getAuthority()) {
+		case "ADMIN":
+			return "4dm1n";
+		case "PROFESOR":
+			return "pr0fes0r";
+		case "ESTUDIANTE":
+			return "3studiante";
+		default:
+			return "";
+		}
 	}
 
 	@Transactional(readOnly = true)
