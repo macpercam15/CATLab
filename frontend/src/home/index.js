@@ -54,6 +54,17 @@ export default function Home() {
 
     const isStudent = role === 'ESTUDIANTE' || role === 'STUDENT' || role === 'STUDENT_ROLE';
     const isTeacher = role === 'PROFESOR' || role === 'TEACHER' || role === 'TEACHER_ROLE';
+    const isAdmin = role === 'ADMIN' || role === 'ADMINISTRADOR' || role === 'ADMIN_ROLE';
+    const isStaff = isTeacher || isAdmin;
+
+    const primaryLabel = isAdmin ? 'New user' : 'Projects';
+    const secondaryLabel = isAdmin ? 'Users' : 'My students';
+    const primaryAlert = isAdmin
+        ? 'Funcionalidad "Nuevo usuario" no implementada aun'
+        : 'Funcionalidad "Proyectos" no implementada aun';
+    const secondaryAlert = isAdmin
+        ? 'Funcionalidad "Usuarios" no implementada aun'
+        : 'Funcionalidad "Mis estudiantes" no implementada aun';
 
     return (
         <div className="home-page-container">
@@ -99,20 +110,20 @@ export default function Home() {
                             </button>
                         </div>
                     </div>
-                ) : isTeacher ? (
-                    <div className="teacher-hero-buttons">
+                ) : isStaff ? (
+                    <div className="role-hero-buttons">
                         <button
-                            className="teacher-primary"
-                            onClick={() => alert('Funcionalidad "Proyectos" no implementada aun')}
+                            className="role-primary"
+                            onClick={() => alert(primaryAlert)}
                         >
-                            Projects
+                            {primaryLabel}
                         </button>
 
                         <button
-                            className="teacher-outline"
-                            onClick={() => alert('Funcionalidad "Mis estudiantes" no implementada aun')}
+                            className="role-outline"
+                            onClick={() => alert(secondaryAlert)}
                         >
-                            My students
+                            {secondaryLabel}
                         </button>
                     </div>
                 ) : (
@@ -128,7 +139,7 @@ export default function Home() {
 
             </section>
 
-            {!isStudent && !isTeacher && (
+            {!isStudent && !isTeacher && !isAdmin && (
                 <section className="features-section">
 
                     <div className="feature-card">

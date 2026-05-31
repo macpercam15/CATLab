@@ -129,8 +129,8 @@
     background-color: rgba(15,118,110,0.06);
 }
 
-/* Teacher hero buttons (logged-in teacher view) */
-.teacher-hero-buttons {
+/* Staff hero buttons (teacher/admin view) */
+.role-hero-buttons {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -138,7 +138,7 @@
     margin-top: 25px;
 }
 
-.teacher-primary {
+.role-primary {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -155,13 +155,13 @@
     text-align: center;
 }
 
-.teacher-primary:hover {
+.role-primary:hover {
     transform: translateY(-3px);
     background-color: #0D9488;
     border: 6px solid #0D9488;
 }
 
-.teacher-outline {
+.role-outline {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -177,7 +177,7 @@
     white-space: nowrap;
 }
 
-.teacher-outline:hover {
+.role-outline:hover {
     background-color: rgba(15,118,110,0.06);
 }
 
