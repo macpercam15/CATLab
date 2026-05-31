@@ -12,6 +12,10 @@ const jwt = tokenService.getLocalAccessToken();
 export default function UserListAdmin() {
   const [message, setMessage] = useState(null);
   const [visible, setVisible] = useState(false);
+  const [selectedRole, setSelectedRole] = useState("");
+  const [selectedClass, setSelectedClass] = useState("");
+  const [appliedRole, setAppliedRole] = useState("");
+  const [appliedClass, setAppliedClass] = useState("");
   const [users, setUsers] = useFetchState(
     [],
     `/api/v1/users`,
@@ -21,11 +25,48 @@ export default function UserListAdmin() {
   );
   const [alerts, setAlerts] = useState([]);
 
-  const userList = users.map((user) => {
+  const roleOptions = Array.from(
+    new Set(
+      users
+        .map((user) => user?.authority?.authority)
+        .filter((role) => typeof role === "string" && role.trim() !== "")
+    )
+  ).sort((a, b) => a.localeCompare(b));
+
+  const classOptions = Array.from(
+    new Set(
+      users
+        .map(
+          (user) =>
+            user?.className || user?.class || user?.classroom || user?.course
+        )
+        .filter(
+          (value) => typeof value === "string" && value.trim() !== ""
+        )
+    )
+  ).sort((a, b) => a.localeCompare(b));
+
+  const filteredUsers = users.filter((user) => {
+    const role = user?.authority?.authority || "";
+    const userClass =
+      user?.className || user?.class || user?.classroom || user?.course || "";
+    const roleMatch = !appliedRole || role === appliedRole;
+    const classMatch = !appliedClass || userClass === appliedClass;
+    return roleMatch && classMatch;
+  });
+
+  const userList = filteredUsers.map((user) => {
+    const userClass =
+      user.className ||
+      user.class ||
+      user.classroom ||
+      user.course ||
+      "-";
     return (
       <tr key={user.id}>
         <td>{user.username}</td>
         <td>{user.authority.authority}</td>
+        <td>{userClass}</td>
         <td>
           <ButtonGroup>
             <Button
@@ -34,6 +75,7 @@ export default function UserListAdmin() {
               aria-label={"edit-" + user.id}
               tag={Link}
               to={"/users/" + user.id}
+              className="admin-users-action admin-users-edit"
             >
               Edit
             </Button>
@@ -51,6 +93,7 @@ export default function UserListAdmin() {
                   setVisible
                 )
               }
+              className="admin-users-action admin-users-delete"
             >
               Delete
             </Button>
@@ -62,19 +105,59 @@ export default function UserListAdmin() {
   const modal = getErrorModal(setVisible, visible, message);
 
   return (
-    <div className="admin-page-container">
-      <h1 className="text-center">Users</h1>
+    <div className="admin-page-container admin-users-page">
+      <div className="admin-users-header">
+        <h1>Users</h1>
+        <Button className="admin-users-new" tag={Link} to="/users/new">
+          New User
+        </Button>
+      </div>
       {alerts.map((a) => a.alert)}
       {modal}
-      <Button color="success" tag={Link} to="/users/new">
-        Add User
-      </Button>
-      <div>
-        <Table aria-label="users" className="mt-4">
+      <div className="admin-users-filters">
+        <select
+          className="admin-users-select"
+          aria-label="role-filter"
+          value={selectedRole}
+          onChange={(event) => setSelectedRole(event.target.value)}
+        >
+          <option value="">Role</option>
+          {roleOptions.map((role) => (
+            <option key={role} value={role}>
+              {role}
+            </option>
+          ))}
+        </select>
+        <select
+          className="admin-users-select"
+          aria-label="class-filter"
+          value={selectedClass}
+          onChange={(event) => setSelectedClass(event.target.value)}
+        >
+          <option value="">Class</option>
+          {classOptions.map((value) => (
+            <option key={value} value={value}>
+              {value}
+            </option>
+          ))}
+        </select>
+        <Button
+          className="admin-users-filter-apply"
+          onClick={() => {
+            setAppliedRole(selectedRole);
+            setAppliedClass(selectedClass);
+          }}
+        >
+          Apply
+        </Button>
+      </div>
+      <div className="admin-users-card">
+        <Table aria-label="users" className="admin-users-table">
           <thead>
             <tr>
               <th>Username</th>
-              <th>Authority</th>
+              <th>Role</th>
+              <th>Class</th>
               <th>Actions</th>
             </tr>
           </thead>

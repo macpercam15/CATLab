@@ -60,10 +60,10 @@ export default function Home() {
     const primaryLabel = isAdmin ? 'New user' : 'Projects';
     const secondaryLabel = isAdmin ? 'Users' : 'My students';
     const primaryAlert = isAdmin
-        ? 'Funcionalidad "Nuevo usuario" no implementada aun'
+        ? null
         : 'Funcionalidad "Proyectos" no implementada aun';
     const secondaryAlert = isAdmin
-        ? 'Funcionalidad "Usuarios" no implementada aun'
+        ? null
         : 'Funcionalidad "Mis estudiantes" no implementada aun';
 
     return (
@@ -114,14 +114,26 @@ export default function Home() {
                     <div className="role-hero-buttons">
                         <button
                             className="role-primary"
-                            onClick={() => alert(primaryAlert)}
+                            onClick={() => {
+                                if (isAdmin) {
+                                    window.location.href = '/users/new';
+                                    return;
+                                }
+                                alert(primaryAlert);
+                            }}
                         >
                             {primaryLabel}
                         </button>
 
                         <button
                             className="role-outline"
-                            onClick={() => alert(secondaryAlert)}
+                            onClick={() => {
+                                if (isAdmin) {
+                                    window.location.href = '/users';
+                                    return;
+                                }
+                                alert(secondaryAlert);
+                            }}
                         >
                             {secondaryLabel}
                         </button>
