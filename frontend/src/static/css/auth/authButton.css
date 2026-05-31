@@ -25,6 +25,20 @@
   transform: translateY(-1px);
 }
 
+.auth-button.outline {
+  background-color: transparent;
+  color: #0F766E;
+  border: solid 2px #0F766E;
+  box-shadow: none;
+}
+
+.auth-button.outline:hover {
+  background-color: #0F766E;
+  color: #FFFFFF;
+  box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.25);
+  transform: translateY(-7px);
+}
+
 .blue{
   border: solid 2px var(--main-blue-color) !important;
 }

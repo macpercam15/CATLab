@@ -16,16 +16,15 @@ const Logout = () => {
   }
 
   return (
-    <div className="auth-page-container">
-      <div className="auth-form-container">
-        <h2 className="text-center text-md">
-          Are you sure you want to log out?
-        </h2>
-        <div className="options-row">
-          <Link className="auth-button" to="/" style={{textDecoration: "none"}}>
+    <div className="auth-page-container centered">
+      <div className="logout-card">
+        <h2 className="logout-title">Are you sure you want to log out?</h2>
+        <p className="logout-subtitle">You can always log in again later.</p>
+        <div className="logout-actions">
+          <Link className="auth-button outline" to="/" style={{ textDecoration: "none" }}>
             No
           </Link>
-          <button className="auth-button" onClick={() => sendLogoutRequest()}>
+          <button className="auth-button danger" onClick={() => sendLogoutRequest()}>
             Yes
           </button>
         </div>
