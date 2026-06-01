@@ -55,6 +55,8 @@ public class UserService {
 		User user;
 		user = new User();
 		user.setUsername(request.getUsername());
+		user.setName(request.getName());
+		user.setSurname(request.getSurname());
 		String rawPassword = request.getPassword();
 		if (rawPassword == null || rawPassword.isBlank()) {
 			rawPassword = defaultPasswordForAuthority(request.getAuthority());
@@ -122,6 +124,14 @@ public class UserService {
 		// Username
 		if (!user.getUsername().equals(toUpdate.getUsername())) {
 			toUpdate.setUsername(user.getUsername());
+		}
+
+		// Name/surname
+		if (user.getName() != null && !user.getName().equals(toUpdate.getName())) {
+			toUpdate.setName(user.getName());
+		}
+		if (user.getSurname() != null && !user.getSurname().equals(toUpdate.getSurname())) {
+			toUpdate.setSurname(user.getSurname());
 		}
 
 		// Password

@@ -8,6 +8,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -21,6 +22,14 @@ public class User extends BaseEntity {
 	String username;
 
 	String password;
+
+	@Column(name = "name")
+	@NotBlank
+	String name;
+
+	@Column(name = "surname")
+	@NotBlank
+	String surname;
 
 	@NotNull
 	@ManyToOne(optional = false)

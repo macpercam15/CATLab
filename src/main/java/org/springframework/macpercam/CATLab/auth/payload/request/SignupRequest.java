@@ -22,10 +22,10 @@ public class SignupRequest {
 	
 	//Both
 	@NotBlank
-	private String firstName;
+	private String name;
 	
 	@NotBlank
-	private String lastName;
+	private String surname;
 
 	@NotBlank
 	private String dni;

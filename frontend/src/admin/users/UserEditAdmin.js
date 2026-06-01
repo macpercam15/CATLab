@@ -15,6 +15,8 @@ export default function UserEditAdmin() {
     id: null,
     username: "",
     password: "",
+    name: "",
+    surname: "",
     authority: null,
   };
   const id = getIdFromUrl(2);
@@ -48,6 +50,8 @@ export default function UserEditAdmin() {
 
   const payload = {
     username: user.username,
+    name: user.name,
+    surname: user.surname,
     authority: user.authority,
   };
 
@@ -125,6 +129,36 @@ export default function UserEditAdmin() {
               value={user.username || ""}
               onChange={handleChange}
               placeholder="username"
+              className="admin-user-form-input"
+            />
+          </div>
+          <div className="admin-user-form-group">
+            <Label for="name" className="admin-user-form-label">
+              Name
+            </Label>
+            <Input
+              type="text"
+              required
+              name="name"
+              id="name"
+              value={user.name || ""}
+              onChange={handleChange}
+              placeholder="name"
+              className="admin-user-form-input"
+            />
+          </div>
+          <div className="admin-user-form-group">
+            <Label for="surname" className="admin-user-form-label">
+              Surname
+            </Label>
+            <Input
+              type="text"
+              required
+              name="surname"
+              id="surname"
+              value={user.surname || ""}
+              onChange={handleChange}
+              placeholder="surname"
               className="admin-user-form-input"
             />
           </div>

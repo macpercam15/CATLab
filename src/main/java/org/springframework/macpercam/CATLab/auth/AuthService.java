@@ -42,6 +42,8 @@ public class AuthService {
 		User user = new User();
 		user.setUsername(request.getUsername());
 		user.setPassword(encoder.encode(request.getPassword()));
+		user.setName(request.getName());
+		user.setSurname(request.getSurname());
 		String strRoles = request.getAuthority();
 		Authorities role;
 
@@ -56,8 +58,8 @@ public class AuthService {
 			user.setAuthority(role);
 			userService.saveUser(user);
 			Profesor profesor = new Profesor();
-			profesor.setFirstName(request.getFirstName());
-			profesor.setLastName(request.getLastName());
+			profesor.setFirstName(request.getName());
+			profesor.setLastName(request.getSurname());
 			profesor.setUser(user);
 			profesorService.saveProfesor(profesor);
 			break;
@@ -66,8 +68,8 @@ public class AuthService {
 			user.setAuthority(role);
 			userService.saveUser(user);
 			Estudiante estudiante = new Estudiante();
-			estudiante.setFirstName(request.getFirstName());
-			estudiante.setLastName(request.getLastName());
+			estudiante.setFirstName(request.getName());
+			estudiante.setLastName(request.getSurname());
 			estudiante.setUser(user);
 			estudianteService.saveEstudiante(estudiante);
 			break;
