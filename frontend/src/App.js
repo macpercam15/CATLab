@@ -10,6 +10,7 @@ import Logout from "./auth/logout";
 import tokenService from "./services/token.service";
 import UserListAdmin from "./admin/users/UserListAdmin";
 import UserEditAdmin from "./admin/users/UserEditAdmin";
+import About from "./home/About";
 import SwaggerDocs from "./public/swagger";
 
 function ErrorFallback({ error, resetErrorBoundary }) {
@@ -65,6 +66,7 @@ function App() {
     publicRoutes = (
       <>        
         <Route path="/login" element={<Login />} />
+        <Route path="/about" element={<About />} />
       </>
     )
   } else {

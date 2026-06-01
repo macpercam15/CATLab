@@ -11,6 +11,7 @@
     padding-bottom: 80px;
 
     font-family: 'Anonymous Pro', monospace;
+
 }
 
 /* HERO */
@@ -251,5 +252,114 @@
 
     .hero-subtitle {
         font-size: 1.4rem;
+    }
+}
+
+/* ABOUT */
+
+.about-page {
+    padding-top: 70px;
+}
+
+.about-hero {
+    max-width: 900px;
+    text-align: left;
+    margin: 10px 20px 0;
+}
+
+.about-hero h1 {
+    font-size: 7rem;
+    font-weight: 1000;
+    font-family: 'Anonymous Pro', monospace;
+    color: #202124;
+    margin-bottom: 55px;
+}
+
+.about-block {
+    max-width: 900px;
+    width: 100%;
+    margin-top: 50px;
+}
+
+.about-block h2 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #202124;
+    margin-bottom: 15px;
+    letter-spacing: 0.5px;
+}
+
+.about-block p {
+    font-size: 1.6rem;
+    color: #202124;
+    line-height: 1.45;
+    margin: 0;
+}
+
+.about-features {
+    max-width: 1000px;
+}
+
+.about-feature-list {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+    margin-top: 18px;
+}
+
+.about-feature-item {
+    display: flex;
+    gap: 18px;
+    align-items: flex-start;
+}
+
+.about-icon-img {
+    width: 100px;
+    height: 100px;
+    object-fit: contain;
+    display: block;
+    flex-shrink: 0;
+}
+
+.about-feature-text h3 {
+    font-size: 1.8rem;
+    font-weight: 800;
+    margin: 0 0 6px;
+    color: #1f2937;
+}
+
+.about-feature-text p {
+    font-size: 1.5rem;
+    color: #2d3748;
+    margin: 0;
+}
+
+@media (max-width: 900px) {
+    .about-hero h1 {
+        font-size: 3.4rem;
+    }
+
+    .about-tagline {
+        font-size: 1.4rem;
+    }
+
+    .about-block h2 {
+        font-size: 2rem;
+    }
+}
+
+@media (max-width: 700px) {
+    .about-hero {
+        margin: 0 16px;
+    }
+
+    .about-feature-item {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .about-feature-text h3 {
+        font-size: 1.6rem;
     }
 }
