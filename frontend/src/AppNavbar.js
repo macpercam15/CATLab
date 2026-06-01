@@ -176,7 +176,7 @@ function AppNavbar() {
                         </span>
                     </DropdownToggle>
                     <DropdownMenu end>
-                        <DropdownItem disabled>Perfil (proximamente)</DropdownItem>
+                        <DropdownItem tag={Link} to="/profile">Perfil</DropdownItem>
                         <DropdownItem divider />
                         <DropdownItem tag={Link} to="/logout">Logout</DropdownItem>
                     </DropdownMenu>

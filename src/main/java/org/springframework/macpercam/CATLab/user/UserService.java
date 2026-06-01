@@ -151,6 +151,25 @@ public class UserService {
 	}
 
 	@Transactional
+	public User updateCurrentUser(@Valid UserProfileUpdateRequest request) {
+		User toUpdate = findCurrentUser();
+
+		if (request.getName() != null) {
+			toUpdate.setName(request.getName());
+		}
+		if (request.getSurname() != null) {
+			toUpdate.setSurname(request.getSurname());
+		}
+		if (request.getPassword() != null && !request.getPassword().isBlank()) {
+			if (!encoder.matches(request.getPassword(), toUpdate.getPassword())) {
+				toUpdate.setPassword(encoder.encode(request.getPassword()));
+			}
+		}
+
+		return userRepository.save(toUpdate);
+	}
+
+	@Transactional
 	public void deleteUser(Integer id) {
 		User toDelete = findUser(id);
 		deleteRelations(id, toDelete.getAuthority().getAuthority());

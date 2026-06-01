@@ -84,8 +84,10 @@ public class SecurityConfiguration {
             // API restringida para propietarios de mascotas:
             // .requestMatchers("/api/v1/plan").hasAuthority("OWNER")
 
-            // API restringida para administradores
-            .requestMatchers("/api/v1/users/**").hasAuthority(ADMIN)
+			// API de perfil del usuario actual
+			.requestMatchers("/api/v1/users/me").authenticated()
+			// API restringida para administradores
+			.requestMatchers("/api/v1/users/**").hasAuthority(ADMIN)
             // .requestMatchers("/api/v1/clinicOwners/all").hasAuthority(ADMIN)
             // .requestMatchers(HttpMethod.DELETE, "/api/v1/consultations/**").hasAuthority(ADMIN)
             // .requestMatchers("/api/v1/owners/**").hasAuthority(ADMIN)

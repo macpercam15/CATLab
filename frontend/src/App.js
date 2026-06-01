@@ -7,6 +7,8 @@ import Home from "./home";
 import PrivateRoute from "./privateRoute";
 import Login from "./auth/login";
 import Logout from "./auth/logout";
+import ProfileInfo from "./auth/ProfileInfo";
+import ProfileEdit from "./auth/ProfileEdit";
 import tokenService from "./services/token.service";
 import UserListAdmin from "./admin/users/UserListAdmin";
 import UserEditAdmin from "./admin/users/UserEditAdmin";
@@ -75,6 +77,8 @@ function App() {
         {/* <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} /> */}        
         <Route path="/logout" element={<Logout />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/profile" element={<PrivateRoute><ProfileInfo /></PrivateRoute>} />
+        <Route path="/profile/edit" element={<PrivateRoute><ProfileEdit /></PrivateRoute>} />
       </>
     )
   }
