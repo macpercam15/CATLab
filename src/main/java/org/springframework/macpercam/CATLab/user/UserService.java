@@ -50,6 +50,8 @@ public class UserService {
 		this.encoder = encoder;
 	}
 
+	//TODO: Tiene que crear una entidad del rol que es. Por ejemplo si es rol profesor
+	// deberá crearse también una instancia de profesor con el mismo id que el usuario. 
 	@Transactional
 	public User saveUser(User request) {
 		User user;
