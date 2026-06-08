@@ -18,6 +18,8 @@ package org.springframework.macpercam.CATLab.model;
 import jakarta.persistence.Column;
 import jakarta.persistence.MappedSuperclass;
 import jakarta.validation.constraints.NotEmpty;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Simple JavaBean domain object representing an person.
@@ -25,6 +27,8 @@ import jakarta.validation.constraints.NotEmpty;
  * @author Ken Krebs
  */
 @MappedSuperclass
+@Getter
+@Setter
 public class Person extends BaseEntity {
 
 	@Column(name = "first_name")
@@ -38,21 +42,5 @@ public class Person extends BaseEntity {
 	@Column(name = "email", unique = true)
 	@NotEmpty
 	protected String email;
-
-	public String getFirstName() {
-		return this.firstName;
-	}
-
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
-	}
-
-	public String getLastName() {
-		return this.lastName;
-	}
-
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
-	}
 
 }

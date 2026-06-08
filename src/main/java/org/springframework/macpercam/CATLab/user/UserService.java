@@ -23,6 +23,8 @@ import org.apache.coyote.BadRequestException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
+import org.springframework.macpercam.CATLab.administrador.Administrador;
+import org.springframework.macpercam.CATLab.administrador.AdministradorService;
 import org.springframework.macpercam.CATLab.estudiante.Estudiante;
 import org.springframework.macpercam.CATLab.exceptions.ResourceNotFoundException;
 import org.springframework.macpercam.CATLab.profesor.Profesor;
@@ -40,33 +42,64 @@ public class UserService {
 	private UserRepository userRepository;
 	private ProfesorService profesorService;
 	private EstudianteService estudianteService;
+	private AdministradorService administradorService;
 	private final PasswordEncoder encoder;
 
 	@Autowired
-	public UserService(UserRepository userRepository, ProfesorService profesorService, EstudianteService estudianteService, PasswordEncoder encoder) {
+	public UserService(UserRepository userRepository, ProfesorService profesorService, EstudianteService estudianteService, AdministradorService administradorService, PasswordEncoder encoder) {
 		this.userRepository = userRepository;
 		this.profesorService = profesorService;
 		this.estudianteService = estudianteService;
+		this.administradorService = administradorService;
 		this.encoder = encoder;
 	}
 
-	//TODO: Tiene que crear una entidad del rol que es. Por ejemplo si es rol profesor
-	// deberá crearse también una instancia de profesor con el mismo id que el usuario. 
 	@Transactional
-	public User saveUser(User request) {
+	public User saveUser(UserCreateRequest request) {
 		User user;
 		user = new User();
 		user.setUsername(request.getUsername());
-		user.setName(request.getName());
-		user.setSurname(request.getSurname());
+
 		String rawPassword = request.getPassword();
 		if (rawPassword == null || rawPassword.isBlank()) {
 			rawPassword = defaultPasswordForAuthority(request.getAuthority());
 		}
-		user.setPassword(encoder.encode(rawPassword));
-		user.setAuthority(request.getAuthority());
 
-		return userRepository.save(user);
+		user.setPassword(encoder.encode(rawPassword));
+
+		user.setAuthority(request.getAuthority());
+		userRepository.save(user);
+
+		if (user.getAuthority() != null) {
+			switch (user.getAuthority().getAuthority()) {
+			case "PROFESOR":
+				Profesor profesor = new Profesor();
+				profesor.setFirstName(request.getFirstName());
+				profesor.setLastName(request.getLastName());
+				profesor.setEmail(request.getEmail());
+				profesor.setUser(user);
+				profesorService.saveProfesor(profesor);
+				break;
+			case "ESTUDIANTE":
+				Estudiante estudiante = new Estudiante();
+				estudiante.setFirstName(request.getFirstName());
+				estudiante.setLastName(request.getLastName());
+				estudiante.setEmail(request.getEmail());
+				estudiante.setUser(user);
+				estudianteService.saveEstudiante(estudiante);
+				break;
+			case "ADMIN":
+				Administrador admin = new Administrador();
+				admin.setFirstName(request.getFirstName());
+				admin.setLastName(request.getLastName());
+				admin.setEmail(request.getEmail());
+				admin.setUser(user);
+				administradorService.saveAdministrador(admin);
+				break;
+			}
+		}
+
+		return user;
 	}
 
 	private String defaultPasswordForAuthority(Authorities authority) {
@@ -128,14 +161,6 @@ public class UserService {
 			toUpdate.setUsername(user.getUsername());
 		}
 
-		// Name/surname
-		if (user.getName() != null && !user.getName().equals(toUpdate.getName())) {
-			toUpdate.setName(user.getName());
-		}
-		if (user.getSurname() != null && !user.getSurname().equals(toUpdate.getSurname())) {
-			toUpdate.setSurname(user.getSurname());
-		}
-
 		// Password
 		if (user.getPassword() != null && !user.getPassword().isBlank()) {
 			// Solo si la contraseña enviada no coincide con la anterior (en caso de que el frontend envíe texto plano)
@@ -144,7 +169,7 @@ public class UserService {
 			}
 		}
 
-		// Authority / rol
+		// Authority
 		if (user.getAuthority() != null && !user.getAuthority().equals(toUpdate.getAuthority())) {
 			toUpdate.setAuthority(user.getAuthority());
 		}
@@ -152,16 +177,17 @@ public class UserService {
 		return userRepository.save(toUpdate);
 	}
 
+	//TODO: actualizar esto para que un usuario no pueda tocarse su propio rol y que solo pueda cambiar info de nombre, apellido, email y contraseña
 	@Transactional
 	public User updateCurrentUser(@Valid UserProfileUpdateRequest request) {
 		User toUpdate = findCurrentUser();
 
-		if (request.getName() != null) {
-			toUpdate.setName(request.getName());
-		}
-		if (request.getSurname() != null) {
-			toUpdate.setSurname(request.getSurname());
-		}
+		// if (request.getName() != null) {
+		// 	toUpdate.setName(request.getName());
+		// }
+		// if (request.getSurname() != null) {
+		// 	toUpdate.setSurname(request.getSurname());
+		// }
 		if (request.getPassword() != null && !request.getPassword().isBlank()) {
 			if (!encoder.matches(request.getPassword(), toUpdate.getPassword())) {
 				toUpdate.setPassword(encoder.encode(request.getPassword()));
@@ -171,33 +197,28 @@ public class UserService {
 		return userRepository.save(toUpdate);
 	}
 
+	
 	@Transactional
-	public void deleteUser(Integer id) {
-		User toDelete = findUser(id);
-		deleteRelations(id, toDelete.getAuthority().getAuthority());
-		this.userRepository.delete(toDelete);
-	}
+	public void deleteUser(Integer userId) {
 
-	private void deleteRelations(Integer id, String auth) {
-		switch (auth) {
-		case "PROFESOR":
-			Optional<Profesor> profesor = profesorService.findProfesorByUserId(id);
-			if (profesor.isPresent())
-				profesorService.deleteProfesor(profesor.get().getId());
-			this.userRepository.deleteProfesorRelation(id);
-			break;
-		case "ESTUDIANTE":
-			Optional<Estudiante> estudiante = estudianteService.findEstudianteByUserId(id);
-			if (estudiante.isPresent()) {
-				estudianteService.deleteEstudiante(estudiante.get().getId());
-			}
-			this.userRepository.deleteEstudianteRelation(id);
-			break;
-		// default:
-		// 	// The only relations that have user are Owner and Vet
-		// 	break;
+		User user = userRepository.findById(userId)
+				.orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
+
+		switch (user.getAuthority().getAuthority()) {
+			case "ESTUDIANTE":
+				estudianteService.deleteEstudianteByUserId(userId);
+				break;
+
+			case "PROFESOR":
+				profesorService.deleteProfesorByUserId(userId);
+				break;
+
+			case "ADMIN":
+				administradorService.deleteAdministradorByUser(userId);
+				break;
 		}
 
+    	userRepository.delete(user);
 	}
 
 }

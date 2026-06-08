@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
+import org.springframework.macpercam.CATLab.administrador.Administrador;
 import org.springframework.macpercam.CATLab.exceptions.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,11 +41,6 @@ public class EstudianteService {
         return pr.findByUser(userId);
     }
 
-    @Transactional(readOnly = true)
-    public Optional<Estudiante> findEstudianteByEmail(String email) throws DataAccessException {
-        return pr.findByEmail(email);
-    }
-
     @Transactional
 	public Estudiante saveEstudiante(Estudiante estudiante) throws DataAccessException {
 		pr.save(estudiante);
@@ -52,23 +48,13 @@ public class EstudianteService {
 	}
 
 	@Transactional
-	public Estudiante updateEstudiante(EstudianteUpdateDTO estudiante, int id) throws DataAccessException {
-		Estudiante toUpdate = findEstudianteById(id);
-		if (estudiante.getFirstName() != null) {
-        toUpdate.setFirstName(estudiante.getFirstName());
-    }
-
-    if (estudiante.getLastName() != null) {
-        toUpdate.setLastName(estudiante.getLastName());
-    }
-
-    return saveEstudiante(toUpdate);
-	}
-
-	@Transactional
-	public void deleteEstudiante(int id) throws DataAccessException {
-		Estudiante toDelete = findEstudianteById(id);
-		pr.delete(toDelete);
+	public void deleteEstudianteByUserId(int userId) throws DataAccessException {
+		Optional<Estudiante> toDelete = findEstudianteByUserId(userId);
+		if (toDelete.isPresent()) {
+			pr.delete(toDelete.get());
+		} else {
+            throw new ResourceNotFoundException("Estudiante", "User ID", userId);
+        }
 	}
 
 

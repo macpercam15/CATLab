@@ -53,34 +53,4 @@ public class ProfesorRestController {
 	public ResponseEntity<Profesor> findById(@PathVariable("profesorId") int id) {
 		return new ResponseEntity<>(profesorService.findProfesorById(id), HttpStatus.OK);
 	}
-
-	@PostMapping()
-	@ResponseStatus(HttpStatus.CREATED)
-	public ResponseEntity<Profesor> create(@RequestBody @Valid Profesor profesor) throws URISyntaxException {
-		Profesor newProfesor = new Profesor();
-		BeanUtils.copyProperties(profesor, newProfesor, "id");
-		User user = userService.findCurrentUser();
-        Authorities profesorRole = authoritiesService.findByAuthority("PROFESOR");
-        user.setAuthority(profesorRole);
-		newProfesor.setUser(user);
-		Profesor savedProfesor = this.profesorService.saveProfesor(newProfesor);
-
-		return new ResponseEntity<>(savedProfesor, HttpStatus.CREATED);
-	}
-
-	@PutMapping(value = "{profesorId}")
-	@ResponseStatus(HttpStatus.OK)
-	public ResponseEntity<Profesor> update(@PathVariable("profesorId") int profesorId, @RequestBody @Valid ProfesorUpdateDTO profesor) {
-		RestPreconditions.checkNotNull(profesorService.findProfesorById(profesorId), "Profesor", "ID", profesorId);
-		return new ResponseEntity<>(this.profesorService.updateProfesor(profesor, profesorId), HttpStatus.OK);
-	}
-
-	@DeleteMapping(value = "{profesorId}")
-	@ResponseStatus(HttpStatus.OK)
-	public ResponseEntity<MessageResponse> delete(@PathVariable("profesorId") int id) {
-		RestPreconditions.checkNotNull(profesorService.findProfesorById(id), "Profesor", "ID", id);
-		profesorService.deleteProfesor(id);
-		return new ResponseEntity<>(new MessageResponse("Profesor deleted!"), HttpStatus.OK);
-	}
-
 }

@@ -37,42 +37,6 @@ public class AuthService {
 		this.estudianteService = estudianteService;
 	}
 
-	@Transactional
-	public void createUser(@Valid SignupRequest request) {
-		User user = new User();
-		user.setUsername(request.getUsername());
-		user.setPassword(encoder.encode(request.getPassword()));
-		user.setName(request.getName());
-		user.setSurname(request.getSurname());
-		String strRoles = request.getAuthority();
-		Authorities role;
-
-		switch (strRoles.toLowerCase()) {
-		case "admin":
-			role = authoritiesService.findByAuthority("ADMIN");
-			user.setAuthority(role);
-			userService.saveUser(user);
-			break;
-		case "profesor":
-			role = authoritiesService.findByAuthority("PROFESOR");
-			user.setAuthority(role);
-			userService.saveUser(user);
-			Profesor profesor = new Profesor();
-			profesor.setFirstName(request.getName());
-			profesor.setLastName(request.getSurname());
-			profesor.setUser(user);
-			profesorService.saveProfesor(profesor);
-			break;
-		case "estudiante":
-			role = authoritiesService.findByAuthority("ESTUDIANTE");
-			user.setAuthority(role);
-			userService.saveUser(user);
-			Estudiante estudiante = new Estudiante();
-			estudiante.setFirstName(request.getName());
-			estudiante.setLastName(request.getSurname());
-			estudiante.setUser(user);
-			estudianteService.saveEstudiante(estudiante);
-			break;
 		// case "vet":
 		// 	role = authoritiesService.findByAuthority("VET");
 		// 	user.setAuthority(role);
@@ -110,7 +74,7 @@ public class AuthService {
 		// 	owner.setUser(user);
 		// 	ownerService.saveOwner(owner);
 
-		}
-	}
+		
+	
 
 }

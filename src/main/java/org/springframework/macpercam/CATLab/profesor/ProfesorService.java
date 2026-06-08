@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
+import org.springframework.macpercam.CATLab.administrador.Administrador;
 import org.springframework.macpercam.CATLab.exceptions.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -58,23 +59,13 @@ public class ProfesorService {
 	}
 
 	@Transactional
-	public Profesor updateProfesor(ProfesorUpdateDTO profesor, int id) throws DataAccessException {
-		Profesor toUpdate = findProfesorById(id);
-		if (profesor.getFirstName() != null) {
-        toUpdate.setFirstName(profesor.getFirstName());
-    }
-
-    if (profesor.getLastName() != null) {
-        toUpdate.setLastName(profesor.getLastName());
-    }
-
-    return saveProfesor(toUpdate);
-	}
-
-	@Transactional
-	public void deleteProfesor(int id) throws DataAccessException {
-		Profesor toDelete = findProfesorById(id);
-		pr.delete(toDelete);
+	public void deleteProfesorByUserId(int userId) throws DataAccessException {
+		Optional<Profesor> toDelete = findProfesorByUserId(userId);
+		if (toDelete.isPresent()) {
+			pr.delete(toDelete.get());
+		} else {
+            throw new ResourceNotFoundException("Profesor", "User ID", userId);
+        }
 	}
 
 

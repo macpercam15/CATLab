@@ -76,13 +76,9 @@ public class SecurityConfiguration {
 
             // API pública
             .requestMatchers("/api/v1/auth/**").permitAll()
-            // .requestMatchers("/api/v1/developers").permitAll()
-            // .requestMatchers("/api/v1/plan").permitAll()
-            // .requestMatchers("/api/v1/clinics").permitAll()
-            // .requestMatchers("/api/v1/developers").permitAll()
 
             // API restringida para propietarios de mascotas:
-            // .requestMatchers("/api/v1/plan").hasAuthority("OWNER")
+            .requestMatchers("/api/v1/plan").hasAuthority("ADMIN")
 
 			// API de perfil del usuario actual
 			.requestMatchers("/api/v1/users/me").authenticated()
@@ -99,6 +95,8 @@ public class SecurityConfiguration {
 
 			 // API restringida para estudiantes
 			 .requestMatchers("/api/estudiantes/**").hasAnyAuthority(ESTUDIANTE, ADMIN)
+
+			 .requestMatchers("/api/administradores/**").hasAuthority(ADMIN)
 
 			// Otras reglas de controal de acceso:
 			// .requestMatchers("/api/v1/clinicOwners/**").hasAnyAuthority(ADMIN, CLINIC_OWNER)

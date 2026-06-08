@@ -23,16 +23,6 @@ public class User extends BaseEntity {
 
 	String password;
 
-	// Lo de nombre y contraseña yo lo quitaría porque ya lo tienene la persona
-
-	@Column(name = "name")
-	@NotBlank
-	String name;
-
-	@Column(name = "surname")
-	@NotBlank
-	String surname;
-
 	@NotNull
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "authority")

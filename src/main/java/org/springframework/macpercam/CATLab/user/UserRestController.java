@@ -80,7 +80,7 @@ class UserRestController {
 
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
-	public ResponseEntity<User> create(@RequestBody @Valid User user) {
+	public ResponseEntity<User> create(@RequestBody @Valid UserCreateRequest user) {
 		User savedUser = userService.saveUser(user);
 		return new ResponseEntity<>(savedUser, HttpStatus.CREATED);
 	}
