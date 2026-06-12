@@ -37,8 +37,8 @@ public class EstudianteService {
     }
 
     @Transactional(readOnly = true)
-    public Optional<Estudiante> findEstudianteByUserId(int userId) throws DataAccessException {
-        return pr.findByUser(userId);
+    public Estudiante findEstudianteByUserId(int userId) throws DataAccessException {
+        return pr.findByUser(userId).orElseThrow(() -> new ResourceNotFoundException("Estudiante", "User ID", userId));
     }
 
     @Transactional
@@ -49,9 +49,9 @@ public class EstudianteService {
 
 	@Transactional
 	public void deleteEstudianteByUserId(int userId) throws DataAccessException {
-		Optional<Estudiante> toDelete = findEstudianteByUserId(userId);
-		if (toDelete.isPresent()) {
-			pr.delete(toDelete.get());
+		Estudiante estudiante = findEstudianteByUserId(userId);
+		if (estudiante != null) {
+			pr.delete(estudiante);
 		} else {
             throw new ResourceNotFoundException("Estudiante", "User ID", userId);
         }

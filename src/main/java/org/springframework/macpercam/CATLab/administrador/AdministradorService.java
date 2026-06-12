@@ -36,8 +36,8 @@ public class AdministradorService {
     }
 
     @Transactional(readOnly = true)
-    public Optional<Administrador> findAdministradorByUserId(int userId) throws DataAccessException {
-        return pr.findByUser(userId);
+    public Administrador findAdministradorByUserId(int userId) throws DataAccessException {
+        return pr.findByUser(userId).orElseThrow(() -> new ResourceNotFoundException("Administrador", "User ID", userId));
     }
 
     @Transactional
@@ -48,9 +48,9 @@ public class AdministradorService {
 
 	@Transactional
 	public void deleteAdministradorByUser(int userId) throws DataAccessException {
-		Optional<Administrador> toDelete = findAdministradorByUserId(userId);
-		if (toDelete.isPresent()) {
-			pr.delete(toDelete.get());
+		Administrador toDelete = findAdministradorByUserId(userId);
+		if (toDelete != null) {
+			pr.delete(toDelete);
 		} else {
             throw new ResourceNotFoundException("Administrador", "User ID", userId);
         }

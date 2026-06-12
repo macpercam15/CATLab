@@ -177,24 +177,40 @@ public class UserService {
 		return userRepository.save(toUpdate);
 	}
 
-	//TODO: actualizar esto para que un usuario no pueda tocarse su propio rol y que solo pueda cambiar info de nombre, apellido, email y contraseña
 	@Transactional
 	public User updateCurrentUser(@Valid UserProfileUpdateRequest request) {
-		User toUpdate = findCurrentUser();
+		User userToUpdate = findCurrentUser();
 
-		// if (request.getName() != null) {
-		// 	toUpdate.setName(request.getName());
-		// }
-		// if (request.getSurname() != null) {
-		// 	toUpdate.setSurname(request.getSurname());
-		// }
+		if (userToUpdate.getAuthority().getAuthority().equals("ESTUDIANTE")) {
+			Estudiante rolToUpdate = estudianteService.findEstudianteByUserId(userToUpdate.getId());
+			rolToUpdate.setFirstName(request.getFirstName());
+			rolToUpdate.setLastName(request.getLastName());
+			rolToUpdate.setEmail(request.getEmail());
+			estudianteService.saveEstudiante(rolToUpdate);
+		} else if (userToUpdate.getAuthority().getAuthority().equals("PROFESOR")) {
+			Profesor rolToUpdate = profesorService.findProfesorByUserId(userToUpdate.getId());
+			rolToUpdate.setFirstName(request.getFirstName());
+			rolToUpdate.setLastName(request.getLastName());
+			rolToUpdate.setEmail(request.getEmail());
+			profesorService.saveProfesor(rolToUpdate);
+		} else if (userToUpdate.getAuthority().getAuthority().equals("ADMIN")) {
+			Administrador rolToUpdate = administradorService.findAdministradorByUserId(userToUpdate.getId());
+			rolToUpdate.setFirstName(request.getFirstName());
+			rolToUpdate.setLastName(request.getLastName());
+			rolToUpdate.setEmail(request.getEmail());
+			administradorService.saveAdministrador(rolToUpdate);
+		}
+
+		if (request.getUsername() != null && !request.getUsername().isBlank()) {
+			userToUpdate.setUsername(request.getUsername());
+		}
 		if (request.getPassword() != null && !request.getPassword().isBlank()) {
-			if (!encoder.matches(request.getPassword(), toUpdate.getPassword())) {
-				toUpdate.setPassword(encoder.encode(request.getPassword()));
+			if (!encoder.matches(request.getPassword(), userToUpdate.getPassword())) {
+				userToUpdate.setPassword(encoder.encode(request.getPassword()));
 			}
 		}
 
-		return userRepository.save(toUpdate);
+		return userRepository.save(userToUpdate);
 	}
 
 	

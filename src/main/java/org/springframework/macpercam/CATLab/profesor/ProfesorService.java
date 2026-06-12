@@ -43,13 +43,13 @@ public class ProfesorService {
     }
 
     @Transactional(readOnly = true)
-    public Optional<Profesor> findProfesorByUserId(int userId) throws DataAccessException {
-        return pr.findByUser(userId);
+    public Profesor findProfesorByUserId(int userId) throws DataAccessException {
+        return pr.findByUser(userId).orElseThrow(() -> new ResourceNotFoundException("Profesor", "User ID", userId));
     }
 
     @Transactional(readOnly = true)
-    public Optional<Profesor> findProfesorByEmail(String email) throws DataAccessException {
-        return pr.findByEmail(email);
+    public Profesor findProfesorByEmail(String email) throws DataAccessException {
+        return pr.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException("Profesor", "Email", email));
     }
 
     @Transactional
@@ -60,9 +60,9 @@ public class ProfesorService {
 
 	@Transactional
 	public void deleteProfesorByUserId(int userId) throws DataAccessException {
-		Optional<Profesor> toDelete = findProfesorByUserId(userId);
-		if (toDelete.isPresent()) {
-			pr.delete(toDelete.get());
+		Profesor profesor = findProfesorByUserId(userId);
+		if (profesor != null) {
+			pr.delete(profesor);
 		} else {
             throw new ResourceNotFoundException("Profesor", "User ID", userId);
         }

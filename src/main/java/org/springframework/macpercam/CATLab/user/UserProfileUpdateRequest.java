@@ -8,11 +8,13 @@ import lombok.Setter;
 @Setter
 public class UserProfileUpdateRequest {
 
-	@NotBlank
-	private String name;
+	private String firstName;
 
-	@NotBlank
-	private String surname;
+	private String lastName;
+
+	private String email;
+
+	private String username;
 
 	private String password;
 }
