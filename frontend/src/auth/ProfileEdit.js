@@ -1,16 +1,29 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { Form, Input, Label } from "reactstrap";
 import tokenService from "../services/token.service";
-import "../static/css/auth/authPage.css";
+import "../static/css/admin/adminPage.css";
 
 export default function ProfileEdit() {
+  const [form, setForm] = useState({
+    firstName: "",
+    lastName: "",
+    username: "",
+    password: "",
+    email: "",
+  });
+
   const [profile, setProfile] = useState(null);
-  const [form, setForm] = useState({ name: "", surname: "", password: "" });
   const [error, setError] = useState("");
+
   const jwt = tokenService.getLocalAccessToken();
 
+  // 1. USER (auth base)
   useEffect(() => {
-    if (!jwt) return;
+    if (!jwt) {
+      setError("No hay sesión activa");
+      return;
+    }
 
     fetch("/api/v1/users/me", {
       headers: {
@@ -18,151 +31,192 @@ export default function ProfileEdit() {
         Accept: "application/json",
       },
     })
-      .then((response) => {
-        if (!response.ok) throw new Error("No se pudo cargar el perfil");
-        return response.json();
+      .then((res) => {
+        if (!res.ok) throw new Error("No se pudo cargar el perfil");
+        return res.json();
       })
-      .then((data) => {
-        setProfile(data);
+      .then((data) => setProfile(data))
+      .catch((err) => {
+        console.log("ERROR /me:", err);
+        setError(err.message);
+      });
+  }, [jwt]);
+
+  // 2. ENTITY (datos reales)
+  useEffect(() => {
+    if (!profile?.id || !profile?.authority?.authority) return;
+
+    const role = profile.authority.authority;
+
+    let url = null;
+
+    if (role === "ESTUDIANTE") {
+      url = `/api/estudiantes/user/${profile.id}`;
+    } else if (role === "PROFESOR") {
+      url = `/api/profesores/user/${profile.id}`;
+    } else if (role === "ADMIN") {
+      url = `/api/administradores/user/${profile.id}`;
+    }
+
+    if (!url) return;
+
+    fetch(url, {
+      headers: {
+        Authorization: `Bearer ${jwt}`,
+        Accept: "application/json",
+      },
+    })
+      .then((res) => res.json())
+      .then((entity) => {
         setForm({
-          name: data?.name || "",
-          surname: data?.surname || "",
+          firstName: entity?.firstName || "",
+          lastName: entity?.lastName || "",
+          email: entity?.email || "",
+          username: profile?.username || "",
           password: "",
         });
       })
-      .catch((err) => setError(err.message));
-  }, [jwt]);
-
-  const role =
-    profile?.authority?.authority ||
-    profile?.authority ||
-    (Array.isArray(profile?.roles) ? profile.roles[0] : "-");
-  const classesValue =
-    profile?.classes ||
-    profile?.className ||
-    profile?.class ||
-    profile?.classroom ||
-    profile?.course ||
-    "-";
+      .catch((err) => {
+        console.log("ERROR entity:", err);
+      });
+  }, [profile, jwt]);
 
   function handleChange(event) {
     const { name, value } = event.target;
     setForm((prev) => ({ ...prev, [name]: value }));
   }
 
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault();
     setError("");
 
+    const usernameChanged = form.username !== profile.username;
+    const passwordChanged =
+      form.password && form.password.trim() !== "";
+
+    const authChanged = usernameChanged || passwordChanged;
+
     const payload = {
-      name: form.name,
-      surname: form.surname,
+      firstName: form.firstName,
+      lastName: form.lastName,
+      username: form.username,
+      email: form.email,
     };
 
-    if (form.password.trim() !== "") {
+    if (passwordChanged) {
       payload.password = form.password;
     }
 
-    fetch("/api/v1/users/me", {
-      method: "PUT",
-      headers: {
-        Authorization: `Bearer ${jwt}`,
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(payload),
-    })
-      .then((response) => {
-        if (!response.ok) throw new Error("No se pudo actualizar el perfil");
-        return response.json();
-      })
-      .then(() => {
+    try {
+      const res = await fetch("/api/v1/users/me", {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${jwt}`,
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!res.ok) throw new Error("No se pudo actualizar el perfil");
+
+      await res.json();
+
+      // 💡 CASO NORMAL: no cambias credenciales
+      if (!authChanged) {
         window.location.href = "/profile";
-      })
-      .catch((err) => setError(err.message));
+        return;
+      }
+
+      // 💥 CASO CRÍTICO: username o password cambiado
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("user");
+
+      // rediriges a login
+      window.location.href = "/login";
+
+    } catch (err) {
+      console.log("ERROR update:", err);
+      setError(err.message);
+    }
   }
 
   return (
-    <div className="profile-page-container">
-      <div className="profile-edit-card">
-        <h1 className="profile-title">Edit profile</h1>
+    <div className="admin-user-form-page">
+      <div className="admin-user-form-card">
+        <h1 className="admin-user-form-title">Edit profile</h1>
+
         {error && <div className="auth-alert">{error}</div>}
-        <form className="profile-form" onSubmit={handleSubmit}>
-          <div className="profile-form-group">
-            <label className="profile-form-label" htmlFor="name">
-              Name
-            </label>
-            <input
-              className="profile-form-input"
-              id="name"
-              name="name"
-              type="text"
-              required
-              value={form.name}
+
+        <Form onSubmit={handleSubmit} className="admin-user-form">
+
+          <div className="admin-user-form-group">
+            <Label className="admin-user-form-label">First name</Label>
+            <Input
+              className="admin-user-form-input"
+              name="firstName"
+              value={form.firstName}
               onChange={handleChange}
-            />
-          </div>
-          <div className="profile-form-group">
-            <label className="profile-form-label" htmlFor="surname">
-              Surname
-            </label>
-            <input
-              className="profile-form-input"
-              id="surname"
-              name="surname"
-              type="text"
               required
-              value={form.surname}
+            />
+          </div>
+
+          <div className="admin-user-form-group">
+            <Label className="admin-user-form-label">Last name</Label>
+            <Input
+              className="admin-user-form-input"
+              name="lastName"
+              value={form.lastName}
               onChange={handleChange}
+              required
             />
           </div>
-          <div className="profile-form-group">
-            <label className="profile-form-label" htmlFor="role">
-              Role
-            </label>
-            <input
-              className="profile-form-input"
-              id="role"
-              type="text"
-              value={role}
-              disabled
+
+          <div className="admin-user-form-group">
+            <Label className="admin-user-form-label">Username</Label>
+            <Input
+              className="admin-user-form-input"
+              name="username"
+              value={form.username}
+              onChange={handleChange}
+              required
             />
           </div>
-          <div className="profile-form-group">
-            <label className="profile-form-label" htmlFor="classes">
-              My classes
-            </label>
-            <input
-              className="profile-form-input"
-              id="classes"
-              type="text"
-              value={classesValue}
-              disabled
+
+          <div className="admin-user-form-group">
+            <Label className="admin-user-form-label">Email</Label>
+            <Input
+              className="admin-user-form-input"
+              name="email"
+              value={form.email}
+              onChange={handleChange}
+              required
             />
           </div>
-          <div className="profile-form-group">
-            <label className="profile-form-label" htmlFor="password">
-              Password
-            </label>
-            <input
-              className="profile-form-input"
-              id="password"
-              name="password"
+
+          <div className="admin-user-form-group">
+            <Label className="admin-user-form-label">Password</Label>
+            <Input
               type="password"
-              placeholder="Leave empty to keep current password"
+              className="admin-user-form-input"
+              name="password"
               value={form.password}
               onChange={handleChange}
+              placeholder="Leave empty to keep current password"
             />
           </div>
-          <div className="profile-form-actions">
-            <button className="profile-action-button edit" type="submit">
+
+          <div className="admin-user-form-actions">
+            <button className="admin-user-form-button" type="submit">
               Save
             </button>
-            <Link to="/profile" className="profile-action-button cancel">
+
+            <Link to="/profile" className="admin-user-form-button outline">
               Cancel
             </Link>
           </div>
-        </form>
+
+        </Form>
       </div>
     </div>
   );
