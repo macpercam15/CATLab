@@ -19,6 +19,7 @@ import java.util.List;
 
 import jakarta.validation.Valid;
 
+import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -80,14 +81,14 @@ class UserRestController {
 
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
-	public ResponseEntity<User> create(@RequestBody @Valid UserCreateRequest user) {
+	public ResponseEntity<User> create(@RequestBody @Valid UserCreateRequest user) throws BadRequestException {
 		User savedUser = userService.saveUser(user);
 		return new ResponseEntity<>(savedUser, HttpStatus.CREATED);
 	}
 
 	@PutMapping(value = "{userId}")
 	@ResponseStatus(HttpStatus.OK)
-	public ResponseEntity<User> update(@PathVariable("userId") Integer id, @RequestBody @Valid User user) {
+	public ResponseEntity<User> update(@PathVariable("userId") Integer id, @RequestBody @Valid UserUpdateRequest user) {
 		RestPreconditions.checkNotNull(userService.findUser(id), "User", "ID", id);
 		return new ResponseEntity<>(this.userService.updateUser(user, id), HttpStatus.OK);
 	}

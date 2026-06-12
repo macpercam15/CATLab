@@ -52,4 +52,9 @@ public class EstudianteRestController {
 		return new ResponseEntity<>(estudianteService.findEstudianteById(id), HttpStatus.OK);
 	}
 
+	@GetMapping(value = "/user/{userId}")
+	public ResponseEntity<Estudiante> findByUserId(@PathVariable("userId") int userId) {
+		return new ResponseEntity<>(estudianteService.findEstudianteByUserId(userId), HttpStatus.OK);
+	}
+
 }

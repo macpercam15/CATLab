@@ -53,4 +53,9 @@ public class AdministradorRestController{
 		return new ResponseEntity<>(administradorService.findAdministradorById(id), HttpStatus.OK);
 	}
 
+    @GetMapping(value = "/user/{userId}")
+    public ResponseEntity<Administrador> findByUserId(@PathVariable("userId") int userId) {
+        return new ResponseEntity<>(administradorService.findAdministradorByUserId(userId), HttpStatus.OK);
+    }
+
 }

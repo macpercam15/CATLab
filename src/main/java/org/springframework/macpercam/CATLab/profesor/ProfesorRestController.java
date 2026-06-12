@@ -53,4 +53,9 @@ public class ProfesorRestController {
 	public ResponseEntity<Profesor> findById(@PathVariable("profesorId") int id) {
 		return new ResponseEntity<>(profesorService.findProfesorById(id), HttpStatus.OK);
 	}
+
+	@GetMapping(value = "/user/{userId}")
+	public ResponseEntity<Profesor> findByUserId(@PathVariable("userId") int userId) {
+		return new ResponseEntity<>(profesorService.findProfesorByUserId(userId), HttpStatus.OK);
+	}
 }

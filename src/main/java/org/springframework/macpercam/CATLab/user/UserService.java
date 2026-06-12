@@ -55,43 +55,42 @@ public class UserService {
 	}
 
 	@Transactional
-	public User saveUser(UserCreateRequest request) {
+	public User saveUser(UserCreateRequest request){
 		User user;
 		user = new User();
+
 		user.setUsername(request.getUsername());
 
 		String rawPassword = request.getPassword();
-		if (rawPassword == null || rawPassword.isBlank()) {
-			rawPassword = defaultPasswordForAuthority(request.getAuthority());
-		}
-
+		rawPassword = defaultPasswordForAuthority(request.getAuthority());
 		user.setPassword(encoder.encode(rawPassword));
 
 		user.setAuthority(request.getAuthority());
 		userRepository.save(user);
 
+
 		if (user.getAuthority() != null) {
 			switch (user.getAuthority().getAuthority()) {
 			case "PROFESOR":
 				Profesor profesor = new Profesor();
-				profesor.setFirstName(request.getFirstName());
-				profesor.setLastName(request.getLastName());
+				profesor.setFirstName(request.getName());
+				profesor.setLastName(request.getSurname());
 				profesor.setEmail(request.getEmail());
 				profesor.setUser(user);
 				profesorService.saveProfesor(profesor);
 				break;
 			case "ESTUDIANTE":
 				Estudiante estudiante = new Estudiante();
-				estudiante.setFirstName(request.getFirstName());
-				estudiante.setLastName(request.getLastName());
+				estudiante.setFirstName(request.getName());
+				estudiante.setLastName(request.getSurname());
 				estudiante.setEmail(request.getEmail());
 				estudiante.setUser(user);
 				estudianteService.saveEstudiante(estudiante);
 				break;
 			case "ADMIN":
 				Administrador admin = new Administrador();
-				admin.setFirstName(request.getFirstName());
-				admin.setLastName(request.getLastName());
+				admin.setFirstName(request.getName());
+				admin.setLastName(request.getSurname());
 				admin.setEmail(request.getEmail());
 				admin.setUser(user);
 				administradorService.saveAdministrador(admin);
@@ -153,7 +152,7 @@ public class UserService {
 	}
 
 	@Transactional
-	public User updateUser(@Valid User user, Integer idToUpdate) {
+	public User updateUser(@Valid UserUpdateRequest user, Integer idToUpdate) {
 		User toUpdate = findUser(idToUpdate);
 
 		// Username
@@ -174,6 +173,81 @@ public class UserService {
 			toUpdate.setAuthority(user.getAuthority());
 		}
 
+		String authority = toUpdate.getAuthority().getAuthority();
+
+		switch (authority) {
+			case "ESTUDIANTE" -> {
+				Estudiante rol = estudianteService.findEstudianteByUserId(toUpdate.getId());
+
+				if (user.getName() != null
+						&& !user.getName().isBlank()
+						&& !user.getName().equals(rol.getFirstName())) {
+					rol.setFirstName(user.getName());
+				}
+
+				if (user.getSurname() != null
+						&& !user.getSurname().isBlank()
+						&& !user.getSurname().equals(rol.getLastName())) {
+					rol.setLastName(user.getSurname());
+				}
+
+				if (user.getEmail() != null
+						&& !user.getEmail().isBlank()
+						&& !user.getEmail().equals(rol.getEmail())) {
+					rol.setEmail(user.getEmail());
+				}
+
+				estudianteService.saveEstudiante(rol);
+			}
+			case "PROFESOR" -> {
+				Profesor rol = profesorService.findProfesorByUserId(toUpdate.getId());
+
+				if (user.getName() != null
+						&& !user.getName().isBlank()
+						&& !user.getName().equals(rol.getFirstName())) {
+					rol.setFirstName(user.getName());
+				}
+
+				if (user.getSurname() != null
+						&& !user.getSurname().isBlank()
+						&& !user.getSurname().equals(rol.getLastName())) {
+					rol.setLastName(user.getSurname());
+				}
+
+				if (user.getEmail() != null
+						&& !user.getEmail().isBlank()
+						&& !user.getEmail().equals(rol.getEmail())) {
+					rol.setEmail(user.getEmail());
+				}
+
+				profesorService.saveProfesor(rol);
+			}
+
+			case "ADMIN" -> {
+				Administrador rol = administradorService.findAdministradorByUserId(toUpdate.getId());
+
+				if (user.getName() != null
+						&& !user.getName().isBlank()
+						&& !user.getName().equals(rol.getFirstName())) {
+					rol.setFirstName(user.getName());
+				}
+
+				if (user.getSurname() != null
+						&& !user.getSurname().isBlank()
+						&& !user.getSurname().equals(rol.getLastName())) {
+					rol.setLastName(user.getSurname());
+				}
+
+				if (user.getEmail() != null
+						&& !user.getEmail().isBlank()
+						&& !user.getEmail().equals(rol.getEmail())) {
+					rol.setEmail(user.getEmail());
+				}
+
+				administradorService.saveAdministrador(rol);
+			}
+
+		}
 		return userRepository.save(toUpdate);
 	}
 
