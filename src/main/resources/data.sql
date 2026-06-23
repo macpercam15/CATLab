@@ -12,6 +12,13 @@ INSERT INTO profesores(id, first_name, last_name, email, user_id) VALUES (1, 'Pr
 INSERT INTO appusers(id,username,password,authority) VALUES (3,'estudiante1','$2a$12$iTYRfDeDd3prIIytTzWOWOpw1ayxATLT10HqfJ94sDpVoKhqGK9dq',3);
 INSERT INTO estudiantes(id, first_name, last_name, email, user_id) VALUES (1, 'Estudiante', 'Uno','estudiante@catlab.local', 3);
 
+INSERT INTO glosarios(id) VALUES (1);
+INSERT INTO glosarios(id) VALUES (2);
+
+INSERT INTO entradas_glosario(id, origen, destino, glosario_id) VALUES (1, 'A', 'B', 1);
+INSERT INTO entradas_glosario(id, origen, destino, glosario_id) VALUES (2, 'espanyol', 'ingles', 1);
+INSERT INTO entradas_glosario(id, origen, destino, glosario_id) VALUES (3, 'frances', 'aleman', 2);
+
 -- -- Three clinic owners, with password "clinic_owner"
 -- INSERT INTO authorities(id,authority) VALUES (2,'CLINIC_OWNER');
 -- INSERT INTO appusers(id,username,password,authority) VALUES (2,'clinicOwner1','$2a$10$t.I/C4cjUdUWzqlFlSddLeh9SbZ6d8wR7mdbeIRghT355/KRKZPAi',2);
