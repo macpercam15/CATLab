@@ -24,7 +24,8 @@ public class GlosarioService {
 
     @Transactional(readOnly = true)
     public List<EntradaGlosario> getAllEntradasByGlosarioId(int glosarioId){
-        List<EntradaGlosario> entradas = entradaRepo.getAllEntradasByGlosarioId(glosarioId);
+        Glosario glosario = glosarioRepo.findById(glosarioId).orElseThrow(() -> new ResourceNotFoundException("Glosario", "ID", glosarioId));
+        List<EntradaGlosario> entradas = entradaRepo.getAllEntradasByGlosarioId(glosario.getId());
         return entradas;
     }
 
@@ -34,12 +35,12 @@ public class GlosarioService {
     }
 
     @Transactional()
-    public EntradaGlosario createEntrada(saveEntradaDTO entradaIn) throws DataAccessException{
+    public EntradaGlosario createEntrada(SaveEntradaDTO data) throws DataAccessException{
         EntradaGlosario entrada = new EntradaGlosario();
-        entrada.setOrigen(entradaIn.getOrigen());
-        entrada.setDestino(entradaIn.getDestino());
+        entrada.setOrigen(data.getOrigen());
+        entrada.setDestino(data.getDestino());
 
-        Glosario gl = glosarioRepo.findById(entradaIn.getGlosarioId()).orElseThrow(() -> new ResourceNotFoundException("Glosario", "ID", entradaIn.getGlosarioId()));
+        Glosario gl = glosarioRepo.findById(data.getGlosarioId()).orElseThrow(() -> new ResourceNotFoundException("Glosario", "ID", data.getGlosarioId()));
         entrada.setGlosario(gl);
 
         entradaRepo.save(entrada);
