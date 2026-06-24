@@ -99,6 +99,7 @@ public class SecurityConfiguration {
 			 .requestMatchers("/api/administradores/**").hasAuthority(ADMIN)
 
 			 .requestMatchers("/api/entradas/**").hasAnyAuthority(ESTUDIANTE, ADMIN)
+			 .requestMatchers("/api/glosarios/**").hasAnyAuthority(ESTUDIANTE, ADMIN)
 
 			// Otras reglas de controal de acceso:
 			// .requestMatchers("/api/v1/clinicOwners/**").hasAnyAuthority(ADMIN, CLINIC_OWNER)

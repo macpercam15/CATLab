@@ -68,4 +68,21 @@ public class GlosarioService {
         return glosarioRepo.findAll();
     }
 
+    @Transactional(readOnly = true)
+    public Glosario getGlosarioById(int id) {
+        return glosarioRepo.findById(id).orElseThrow(() -> new ResourceNotFoundException("Glosario", "ID", id));
+    }
+
+    @Transactional()
+    public Glosario createGlosario() {
+        Glosario glosario = new Glosario();
+        return glosarioRepo.save(glosario);
+    }
+
+    @Transactional()
+    public void deleteGlosario(int id) {
+        Glosario glosario = glosarioRepo.findById(id).orElseThrow(() -> new ResourceNotFoundException("Glosario", "ID", id));
+        glosarioRepo.delete(glosario);
+    }
+
 }
