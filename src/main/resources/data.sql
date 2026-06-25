@@ -12,12 +12,29 @@ INSERT INTO profesores(id, first_name, last_name, email, user_id) VALUES (1, 'Pr
 INSERT INTO appusers(id,username,password,authority) VALUES (3,'estudiante1','$2a$12$iTYRfDeDd3prIIytTzWOWOpw1ayxATLT10HqfJ94sDpVoKhqGK9dq',3);
 INSERT INTO estudiantes(id, first_name, last_name, email, user_id) VALUES (1, 'Estudiante', 'Uno','estudiante@catlab.local', 3);
 
+INSERT INTO appusers(id,username,password,authority) VALUES (4,'estudiante2','$2a$12$iTYRfDeDd3prIIytTzWOWOpw1ayxATLT10HqfJ94sDpVoKhqGK9dq',3);
+INSERT INTO estudiantes(id, first_name, last_name, email, user_id) VALUES (2, 'Estudiante', 'Dos','estudiante2@catlab.local', 4);
+
 INSERT INTO glosarios(id) VALUES (1);
 INSERT INTO glosarios(id) VALUES (2);
 
 INSERT INTO entradas_glosario(id, origen, destino, glosario_id) VALUES (1, 'A', 'B', 1);
 INSERT INTO entradas_glosario(id, origen, destino, glosario_id) VALUES (2, 'espanyol', 'ingles', 1);
 INSERT INTO entradas_glosario(id, origen, destino, glosario_id) VALUES (3, 'frances', 'aleman', 2);
+
+INSERT INTO idiomas(id, name) VALUES (1, 'Español');
+INSERT INTO idiomas(id, name) VALUES (2, 'Inglés');
+INSERT INTO idiomas(id, name) VALUES (3, 'Italiano');
+INSERT INTO idiomas(id,name) VALUES (4, 'Francés');
+
+INSERT INTO proyectos (id, name, estado, idioma_origen_id, idioma_destino_id) VALUES (1, 'Traducción inversa', 'BORRADOR', 2, 1);
+INSERT INTO proyectos (id, name, estado, idioma_origen_id, idioma_destino_id) VALUES (2, 'Traducción especializada', 'BORRADOR', 1, 2);
+
+INSERT INTO proyecto_estudiante (proyecto_id, estudiante_id) VALUES (1, 1);
+INSERT INTO proyecto_estudiante (proyecto_id, estudiante_id) VALUES (2, 1);
+INSERT INTO proyecto_estudiante (proyecto_id, estudiante_id) VALUES (2, 2);
+
+
 
 -- -- Three clinic owners, with password "clinic_owner"
 -- INSERT INTO authorities(id,authority) VALUES (2,'CLINIC_OWNER');
