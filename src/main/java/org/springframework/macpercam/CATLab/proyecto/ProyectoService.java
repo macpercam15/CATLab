@@ -30,12 +30,14 @@ public class ProyectoService {
     private ProyectoRepository proyectoRp;
     private IdiomaRepository idiomaRp;
     private EstudianteRepository estudianteRp;
+    private GlosarioRepository glosarioRp;
 
     @Autowired
-    public ProyectoService(ProyectoRepository proyectoRp, IdiomaRepository idiomaRp, EstudianteRepository estudianteRp) {
+    public ProyectoService(ProyectoRepository proyectoRp, IdiomaRepository idiomaRp, EstudianteRepository estudianteRp, GlosarioRepository glosarioRp) {
         this.proyectoRp = proyectoRp;
         this.idiomaRp = idiomaRp;
         this.estudianteRp = estudianteRp;
+        this.glosarioRp = glosarioRp;
     }
 
     @Transactional(readOnly = true)
@@ -71,6 +73,7 @@ public class ProyectoService {
         // p.setTm(proyecto.getTM());
 
         Glosario g = new Glosario();
+        glosarioRp.save(g);
         p.setGlosario(g);
 
         Estudiante actual = estudianteRp.findByUsername(username).orElseThrow(() -> new ResourceNotFoundException("Estudiante", "username", username));

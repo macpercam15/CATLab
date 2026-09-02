@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.macpercam.CATLab.proyecto.idioma.Idioma;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -17,7 +18,10 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Encoding;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
 @RestController
@@ -42,6 +46,15 @@ public class ProyectoController {
     }
 
     @PostMapping(value = "/new", consumes = {"multipart/form-data"})
+    @io.swagger.v3.oas.annotations.Operation(
+        summary = "Crear proyecto con documento PDF",
+        requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+            content = @Content(
+                mediaType = MediaType.MULTIPART_FORM_DATA_VALUE,
+                encoding = @Encoding(name = "proyecto", contentType = MediaType.APPLICATION_JSON_VALUE)
+            )
+        )
+    )
     public Proyecto createProyecto(
             @RequestPart("proyecto") SaveProyectoDTO proyecto, 
             @RequestPart("file") MultipartFile file, 
