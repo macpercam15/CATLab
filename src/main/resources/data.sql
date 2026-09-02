@@ -27,8 +27,11 @@ INSERT INTO idiomas(id, name) VALUES (2, 'Inglés');
 INSERT INTO idiomas(id, name) VALUES (3, 'Italiano');
 INSERT INTO idiomas(id,name) VALUES (4, 'Francés');
 
-INSERT INTO proyectos (id, name, estado, idioma_origen_id, idioma_destino_id) VALUES (1, 'Traducción inversa', 'BORRADOR', 2, 1);
-INSERT INTO proyectos (id, name, estado, idioma_origen_id, idioma_destino_id) VALUES (2, 'Traducción especializada', 'BORRADOR', 1, 2);
+INSERT INTO proyectos (id, name, estado, idioma_origen_id, idioma_destino_id, glosario_id) VALUES (1, 'Traducción inversa', 'BORRADOR', 2, 1, 1);
+INSERT INTO proyectos (id, name, estado, idioma_origen_id, idioma_destino_id, glosario_id) VALUES (2, 'Traducción especializada', 'BORRADOR', 1, 2, 2);
+
+INSERT INTO documentos(id, nombre_original, nombre_almacenado, ruta, tipo_mime, tamanyo, proyecto_id) VALUES (1, 'texto_proyecto1.pdf', 'doc1.pdf', 'uploads/doc1.pdf', 'application/pdf', 12000, 1);
+INSERT INTO documentos(id, nombre_original, nombre_almacenado, ruta, tipo_mime, tamanyo, proyecto_id) VALUES (2, 'texto_proyecto2.pdf', 'doc1.pdf', 'uploads/doc1.pdf', 'application/pdf', 12000, 2);
 
 INSERT INTO proyecto_estudiante (proyecto_id, estudiante_id) VALUES (1, 1);
 INSERT INTO proyecto_estudiante (proyecto_id, estudiante_id) VALUES (2, 1);

@@ -1,4 +1,4 @@
-package org.springframework.macpercam.CATLab.proyecto;
+package org.springframework.macpercam.CATLab.proyecto.idioma;
 
 import org.springframework.macpercam.CATLab.model.NamedEntity;
 

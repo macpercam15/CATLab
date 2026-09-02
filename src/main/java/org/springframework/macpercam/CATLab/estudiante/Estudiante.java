@@ -8,6 +8,9 @@ import org.springframework.macpercam.CATLab.model.Person;
 import org.springframework.macpercam.CATLab.proyecto.Proyecto;
 import org.springframework.macpercam.CATLab.user.User;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -29,6 +32,7 @@ public class Estudiante extends Person {
     @OnDelete(action = OnDeleteAction.CASCADE)
     User user;
 
+    @JsonIgnore
     @ManyToMany(mappedBy = "estudiantes")
     private Set<Proyecto> proyectos;
 

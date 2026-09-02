@@ -7,6 +7,7 @@ import org.hibernate.annotations.OnDeleteAction;
 import org.springframework.macpercam.CATLab.estudiante.Estudiante;
 import org.springframework.macpercam.CATLab.glosario.Glosario;
 import org.springframework.macpercam.CATLab.model.NamedEntity;
+import org.springframework.macpercam.CATLab.proyecto.idioma.Idioma;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
@@ -50,6 +51,11 @@ public class Proyecto extends NamedEntity{
         inverseJoinColumns = @JoinColumn(name = "estudiante_id")
     )
     private Set<Estudiante> estudiantes;
+
+    @OneToOne(mappedBy = "proyecto",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true)
+    private Documento documento;
 
     /*
     TODO:

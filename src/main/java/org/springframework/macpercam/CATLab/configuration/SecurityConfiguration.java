@@ -100,6 +100,10 @@ public class SecurityConfiguration {
 
 			 .requestMatchers("/api/entradas/**").hasAnyAuthority(ESTUDIANTE, ADMIN)
 			 .requestMatchers("/api/glosarios/**").hasAnyAuthority(ESTUDIANTE, ADMIN)
+			 .requestMatchers(HttpMethod.GET, "/api/proyectos/**").hasAnyAuthority(ESTUDIANTE, ADMIN, PROFESOR)
+			 .requestMatchers(HttpMethod.POST, "/api/proyectos/**").hasAnyAuthority(ESTUDIANTE, ADMIN)
+			 .requestMatchers(HttpMethod.PUT, "/api/proyectos/**").hasAnyAuthority(ESTUDIANTE, ADMIN, PROFESOR)
+
 
 			// Otras reglas de controal de acceso:
 			// .requestMatchers("/api/v1/clinicOwners/**").hasAnyAuthority(ADMIN, CLINIC_OWNER)

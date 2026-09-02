@@ -16,6 +16,9 @@ public interface EstudianteRepository extends CrudRepository<Estudiante, Integer
     @Query("SELECT DISTINCT estudiante FROM Estudiante estudiante WHERE estudiante.user.id = :userId")
 	public Optional<Estudiante> findByUser(int userId);
 
+    @Query("SELECT DISTINCT estudiante FROM Estudiante estudiante WHERE estudiante.user.username = :username")
+    public Optional<Estudiante> findByUsername(@Param("username") String username);
+
     @Query("SELECT COUNT(p) FROM Estudiante p")
 	public Integer countAll();
 
