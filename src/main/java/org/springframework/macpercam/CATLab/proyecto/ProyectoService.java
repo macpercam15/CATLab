@@ -50,6 +50,13 @@ public class ProyectoService {
         return proyectoRp.findById(id).orElseThrow(() -> new ResourceNotFoundException("Proyecto", "ID", id));
     }
 
+    @Transactional(readOnly = true)
+    public List<Proyecto> findProjectsByUserId(Integer userId){
+        Estudiante estudiante = estudianteRp.findByUser(userId).orElseThrow(() -> new ResourceNotFoundException("Estudiante", "userId", userId));
+        List<Proyecto> proyectos = new ArrayList<>(estudiante.getProyectos());
+        return proyectos;
+    }
+
     @Transactional()
     public Proyecto save(SaveProyectoDTO proyecto, MultipartFile file, String username) throws IOException{
         if (file == null || file.isEmpty()) {

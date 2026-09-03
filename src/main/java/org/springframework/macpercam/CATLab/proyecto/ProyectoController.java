@@ -45,6 +45,11 @@ public class ProyectoController {
         return proyectoService.findById(id);
     }
 
+    @GetMapping(value = "/user/{userId}")
+    public List<Proyecto> getProyectosByUserId(@PathVariable Integer userId) {
+        return proyectoService.findProjectsByUserId(userId);
+    }
+
     @PostMapping(value = "/new", consumes = {"multipart/form-data"})
     @io.swagger.v3.oas.annotations.Operation(
         summary = "Crear proyecto con documento PDF",
