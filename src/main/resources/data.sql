@@ -17,18 +17,26 @@ INSERT INTO estudiantes(id, first_name, last_name, email, user_id) VALUES (2, 'E
 
 INSERT INTO glosarios(id) VALUES (1);
 INSERT INTO glosarios(id) VALUES (2);
+INSERT INTO glosarios(id) VALUES (3);
+INSERT INTO glosarios(id) VALUES (4);
+INSERT INTO glosarios(id) VALUES (5);
 
 INSERT INTO entradas_glosario(id, origen, destino, glosario_id) VALUES (1, 'A', 'B', 1);
 INSERT INTO entradas_glosario(id, origen, destino, glosario_id) VALUES (2, 'espanyol', 'ingles', 1);
 INSERT INTO entradas_glosario(id, origen, destino, glosario_id) VALUES (3, 'frances', 'aleman', 2);
 
-INSERT INTO idiomas(id, name) VALUES (1, 'Español');
-INSERT INTO idiomas(id, name) VALUES (2, 'Inglés');
-INSERT INTO idiomas(id, name) VALUES (3, 'Italiano');
-INSERT INTO idiomas(id,name) VALUES (4, 'Francés');
+INSERT INTO idiomas(id, name, codigo) VALUES (1, 'Español', 'ES');
+INSERT INTO idiomas(id, name, codigo) VALUES (2, 'Inglés', 'EN');
+INSERT INTO idiomas(id, name, codigo) VALUES (3, 'Italiano', 'IT');
+INSERT INTO idiomas(id,name, codigo) VALUES (4, 'Francés', 'FR');
 
 INSERT INTO proyectos (id, name, estado, idioma_origen_id, idioma_destino_id, glosario_id) VALUES (1, 'Traducción inversa', 'BORRADOR', 2, 1, 1);
 INSERT INTO proyectos (id, name, estado, idioma_origen_id, idioma_destino_id, glosario_id) VALUES (2, 'Traducción especializada', 'BORRADOR', 1, 2, 2);
+--proyectos individuales
+INSERT INTO proyectos (id, name, estado, idioma_origen_id, idioma_destino_id, glosario_id) VALUES (3, 'Traducción 1', 'BORRADOR', 2, 1, 3);
+INSERT INTO proyectos (id, name, estado, idioma_origen_id, idioma_destino_id, glosario_id) VALUES (4, 'Traducción 2', 'PUBLICADO', 2, 1, 4);
+INSERT INTO proyectos (id, name, estado, idioma_origen_id, idioma_destino_id, glosario_id) VALUES (5, 'Traducción 3', 'CORREGIDO', 2, 1, 5);
+
 
 INSERT INTO documentos(id, nombre_original, nombre_almacenado, ruta, tipo_mime, tamanyo, proyecto_id) VALUES (1, 'texto_proyecto1.pdf', 'doc1.pdf', 'uploads/doc1.pdf', 'application/pdf', 12000, 1);
 INSERT INTO documentos(id, nombre_original, nombre_almacenado, ruta, tipo_mime, tamanyo, proyecto_id) VALUES (2, 'texto_proyecto2.pdf', 'doc1.pdf', 'uploads/doc1.pdf', 'application/pdf', 12000, 2);
@@ -36,6 +44,10 @@ INSERT INTO documentos(id, nombre_original, nombre_almacenado, ruta, tipo_mime, 
 INSERT INTO proyecto_estudiante (proyecto_id, estudiante_id) VALUES (1, 1);
 INSERT INTO proyecto_estudiante (proyecto_id, estudiante_id) VALUES (2, 1);
 INSERT INTO proyecto_estudiante (proyecto_id, estudiante_id) VALUES (2, 2);
+--individuales
+INSERT INTO proyecto_estudiante (proyecto_id, estudiante_id) VALUES (3, 1);
+INSERT INTO proyecto_estudiante (proyecto_id, estudiante_id) VALUES (4, 1);
+INSERT INTO proyecto_estudiante (proyecto_id, estudiante_id) VALUES (5, 1);
 
 
 

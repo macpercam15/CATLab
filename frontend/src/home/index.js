@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import '../App.css';
 import '../static/css/home/home.css';
@@ -46,6 +47,7 @@ function detectUserRole() {
 
 export default function Home() {
     const [role, setRole] = useState(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const r = detectUserRole();
@@ -95,7 +97,7 @@ export default function Home() {
                         <div className="student-secondary-row">
                             <button
                                 className="student-outline"
-                                onClick={() => alert('Funcionalidad "Mis proyectos" no implementada aún')}
+                                onClick={() => navigate('/my-projects')}
                             >
                                 My projects
                             </button>

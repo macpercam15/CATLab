@@ -13,4 +13,6 @@ import lombok.Setter;
 @Table(name = "idiomas")
 public class Idioma extends NamedEntity {
 
+    String codigo;
+
 }
