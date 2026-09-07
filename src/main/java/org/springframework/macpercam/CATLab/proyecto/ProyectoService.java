@@ -132,6 +132,43 @@ public class ProyectoService {
         return idiomas;
     }
 
+    private boolean esColaborativo(Proyecto p) {
+        return p.getEstudiantes() != null && p.getEstudiantes().size() > 1;
+    }
+
+    public Proyecto publicarProyecto(Integer id) {
+        Proyecto p = proyectoRp.findById(id).orElseThrow(() -> new ResourceNotFoundException("Proyecto", "ID", id));
+        if (esColaborativo(p)) {
+            // TODO: Implementar la lógica para publicar proyectos colaborativos
+            //return publicarColaborativo(id);
+            return p;
+        }
+        else {
+            return publicarIndividual(id);
+        }
+    }
+
+    public Proyecto publicarIndividual(Integer id) {
+        Proyecto p = proyectoRp.findById(id).orElseThrow(() -> new ResourceNotFoundException("Proyecto", "ID", id));
+        if (p.getEstado() != EstadoProyecto.BORRADOR) {
+            throw new IllegalStateException("Solo se pueden publicar proyectos en estado BORRADOR.");
+        }
+        // TODO: Verificar que todos los segmentos están en revisados antes de traducir.
+        p.setEstado(EstadoProyecto.PUBLICADO);
+        return proyectoRp.save(p);
+    }
+
+    // TODO: hay que revisar esto mejor, lo mismo es mejor comprobar más cosas aparte del estado
+    public /*Proyecto*/ String publicarColaborativo(Integer id) {
+        Proyecto p = proyectoRp.findById(id).orElseThrow(() -> new ResourceNotFoundException("Proyecto", "ID", id));
+        if (p.getEstado() != EstadoProyecto.ACEPTADO) {
+            throw new IllegalStateException("Solo se pueden publicar proyectos colaborativos en estado ACEPTADO.");
+        }
+        p.setEstado(EstadoProyecto.PUBLICADO);
+        //return proyectoRp.save(p);
+        return "No se ha implementado proyectos colaborativos.";
+    }
+
     //Section: Idioma
 
     public List<Idioma> findAllIdiomas() {

@@ -73,6 +73,11 @@ public class ProyectoController {
         return proyectoService.update(id, proyecto);
     }
 
+    @PutMapping(value = "/publish/{id}")
+    public Proyecto updateProyectoEstado(@PathVariable Integer id) {
+        return proyectoService.publicarProyecto(id);
+    }
+
     @GetMapping(value = "/idiomas")
     public List<Idioma> getAllIdiomas() {
         return proyectoService.findAllIdiomas();
