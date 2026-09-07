@@ -140,8 +140,7 @@ public class ProyectoService {
         Proyecto p = proyectoRp.findById(id).orElseThrow(() -> new ResourceNotFoundException("Proyecto", "ID", id));
         if (esColaborativo(p)) {
             // TODO: Implementar la lógica para publicar proyectos colaborativos
-            //return publicarColaborativo(id);
-            return p;
+            throw new UnsupportedOperationException("La publicación de proyectos colaborativos aún no está implementada.");
         }
         else {
             return publicarIndividual(id);
@@ -167,6 +166,15 @@ public class ProyectoService {
         p.setEstado(EstadoProyecto.PUBLICADO);
         //return proyectoRp.save(p);
         return "No se ha implementado proyectos colaborativos.";
+    }
+
+    public Proyecto reeditarProyecto(Integer id) {
+        Proyecto p = proyectoRp.findById(id).orElseThrow(() -> new ResourceNotFoundException("Proyecto", "ID", id));
+        if (p.getEstado() != EstadoProyecto.CORREGIDO) {
+            throw new IllegalStateException("Solo se pueden reeditar proyectos en estado CORREGIDO.");
+        }
+        p.setEstado(EstadoProyecto.BORRADOR);
+        return proyectoRp.save(p);
     }
 
     //Section: Idioma

@@ -8,6 +8,7 @@ import org.springframework.http.MediaType;
 import org.springframework.macpercam.CATLab.proyecto.idioma.Idioma;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -76,6 +77,16 @@ public class ProyectoController {
     @PutMapping(value = "/publish/{id}")
     public Proyecto updateProyectoEstado(@PathVariable Integer id) {
         return proyectoService.publicarProyecto(id);
+    }
+
+    @PutMapping(value = "/re-edit/{id}")
+    public Proyecto reeditarProyecto(@PathVariable Integer id) {
+        return proyectoService.reeditarProyecto(id);
+    }
+
+    @PostMapping(value = "/delete/{id}")
+    public void deleteProyecto(@PathVariable Integer id) {
+        proyectoService.delete(id);
     }
 
     @GetMapping(value = "/idiomas")
