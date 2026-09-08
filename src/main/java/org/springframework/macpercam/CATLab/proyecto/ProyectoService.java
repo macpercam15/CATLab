@@ -40,6 +40,7 @@ public class ProyectoService {
         this.glosarioRp = glosarioRp;
     }
 
+    // #region CRUD
     @Transactional(readOnly = true)
     public List<Proyecto> findAll(){
         return (List<Proyecto>) proyectoRp.findAll();
@@ -124,18 +125,17 @@ public class ProyectoService {
         return proyectoRp.save(p);
     }
 
-    public List<Idioma> findIdiomasProyecto(Integer proyectoId) {
-        Proyecto p = proyectoRp.findById(proyectoId).orElseThrow(() -> new ResourceNotFoundException("Proyecto", "ID", proyectoId));
-        List<Idioma> idiomas = new ArrayList<>();
-        idiomas.add(p.getIdiomaOrigen());
-        idiomas.add(p.getIdiomaDestino());
-        return idiomas;
-    }
+    // #endregion CRUD
 
+
+    // #region FLUJO DE ESTADOS
+
+    
     private boolean esColaborativo(Proyecto p) {
         return p.getEstudiantes() != null && p.getEstudiantes().size() > 1;
     }
 
+    @Transactional()
     public Proyecto publicarProyecto(Integer id) {
         Proyecto p = proyectoRp.findById(id).orElseThrow(() -> new ResourceNotFoundException("Proyecto", "ID", id));
         if (esColaborativo(p)) {
@@ -147,6 +147,7 @@ public class ProyectoService {
         }
     }
 
+    @Transactional()
     public Proyecto publicarIndividual(Integer id) {
         Proyecto p = proyectoRp.findById(id).orElseThrow(() -> new ResourceNotFoundException("Proyecto", "ID", id));
         if (p.getEstado() != EstadoProyecto.BORRADOR) {
@@ -156,7 +157,7 @@ public class ProyectoService {
         p.setEstado(EstadoProyecto.PUBLICADO);
         return proyectoRp.save(p);
     }
-
+    @Transactional()
     // TODO: hay que revisar esto mejor, lo mismo es mejor comprobar más cosas aparte del estado
     public /*Proyecto*/ String publicarColaborativo(Integer id) {
         Proyecto p = proyectoRp.findById(id).orElseThrow(() -> new ResourceNotFoundException("Proyecto", "ID", id));
@@ -168,6 +169,7 @@ public class ProyectoService {
         return "No se ha implementado proyectos colaborativos.";
     }
 
+    @Transactional()
     public Proyecto reeditarProyecto(Integer id) {
         Proyecto p = proyectoRp.findById(id).orElseThrow(() -> new ResourceNotFoundException("Proyecto", "ID", id));
         if (p.getEstado() != EstadoProyecto.CORREGIDO) {
@@ -176,16 +178,61 @@ public class ProyectoService {
         p.setEstado(EstadoProyecto.BORRADOR);
         return proyectoRp.save(p);
     }
+    // #endregion FLUJO DE ESTADOS
 
-    //Section: Idioma
+    // #region  PROFESORES
 
+    @Transactional(readOnly = true)
+    public List<Proyecto> getProyectosProfesor(){
+        return ((List<Proyecto>)proyectoRp.findAll()).stream().filter(p-> p.getEstado()
+            == EstadoProyecto.PUBLICADO || p.getEstado() == EstadoProyecto.ACEPTADO) .toList();
+    }
+
+    @Transactional()
+    public Proyecto marcarCorregido(Integer id){
+        Proyecto p = proyectoRp.findById(id).orElseThrow(() -> 
+            new ResourceNotFoundException("Proyecto", "ID", id));
+        if (p.getEstado() != EstadoProyecto.PUBLICADO){
+            throw new IllegalStateException("Solo se pueden marcar como corregidos proyectos en estado PUBLICADO.");
+        }
+        p.setEstado(EstadoProyecto.CORREGIDO);
+        return proyectoRp.save(p);
+    }
+
+    @Transactional()
+    public Proyecto cancelarCorregido(Integer id){
+        Proyecto p = proyectoRp.findById(id).orElseThrow(() -> 
+            new ResourceNotFoundException("Proyecto", "ID", id));
+        if (p.getEstado() != EstadoProyecto.CORREGIDO){
+            throw new IllegalStateException("Solo se pueden cancelar proyectos en estado CORREGIDO.");
+        }
+        p.setEstado(EstadoProyecto.PUBLICADO);
+        return proyectoRp.save(p);
+    }
+
+    // #endregion  PROFESORES
+
+    // #region IDIOMA
+    @Transactional(readOnly = true)
     public List<Idioma> findAllIdiomas() {
         return (List<Idioma>) idiomaRp.findAll();
     }
 
+    @Transactional(readOnly = true)
     public Idioma findIdiomaById(Integer id) {
         return idiomaRp.findById(id).orElseThrow(() -> new ResourceNotFoundException("Idioma", "ID", id));
     }
+
+    @Transactional(readOnly = true)
+    public List<Idioma> findIdiomasProyecto(Integer proyectoId) {
+        Proyecto p = proyectoRp.findById(proyectoId).orElseThrow(() -> new ResourceNotFoundException("Proyecto", "ID", proyectoId));
+        List<Idioma> idiomas = new ArrayList<>();
+        idiomas.add(p.getIdiomaOrigen());
+        idiomas.add(p.getIdiomaDestino());
+        return idiomas;
+    }
+
+    // #endregion IDIOMA
 
 
 }

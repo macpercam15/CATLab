@@ -36,6 +36,7 @@ public class ProyectoController {
         this.proyectoService = proyectoService;
     }
 
+// #region CRUD
     @GetMapping
     public List<Proyecto> getAllProyectos() {
         return proyectoService.findAll();
@@ -74,6 +75,13 @@ public class ProyectoController {
         return proyectoService.update(id, proyecto);
     }
 
+    @PostMapping(value = "/delete/{id}")
+    public void deleteProyecto(@PathVariable Integer id) {
+        proyectoService.delete(id);
+    }
+// #endregion CRUD
+
+// #region FLUJO ESTADOS
     @PutMapping(value = "/publish/{id}")
     public Proyecto updateProyectoEstado(@PathVariable Integer id) {
         return proyectoService.publicarProyecto(id);
@@ -84,11 +92,27 @@ public class ProyectoController {
         return proyectoService.reeditarProyecto(id);
     }
 
-    @PostMapping(value = "/delete/{id}")
-    public void deleteProyecto(@PathVariable Integer id) {
-        proyectoService.delete(id);
+// #endregion FLUJO ESTADOS
+
+// #region PROFESORES
+    @GetMapping(value = "/profesor")
+    public List<Proyecto> getProyectosProfesor() {
+        return proyectoService.getProyectosProfesor();
     }
 
+    @PutMapping(value = "/profesor/grade/{id}")
+    public Proyecto marcarCorregido(@PathVariable Integer id) {
+        return proyectoService.marcarCorregido(id);
+    }
+
+    @PutMapping(value = "/profesor/cancel-grade/{id}")
+    public Proyecto cancelarCorregido(@PathVariable Integer id) {
+        return proyectoService.cancelarCorregido(id);
+    }
+
+// #endregion PROFESORES
+
+// #region IDIOMAS
     @GetMapping(value = "/idiomas")
     public List<Idioma> getAllIdiomas() {
         return proyectoService.findAllIdiomas();
@@ -103,4 +127,5 @@ public class ProyectoController {
     public List<Idioma> getIdiomasByProyectoId(@PathVariable Integer id) {
         return proyectoService.findIdiomasProyecto(id);
     }
+// #endregion IDIOMAS
 }
