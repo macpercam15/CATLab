@@ -26,6 +26,8 @@ const getActionsByStatus = (project, isCollaborative) => {
     }
 };
 
+const canEditProject = (project) => project?.estado !== 'PUBLICADO' && project?.estado !== 'CORREGIDO';
+
 export default function MyProjects() {
     const [message, setMessage] = useState(null);
     const [visible, setVisible] = useState(false);
@@ -33,6 +35,9 @@ export default function MyProjects() {
     const [projectToDelete, setProjectToDelete] = useState(null);
     const [studentsModalProject, setStudentsModalProject] = useState(null);
     const [openMenuProjectId, setOpenMenuProjectId] = useState(null);
+    const [projectToEdit, setProjectToEdit] = useState(null);
+    const [editProjectName, setEditProjectName] = useState('');
+    const [editProjectSubmitting, setEditProjectSubmitting] = useState(false);
 
     const jwt = tokenService.getLocalAccessToken();
     const currentUser = tokenService.getUser();
@@ -71,6 +76,7 @@ export default function MyProjects() {
                 destination: project.idiomaDestino?.codigo || '—',
                 status: status.label,
                 statusClass: status.className,
+                canEdit: canEditProject(project),
                 collaboratorCount,
                 isCollaborative,
                 students,
@@ -85,6 +91,68 @@ export default function MyProjects() {
     const showNotImplementedAlert = () => {
         setMessage('Not implemented yet');
         setVisible(true);
+    };
+
+    const openEditModal = (project) => {
+        if (!project || !canEditProject(project)) {
+            setMessage('This project cannot be edited while it is Published or Corrected.');
+            setVisible(true);
+            return;
+        }
+
+        setProjectToEdit(project);
+        setEditProjectName(project?.name || '');
+        setMessage(null);
+        setVisible(false);
+    };
+
+    const closeEditModal = () => {
+        setProjectToEdit(null);
+        setEditProjectName('');
+        setEditProjectSubmitting(false);
+    };
+
+    const handleEditSubmit = async (event) => {
+        event.preventDefault();
+
+        if (!projectToEdit) return;
+
+        const nextName = editProjectName.trim();
+        if (!nextName) {
+            setMessage('Introduce un nombre para el proyecto.');
+            setVisible(true);
+            return;
+        }
+
+        try {
+            setEditProjectSubmitting(true);
+
+            const response = await fetch(`/api/proyectos/${projectToEdit.id}`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${jwt}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ name: nextName }),
+            });
+
+            if (response.ok) {
+                const updatedProject = await response.json();
+                setProjects((prevProjects) =>
+                    prevProjects.map((p) => (p.id === updatedProject.id ? updatedProject : p))
+                );
+                closeEditModal();
+            } else {
+                const text = await response.text();
+                setMessage(text || 'Error al guardar el nombre del proyecto.');
+                setVisible(true);
+            }
+        } catch (error) {
+            setMessage('Error al conectar con el servidor.');
+            setVisible(true);
+        } finally {
+            setEditProjectSubmitting(false);
+        }
     };
 
     const handleActionClick = async (action, project) => {
@@ -214,8 +282,17 @@ export default function MyProjects() {
                         mappedProjects.map((project, index) => (
                             <div key={`${project.id ?? project.name}-${index}`} className="my-project-item">
                                 <div className="project-main">
-                                    <h2 className="project-name">{project.name}</h2>
-                                    <span className="project-lang">{`${project.origin}>${project.destination}`}</span>
+                                    {project.canEdit ? (
+                                        <button
+                                            className="project-name project-name-link"
+                                            type="button"
+                                            onClick={() => openEditModal(project)}
+                                        >
+                                            {project.name}
+                                        </button>
+                                    ) : (
+                                        <h2 className="project-name">{project.name}</h2>
+                                    )}
                                 </div>
 
                                 <span className={`project-status ${project.statusClass}`}>
@@ -294,22 +371,24 @@ export default function MyProjects() {
 
                                     {openMenuProjectId === project.id && (
                                         <div style={modalStyles.dropdownMenu}>
-                                            <button
-                                                style={modalStyles.dropdownItem}
-                                                type="button"
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    setOpenMenuProjectId(null);
-                                                    showNotImplementedAlert();
-                                                }}
-                                            >
-                                                Edit
-                                            </button>
+                                            {project.canEdit && (
+                                                <button
+                                                    style={modalStyles.dropdownItem}
+                                                    type="button"
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        setOpenMenuProjectId(null);
+                                                        openEditModal(project);
+                                                    }}
+                                                >
+                                                    Edit
+                                                </button>
+                                            )}
                                             <button
                                                 style={{
                                                     ...modalStyles.dropdownItem,
                                                     color: '#b91c1c',
-                                                    borderTop: '1px solid #f3f4f6',
+                                                    borderTop: project.canEdit ? '1px solid #f3f4f6' : 'none',
                                                 }}
                                                 type="button"
                                                 onClick={(e) => {
@@ -352,6 +431,47 @@ export default function MyProjects() {
                                 Confirm
                             </button>
                         </div>
+                    </div>
+                </div>
+            )}
+
+            {projectToEdit && (
+                <div style={modalStyles.overlay} onClick={closeEditModal}>
+                    <div style={modalStyles.editContent} onClick={(e) => e.stopPropagation()}>
+                        <h3 style={modalStyles.editTitle}>Edit title</h3>
+
+                        <form onSubmit={handleEditSubmit}>
+                            <input
+                                type="text"
+                                value={editProjectName}
+                                onChange={(e) => setEditProjectName(e.target.value)}
+                                style={modalStyles.editInput}
+                                placeholder="Project title"
+                                autoFocus
+                            />
+
+                            <p style={modalStyles.editHint}>
+                                Only the project name can be changed.
+                            </p>
+
+                            <div style={modalStyles.buttonContainer}>
+                                <button
+                                    style={{ ...modalStyles.button, ...modalStyles.cancelBtn }}
+                                    type="button"
+                                    onClick={closeEditModal}
+                                    disabled={editProjectSubmitting}
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    style={{ ...modalStyles.button, ...modalStyles.confirmBtn }}
+                                    type="submit"
+                                    disabled={editProjectSubmitting}
+                                >
+                                    {editProjectSubmitting ? 'Saving...' : 'Save'}
+                                </button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             )}
@@ -438,10 +558,43 @@ const modalStyles = {
         textAlign: 'center',
         fontFamily: "'Anonymous Pro', monospace",
     },
+    editContent: {
+        background: '#ffffff',
+        borderRadius: '18px',
+        padding: '24px',
+        maxWidth: '520px',
+        width: '92%',
+        boxShadow: '0 10px 25px rgba(0, 0, 0, 0.15)',
+        textAlign: 'center',
+        fontFamily: "'Anonymous Pro', monospace",
+    },
     title: {
         fontSize: '1.8rem',
         margin: '0 0 12px 0',
         color: '#1f2937',
+    },
+    editTitle: {
+        fontSize: '1.9rem',
+        margin: '0 0 18px 0',
+        color: '#1f2937',
+    },
+    editInput: {
+        width: '100%',
+        borderRadius: '12px',
+        border: '1px solid #d1d5db',
+        padding: '12px 14px',
+        fontSize: '1.3rem',
+        fontFamily: "'Anonymous Pro', monospace",
+        color: '#1f2937',
+        boxSizing: 'border-box',
+        outline: 'none',
+        marginBottom: '14px',
+    },
+    editHint: {
+        fontSize: '1.05rem',
+        color: '#6b7280',
+        margin: '0 0 20px 0',
+        textAlign: 'left',
     },
     text: {
         fontSize: '1.2rem',

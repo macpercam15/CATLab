@@ -120,6 +120,9 @@ public class ProyectoService {
     @Transactional()
     public Proyecto update(Integer id, UpdateProyectoDTO proyecto) {
         Proyecto p = proyectoRp.findById(id).orElseThrow(() -> new ResourceNotFoundException("Proyecto", "ID", id));
+        if (p.getEstado() == EstadoProyecto.PUBLICADO  || p.getEstado() == EstadoProyecto.CORREGIDO) {
+            throw new IllegalStateException("No se puede actualizar un proyecto que ya ha sido publicado o corregido.");
+        }
         p.setName(proyecto.getName());
         // p.setTm(proyecto.getTM());
         return proyectoRp.save(p);

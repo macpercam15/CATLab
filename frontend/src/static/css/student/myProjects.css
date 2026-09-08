@@ -102,6 +102,26 @@
     width: 100%;
 }
 
+.project-name-link {
+    background: transparent;
+    border: none;
+    padding: 0;
+    text-align: left;
+    cursor: pointer;
+}
+
+.project-name-link:hover {
+    text-decoration: underline;
+}
+
+.project-edit-note-inline {
+    margin-top: 4px;
+    font-size: 0.95rem;
+    color: #b45309;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
 .project-lang {
     font-size: 1.2rem;
     color: #4b5563;
