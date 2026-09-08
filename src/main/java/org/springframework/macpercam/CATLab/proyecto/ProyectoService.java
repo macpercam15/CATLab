@@ -114,6 +114,9 @@ public class ProyectoService {
     @Transactional()
     public void delete(Integer id){
         Proyecto p = proyectoRp.findById(id).orElseThrow(() -> new ResourceNotFoundException("Proyecto", "ID", id));
+        if (p.getEstado() == EstadoProyecto.PUBLICADO) {
+            throw new IllegalStateException("No se puede eliminar un proyecto que ya ha sido publicado.");
+        }
         proyectoRp.delete(p);
     }
 

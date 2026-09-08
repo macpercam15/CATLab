@@ -38,6 +38,7 @@ export default function MyProjects() {
     const [projectToEdit, setProjectToEdit] = useState(null);
     const [editProjectName, setEditProjectName] = useState('');
     const [editProjectSubmitting, setEditProjectSubmitting] = useState(false);
+    const [projectCannotDelete, setProjectCannotDelete] = useState(null);
 
     const jwt = tokenService.getLocalAccessToken();
     const currentUser = tokenService.getUser();
@@ -394,7 +395,12 @@ export default function MyProjects() {
                                                 onClick={(e) => {
                                                     e.stopPropagation();
                                                     setOpenMenuProjectId(null);
-                                                    setProjectToDelete(project);
+
+                                                    if (project.rawProject?.estado === 'PUBLICADO') {
+                                                        setProjectCannotDelete(project);
+                                                    } else {
+                                                        setProjectToDelete(project);
+                                                    }
                                                 }}
                                             >
                                                 Delete
@@ -503,6 +509,34 @@ export default function MyProjects() {
                 </div>
             )}
 
+            {/* Popup No se puede eliminar */}
+            {projectCannotDelete && (
+                <div style={modalStyles.overlay}>
+                    <div style={modalStyles.content}>
+                        <div style={modalStyles.warningIcon}>!</div>
+
+                        <h3 style={modalStyles.title}>Project cannot be deleted</h3>
+
+                        <p style={modalStyles.text}>
+                            The project <strong>"{projectCannotDelete.name}"</strong> cannot be deleted
+                            because it has already been <strong>Published</strong>.
+                        </p>
+
+                        <p style={modalStyles.warningText}>
+                            Published projects are protected and cannot be removed.
+                        </p>
+
+                        <div style={modalStyles.buttonContainer}>
+                            <button
+                                style={{ ...modalStyles.button, ...modalStyles.confirmBtn }}
+                                onClick={() => setProjectCannotDelete(null)}
+                            >
+                                Got it
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
             {/* Popup Lista Estudiantes */}
             {studentsModalProject && (
                 <div style={modalStyles.overlay}>
@@ -673,5 +707,29 @@ const modalStyles = {
         fontFamily: "'Anonymous Pro', monospace",
         color: '#1f2937',
         width: '100%',
+        },
+        warningIcon: {
+        width: '52px',
+        height: '52px',
+        borderRadius: '50%',
+        background: '#fef3c7',
+        color: '#d97706',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        margin: '0 auto 16px auto',
+        fontSize: '1.8rem',
+        fontWeight: 'bold',
+        border: '2px solid #f59e0b',
+    },
+
+    warningText: {
+        fontSize: '1.05rem',
+        color: '#92400e',
+        background: '#fffbeb',
+        borderRadius: '10px',
+        padding: '10px 14px',
+        marginBottom: '24px',
+        lineHeight: '1.4',
     },
 };

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import tokenService from '../services/token.service';
 import '../static/css/student/newProject.css';
+import '../static/css/student/editProject.css';
 
 export default function EditProject() {
     const navigate = useNavigate();
