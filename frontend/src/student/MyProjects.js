@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { FiUserPlus } from 'react-icons/fi';
-import '../static/student/myProjects.css';
+import '../static/css/student/myProjects.css';
 import tokenService from '../services/token.service';
 import useFetchState from '../util/useFetchState';
 

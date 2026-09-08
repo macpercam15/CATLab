@@ -1,0 +1,155 @@
+/* Contenedor gris envolvente estilo mockup */
+.teacher-container-card {
+    background-color: #e2e8f0;
+    border-radius: 24px;
+    padding: 24px;
+    margin-top: 16px;
+}
+
+/* Barra de pestañas */
+.teacher-tabs-bar {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 16px;
+    padding-left: 8px;
+}
+
+.teacher-tab {
+    background: transparent;
+    border: none;
+    font-family: 'Anonymous Pro', monospace;
+    font-size: 1.3rem;
+    font-weight: bold;
+    color: #6b7280;
+    padding: 8px 18px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.teacher-tab.active {
+    background-color: #9ca3af;
+    color: #1f2937;
+}
+
+/* Ajustes a la lista de proyectos */
+.teacher-projects-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.teacher-project-item {
+    grid-template-columns: 2fr 1fr 1fr 1fr auto;
+    align-items: center;
+}
+
+.teacher-project-date {
+    font-family: 'Anonymous Pro', monospace;
+    font-size: 1.1rem;
+    color: #6b7280;
+}
+
+/* Círculos de colaboradores del mockup */
+.teacher-collab-box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mockup-avatars {
+    display: flex;
+    align-items: center;
+}
+
+.mockup-avatars .avatar {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    border: 1.5px solid #1f2937;
+}
+
+.mockup-avatars .avatar.grey {
+    background-color: #cbd5e1;
+    margin-right: -10px;
+    z-index: 1;
+}
+
+.mockup-avatars .avatar.pink {
+    background-color: #fbcfe8;
+    z-index: 2;
+}
+
+.mockup-avatars .avatar-count {
+    margin-left: 6px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #1f2937;
+    font-family: 'Anonymous Pro', monospace;
+}
+
+/* Botones de acción del profesor */
+.teacher-btn-send {
+    background-color: #0f766e;
+    color: #ffffff;
+    border: none;
+    padding: 8px 28px;
+    border-radius: 999px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    font-family: 'Anonymous Pro', monospace;
+    transition: opacity 0.2s ease;
+}
+
+.teacher-btn-send:hover {
+    opacity: 0.9;
+}
+
+.teacher-btn-cancel {
+    background-color: #ffffff;
+    color: #0f766e;
+    border: 2px solid #0f766e;
+    padding: 6px 24px;
+    border-radius: 999px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    font-family: 'Anonymous Pro', monospace;
+    transition: background-color 0.2s ease;
+}
+
+.teacher-btn-cancel:hover {
+    background-color: #f0fdf4;
+}
+
+/* Desplegable menú tres puntos */
+.teacher-dropdown-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background-color: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    z-index: 50;
+    min-width: 140px;
+    overflow: hidden;
+}
+
+.teacher-dropdown-item {
+    padding: 10px 14px;
+    border: none;
+    background: transparent;
+    text-align: left;
+    cursor: pointer;
+    font-size: 1.1rem;
+    font-weight: bold;
+    font-family: 'Anonymous Pro', monospace;
+    color: #1f2937;
+    width: 100%;
+}
+
+.teacher-dropdown-item:hover {
+    background-color: #f3f4f6;
+}

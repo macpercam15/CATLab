@@ -121,7 +121,7 @@ export default function Home() {
                                     window.location.href = '/users/new';
                                     return;
                                 }
-                                alert(primaryAlert);
+                                navigate('/teacher/projects');
                             }}
                         >
                             {primaryLabel}
