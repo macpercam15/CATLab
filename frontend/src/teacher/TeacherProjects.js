@@ -49,6 +49,7 @@ export default function TeacherProjects() {
                             : p
                     )
                 );
+                setActiveTab(action === 'SEND' ? 'GRADED' : 'TO_GRADE');
             } else {
                 const text = await response.text();
                 setMessage(text || 'Error al actualizar el estado del proyecto.');

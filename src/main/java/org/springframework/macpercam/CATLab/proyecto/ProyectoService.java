@@ -185,7 +185,7 @@ public class ProyectoService {
     @Transactional(readOnly = true)
     public List<Proyecto> getProyectosProfesor(){
         return ((List<Proyecto>)proyectoRp.findAll()).stream().filter(p-> p.getEstado()
-            == EstadoProyecto.PUBLICADO || p.getEstado() == EstadoProyecto.ACEPTADO) .toList();
+            == EstadoProyecto.PUBLICADO || p.getEstado() == EstadoProyecto.ACEPTADO || p.getEstado() == EstadoProyecto.CORREGIDO) .toList();
     }
 
     @Transactional()
