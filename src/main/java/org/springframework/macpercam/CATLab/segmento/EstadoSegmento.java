@@ -1,7 +1,7 @@
 package org.springframework.macpercam.CATLab.segmento;
 
 public enum EstadoSegmento {
-    PENDIENTE,
+    BORRADOR,
     TRADUCIDO,
     REVISADO,
     CORREGIDO

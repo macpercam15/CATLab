@@ -19,6 +19,7 @@ import org.springframework.macpercam.CATLab.glosario.Glosario;
 import org.springframework.macpercam.CATLab.glosario.GlosarioRepository;
 import org.springframework.macpercam.CATLab.proyecto.idioma.Idioma;
 import org.springframework.macpercam.CATLab.proyecto.idioma.IdiomaRepository;
+import org.springframework.macpercam.CATLab.segmento.SegmentoService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -31,13 +32,15 @@ public class ProyectoService {
     private IdiomaRepository idiomaRp;
     private EstudianteRepository estudianteRp;
     private GlosarioRepository glosarioRp;
+    private SegmentoService segmentoService;
 
     @Autowired
-    public ProyectoService(ProyectoRepository proyectoRp, IdiomaRepository idiomaRp, EstudianteRepository estudianteRp, GlosarioRepository glosarioRp) {
+    public ProyectoService(ProyectoRepository proyectoRp, IdiomaRepository idiomaRp, EstudianteRepository estudianteRp, GlosarioRepository glosarioRp, SegmentoService segmentoService) {
         this.proyectoRp = proyectoRp;
         this.idiomaRp = idiomaRp;
         this.estudianteRp = estudianteRp;
         this.glosarioRp = glosarioRp;
+        this.segmentoService = segmentoService;
     }
 
     // #region CRUD
@@ -108,7 +111,15 @@ public class ProyectoService {
         doc.setProyecto(p);
         p.setDocumento(doc);
 
-        return proyectoRp.save(p);
+        Proyecto proyectoGuardado = proyectoRp.save(p);
+
+        try {
+            segmentoService.generarSegmentos(file, proyectoGuardado);   
+        }catch (Exception e) {
+            throw new RuntimeException("Error al generar los segmentos del proyecto: " + e.getMessage(), e);
+        }
+
+        return proyectoGuardado;
     }
 
     @Transactional()

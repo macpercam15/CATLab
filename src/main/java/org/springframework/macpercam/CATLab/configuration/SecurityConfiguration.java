@@ -104,6 +104,8 @@ public class SecurityConfiguration {
 			 .requestMatchers("/api/proyectos/profesor/**").hasAnyAuthority(ADMIN, PROFESOR)
 			 .requestMatchers("/api/proyectos/**").hasAnyAuthority(ESTUDIANTE, ADMIN)
 
+			 .requestMatchers("/api/segmentos/**").hasAnyAuthority(ESTUDIANTE, ADMIN, PROFESOR)
+
 
 			// Otras reglas de controal de acceso:
 			// .requestMatchers("/api/v1/clinicOwners/**").hasAnyAuthority(ADMIN, CLINIC_OWNER)
