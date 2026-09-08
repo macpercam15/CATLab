@@ -89,7 +89,7 @@ export default function Home() {
                     <div className="student-hero-buttons">
                         <button
                             className="student-primary"
-                            onClick={() => alert('Funcionalidad "Nuevo proyecto" no implementada aún')}
+                            onClick={() => navigate('/my-projects/new')}
                         >
                             New project
                         </button>

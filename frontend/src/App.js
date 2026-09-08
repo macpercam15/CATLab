@@ -15,6 +15,7 @@ import UserEditAdmin from "./admin/users/UserEditAdmin";
 import About from "./home/About";
 import SwaggerDocs from "./public/swagger";
 import MyProjects from "./student/MyProjects";
+import NewProject from "./student/NewProject";
 import TeacherProjects from "./teacher/TeacherProjects";
 
 function ErrorFallback({ error, resetErrorBoundary }) {
@@ -57,6 +58,7 @@ function App() {
       studentRoutes = (
         <>
           <Route path="/my-projects" exact={true} element={<PrivateRoute><MyProjects /></PrivateRoute>} />
+          <Route path="/my-projects/new" exact={true} element={<PrivateRoute><NewProject /></PrivateRoute>} />
           {/* <Route path="/dashboard" element={<PrivateRoute><OwnerDashboard /></PrivateRoute>} /> */}
         </>)
     }

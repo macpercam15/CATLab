@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { FiUserPlus } from 'react-icons/fi';
+import { useNavigate } from 'react-router-dom';
 import '../static/css/student/myProjects.css';
 import tokenService from '../services/token.service';
 import useFetchState from '../util/useFetchState';
@@ -36,6 +37,7 @@ export default function MyProjects() {
     const jwt = tokenService.getLocalAccessToken();
     const currentUser = tokenService.getUser();
     const currentUserId = currentUser?.id;
+    const navigate = useNavigate();
 
     const [projects, setProjects] = useFetchState(
         [],
@@ -192,7 +194,11 @@ export default function MyProjects() {
             <div className="my-projects-shell">
                 <header className="my-projects-header">
                     <h1 className="my-projects-title">My projects</h1>
-                    <button className="my-projects-new-btn" type="button">
+                    <button
+                        className="my-projects-new-btn"
+                        type="button"
+                        onClick={() => navigate('/my-projects/new')}
+                    >
                         New project
                     </button>
                 </header>

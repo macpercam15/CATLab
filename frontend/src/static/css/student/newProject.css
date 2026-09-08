@@ -1,0 +1,234 @@
+.new-project-page {
+    min-height: calc(100vh - 84px);
+    width: 100%;
+    background: #f8f9fb;
+    padding: 28px 20px 48px;
+    font-family: 'Anonymous Pro', monospace;
+    color: #1f2937;
+}
+
+.new-project-shell {
+    max-width: 1120px;
+    margin: 0 auto;
+}
+
+.new-project-title {
+    margin: 0 0 28px;
+    text-align: center;
+    font-size: clamp(3rem, 5.6vw, 5.4rem);
+    line-height: 1;
+    letter-spacing: -0.08em;
+    color: #202124;
+    font-weight: 700;
+}
+
+.new-project-card {
+    background: #dfe4eb;
+    border-radius: 30px;
+    padding: 22px 24px 18px;
+    box-sizing: border-box;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+.new-project-fields-row {
+    display: grid;
+    grid-template-columns: minmax(180px, 1.1fr) minmax(130px, 0.8fr) 64px minmax(130px, 0.8fr) minmax(110px, 0.7fr);
+    gap: 14px;
+    align-items: end;
+    margin-bottom: 18px;
+}
+
+.new-project-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    color: #7386a5;
+}
+
+.new-project-field span {
+    padding-left: 10px;
+    font-size: 1.45rem;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+}
+
+.new-project-field input,
+.new-project-field select {
+    height: 28px;
+    border-radius: 999px;
+    border: 1px solid #c7ced8;
+    background: #f4f5f8;
+    padding: 0 14px;
+    font-family: inherit;
+    font-size: 1.1rem;
+    color: #374151;
+    outline: none;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.75);
+}
+
+.new-project-field input::placeholder {
+    color: #a3afc0;
+}
+
+.new-project-field select:disabled {
+    opacity: 1;
+    cursor: not-allowed;
+}
+
+.new-project-direction {
+    align-self: center;
+    justify-self: center;
+    font-size: 2.8rem;
+    color: #7386a5;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transform: translateY(12px);
+}
+
+.new-project-upload-zone {
+    position: relative;
+    min-height: 328px;
+    border: 1px dashed #aab2bf;
+    border-radius: 22px;
+    background: #ffffff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 32px 20px;
+    box-sizing: border-box;
+    text-align: center;
+    color: #7386a5;
+    cursor: pointer;
+}
+
+.new-project-upload-zone input {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.new-project-upload-icon {
+    font-size: 4.8rem;
+    line-height: 1;
+    color: #7386a5;
+}
+
+.new-project-upload-title {
+    font-size: 2.15rem;
+    font-weight: 700;
+    letter-spacing: -0.04em;
+}
+
+.new-project-upload-hint,
+.new-project-upload-file,
+.new-project-message {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #5f6d85;
+}
+
+.new-project-upload-file {
+    color: #0f766e;
+}
+
+.new-project-message {
+    margin: 16px 4px 0;
+    color: #b91c1c;
+}
+
+.new-project-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 18px;
+    flex-wrap: wrap;
+}
+
+.new-project-button {
+    border-radius: 999px;
+    border: 2px solid #0f766e;
+    padding: 10px 22px;
+    font-family: inherit;
+    font-size: 1.2rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.2s ease, opacity 0.2s ease, background 0.2s ease;
+}
+
+.new-project-button:hover {
+    transform: translateY(-2px);
+}
+
+.new-project-button.primary {
+    background: #0f766e;
+    color: #ffffff;
+}
+
+.new-project-button.secondary {
+    background: #ffffff;
+    color: #0f766e;
+}
+
+.new-project-button:disabled {
+    opacity: 0.72;
+    cursor: wait;
+    transform: none;
+}
+
+.new-project-tm-field select {
+    color: #8793a8;
+}
+
+.new-project-name-field {
+    min-width: 0;
+}
+
+.new-project-name-field input {
+    width: 100%;
+}
+
+@media (max-width: 980px) {
+    .new-project-fields-row {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .new-project-direction {
+        display: none;
+    }
+}
+
+@media (max-width: 640px) {
+    .new-project-page {
+        padding-left: 14px;
+        padding-right: 14px;
+    }
+
+    .new-project-card {
+        padding: 18px;
+        border-radius: 24px;
+    }
+
+    .new-project-fields-row {
+        grid-template-columns: 1fr;
+    }
+
+    .new-project-upload-zone {
+        min-height: 280px;
+    }
+
+    .new-project-upload-title {
+        font-size: 1.8rem;
+    }
+
+    .new-project-actions {
+        justify-content: stretch;
+    }
+
+    .new-project-button {
+        width: 100%;
+    }
+}
