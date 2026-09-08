@@ -8,7 +8,7 @@ export default function TeacherProjects() {
     const [message, setMessage] = useState(null);
     const [visible, setVisible] = useState(false);
     const [activeTab, setActiveTab] = useState('TO_GRADE'); // 'TO_GRADE' | 'GRADED'
-    const [openMenuProjectId, setOpenMenuProjectId] = useState(null);
+    const [studentsModalProject, setStudentsModalProject] = useState(null);
 
     const jwt = tokenService.getLocalAccessToken();
 
@@ -49,7 +49,6 @@ export default function TeacherProjects() {
                             : p
                     )
                 );
-                setActiveTab(action === 'SEND' ? 'GRADED' : 'TO_GRADE');
             } else {
                 const text = await response.text();
                 setMessage(text || 'Error al actualizar el estado del proyecto.');
@@ -61,14 +60,8 @@ export default function TeacherProjects() {
         }
     };
 
-    const formatDate = (dateString) => {
-        if (!dateString) return '18 mar'; // Fecha por defecto si no existe en BD
-        const date = new Date(dateString);
-        return date.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
-    };
-
     return (
-        <div className="my-projects-page" onClick={() => setOpenMenuProjectId(null)}>
+        <div className="my-projects-page">
             <div className="my-projects-shell">
                 <header className="my-projects-header">
                     <h1 className="my-projects-title">Projects</h1>
@@ -104,8 +97,8 @@ export default function TeacherProjects() {
                         ) : (
                             filteredProjects.map((project, index) => {
                                 const students = Array.isArray(project.estudiantes) ? project.estudiantes : [];
-                                const isCollaborative = students.length > 1;
                                 const extraCollaborators = students.length > 1 ? students.length - 1 : 0;
+                                const collaboratorLabel = students.length > 1 ? `+${extraCollaborators}` : '1';
 
                                 return (
                                     <div
@@ -119,22 +112,14 @@ export default function TeacherProjects() {
                                             </span>
                                         </div>
 
-                                        <span className="teacher-project-date">
-                                            {formatDate(project.fechaCreacion || project.createdDate)}
-                                        </span>
-
-                                        <div className="teacher-collab-box">
-                                            {isCollaborative ? (
-                                                <div className="mockup-avatars">
-                                                    <span className="avatar grey"></span>
-                                                    <span className="avatar pink"></span>
-                                                    <span className="avatar-count">+{extraCollaborators}</span>
-                                                </div>
-                                            ) : (
-                                                <div className="mockup-avatars">
-                                                    <span className="avatar pink"></span>
-                                                </div>
-                                            )}
+                                        <div className="project-collab-box teacher-collab-box">
+                                            <span
+                                                className="project-badge pink teacher-collab-badge"
+                                                style={{ cursor: 'pointer' }}
+                                                onClick={() => setStudentsModalProject(project)}
+                                            >
+                                                {collaboratorLabel}
+                                            </span>
                                         </div>
 
                                         <div className="project-action">
@@ -156,37 +141,6 @@ export default function TeacherProjects() {
                                                 </button>
                                             )}
                                         </div>
-
-                                        <div style={{ position: 'relative' }}>
-                                            <button
-                                                className="project-menu"
-                                                aria-label="Project menu"
-                                                type="button"
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    setOpenMenuProjectId(
-                                                        openMenuProjectId === project.id ? null : project.id
-                                                    );
-                                                }}
-                                            >
-                                                ⋮
-                                            </button>
-
-                                            {openMenuProjectId === project.id && (
-                                                <div className="teacher-dropdown-menu">
-                                                    <button
-                                                        className="teacher-dropdown-item"
-                                                        type="button"
-                                                        onClick={() => {
-                                                            setMessage('Aún no está implementado');
-                                                            setVisible(true);
-                                                        }}
-                                                    >
-                                                        Ver entregable
-                                                    </button>
-                                                </div>
-                                            )}
-                                        </div>
                                     </div>
                                 );
                             })
@@ -194,6 +148,116 @@ export default function TeacherProjects() {
                     </div>
                 </div>
             </div>
+
+            {studentsModalProject && (
+                <div style={modalStyles.overlay}>
+                    <div style={modalStyles.content}>
+                        <h3 style={modalStyles.title}>Project Students</h3>
+                        <p style={{ ...modalStyles.text, marginBottom: '16px' }}>
+                            Project: <strong>"{studentsModalProject.name}"</strong>
+                        </p>
+
+                        <ul style={modalStyles.studentList}>
+                            {(studentsModalProject.estudiantes || []).map((student, idx) => (
+                                <li key={student.id || idx} style={modalStyles.studentItem}>
+                                    @{student.username || student.user?.username || `usuario_${student.id}`}
+                                </li>
+                            ))}
+                        </ul>
+
+                        <div style={modalStyles.buttonContainer}>
+                            <button
+                                style={{ ...modalStyles.button, ...modalStyles.confirmBtn }}
+                                onClick={() => setStudentsModalProject(null)}
+                            >
+                                Close
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
+
+const modalStyles = {
+    overlay: {
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: 'rgba(0, 0, 0, 0.4)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        zIndex: 1000,
+    },
+    content: {
+        background: '#ffffff',
+        borderRadius: '16px',
+        padding: '28px',
+        maxWidth: '420px',
+        width: '90%',
+        boxShadow: '0 10px 25px rgba(0, 0, 0, 0.15)',
+        textAlign: 'center',
+        fontFamily: "'Anonymous Pro', monospace",
+    },
+    title: {
+        fontSize: '1.8rem',
+        margin: '0 0 12px 0',
+        color: '#1f2937',
+    },
+    text: {
+        fontSize: '1.2rem',
+        color: '#4b5563',
+        marginBottom: '24px',
+        lineHeight: '1.4',
+    },
+    studentList: {
+        listStyle: 'none',
+        padding: 0,
+        margin: '0 0 20px 0',
+        maxHeight: '200px',
+        overflowY: 'auto',
+    },
+    studentItem: {
+        padding: '10px 14px',
+        backgroundColor: '#f3f4f6',
+        borderRadius: '8px',
+        marginBottom: '8px',
+        fontSize: '1.2rem',
+        fontWeight: 'bold',
+        color: '#1f2937',
+        textAlign: 'left',
+    },
+    buttonContainer: {
+        display: 'flex',
+        justifyContent: 'center',
+        gap: '12px',
+    },
+    button: {
+        padding: '10px 20px',
+        borderRadius: '999px',
+        fontSize: '1.2rem',
+        fontWeight: 'bold',
+        cursor: 'pointer',
+        border: '2px solid transparent',
+        transition: 'all 0.2s ease',
+    },
+    cancelBtn: {
+        background: '#ffffff',
+        borderColor: '#9ca3af',
+        color: '#4b5563',
+    },
+    confirmBtn: {
+        background: '#0f766e',
+        borderColor: '#0f766e',
+        color: '#ffffff',
+    },
+    deleteBtn: {
+        background: '#b91c1c',
+        borderColor: '#b91c1c',
+        color: '#ffffff',
+    },
+};

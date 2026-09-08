@@ -81,7 +81,7 @@ export default function MyProjects() {
     }, [projects, currentUserId]);
 
     const showNotImplementedAlert = () => {
-        setMessage('Aún no está implementado');
+        setMessage('Not implemented yet');
         setVisible(true);
     };
 
@@ -297,7 +297,7 @@ export default function MyProjects() {
                                                     showNotImplementedAlert();
                                                 }}
                                             >
-                                                Editar
+                                                Edit
                                             </button>
                                             <button
                                                 style={{
@@ -312,7 +312,7 @@ export default function MyProjects() {
                                                     setProjectToDelete(project);
                                                 }}
                                             >
-                                                Eliminar
+                                                Delete
                                             </button>
                                         </div>
                                     )}
@@ -327,23 +327,23 @@ export default function MyProjects() {
             {projectToReedit && (
                 <div style={modalStyles.overlay}>
                     <div style={modalStyles.content}>
-                        <h3 style={modalStyles.title}>¿Re-editar proyecto?</h3>
+                        <h3 style={modalStyles.title}>Re-edit project?</h3>
                         <p style={modalStyles.text}>
-                            ¿Estás seguro de que deseas reeditar el proyecto <strong>"{projectToReedit.name}"</strong>? 
-                            El estado cambiará de nuevo a <strong>Borrador (Draft)</strong>.
+                            Are you sure you want to re-edit the project <strong>"{projectToReedit.name}"</strong>? 
+                            The status will change back to <strong>Draft</strong>.
                         </p>
                         <div style={modalStyles.buttonContainer}>
                             <button 
                                 style={{ ...modalStyles.button, ...modalStyles.cancelBtn }}
                                 onClick={() => setProjectToReedit(null)}
                             >
-                                Cancelar
+                                Cancel
                             </button>
                             <button 
                                 style={{ ...modalStyles.button, ...modalStyles.confirmBtn }}
                                 onClick={confirmReedit}
                             >
-                                Confirmar
+                                Confirm
                             </button>
                         </div>
                     </div>
@@ -354,23 +354,23 @@ export default function MyProjects() {
             {projectToDelete && (
                 <div style={modalStyles.overlay}>
                     <div style={modalStyles.content}>
-                        <h3 style={modalStyles.title}>¿Eliminar proyecto?</h3>
+                        <h3 style={modalStyles.title}>Delete project?</h3>
                         <p style={modalStyles.text}>
-                            ¿Estás seguro de que deseas eliminar permanentemente el proyecto <strong>"{projectToDelete.name}"</strong>? 
-                            Esta acción no se puede deshacer.
+                            Are you sure you want to permanently delete the project <strong>"{projectToDelete.name}"</strong>? 
+                            This action cannot be undone.
                         </p>
                         <div style={modalStyles.buttonContainer}>
                             <button 
                                 style={{ ...modalStyles.button, ...modalStyles.cancelBtn }}
                                 onClick={() => setProjectToDelete(null)}
                             >
-                                Cancelar
+                                Cancel
                             </button>
                             <button 
                                 style={{ ...modalStyles.button, ...modalStyles.deleteBtn }}
                                 onClick={confirmDelete}
                             >
-                                Eliminar
+                                Delete
                             </button>
                         </div>
                     </div>
@@ -381,9 +381,9 @@ export default function MyProjects() {
             {studentsModalProject && (
                 <div style={modalStyles.overlay}>
                     <div style={modalStyles.content}>
-                        <h3 style={modalStyles.title}>Estudiantes del Proyecto</h3>
+                        <h3 style={modalStyles.title}>Project Students</h3>
                         <p style={{ ...modalStyles.text, marginBottom: '16px' }}>
-                            Proyecto: <strong>"{studentsModalProject.name}"</strong>
+                            Project: <strong>"{studentsModalProject.name}"</strong>
                         </p>
                         
                         <ul style={modalStyles.studentList}>
@@ -399,7 +399,7 @@ export default function MyProjects() {
                                 style={{ ...modalStyles.button, ...modalStyles.confirmBtn }}
                                 onClick={() => setStudentsModalProject(null)}
                             >
-                                Cerrar
+                                Close
                             </button>
                         </div>
                     </div>
