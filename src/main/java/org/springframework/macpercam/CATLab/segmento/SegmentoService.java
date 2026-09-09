@@ -98,6 +98,10 @@ public class SegmentoService {
         if (!segmento.getEstado().equals(EstadoSegmento.BORRADOR)) {
             throw new IllegalStateException("El segmento no está en estado BORRADOR.");
         }
+        if (segmento.getTextoTraducido() == null || segmento.getTextoTraducido().isBlank()) {
+            throw new IllegalStateException("El segmento no tiene traducción.");
+        }
+
         segmento.setEstado(EstadoSegmento.TRADUCIDO);
         return segmentoRepository.save(segmento);
     }
@@ -134,6 +138,16 @@ public class SegmentoService {
         return segmentoRepository.save(segmento);
     }
 
+    @Transactional()
+    public Segmento volverAPublicado(Integer id) {
+        Segmento segmento = findById(id);
+        if (!segmento.getEstado().equals(EstadoSegmento.CORREGIDO)) {
+            throw new IllegalStateException("El segmento no está en estado CORREGIDO.");
+        }
+        segmento.setEstado(EstadoSegmento.PUBLICADO);
+        return segmentoRepository.save(segmento);
+    }
+
     @Transactional() //manualmente desde revisado. Automaticamente al modificar segmento traducido. Automaticamente al reeditar.
     public Segmento marcarBorrador(Integer id) {
         Segmento segmento = findById(id);
@@ -147,13 +161,22 @@ public class SegmentoService {
     @Transactional()
     public Segmento actualizarTraduccion(Integer id, String nuevaTraduccion) {
         Segmento segmento = findById(id);
-        if (segmento.getEstado().equals(EstadoSegmento.REVISADO) || segmento.getEstado().equals(EstadoSegmento.CORREGIDO) || segmento.getEstado().equals(EstadoSegmento.PUBLICADO)) {
-            throw new IllegalStateException("No se puede actualizar la traducción de un segmento que ya ha sido revisado, corregido o que esté publicado.");
+        
+        if (!segmento.getEstado().equals(EstadoSegmento.BORRADOR ) && !segmento.getEstado().equals(EstadoSegmento.TRADUCIDO)) {
+            throw new IllegalStateException("Solo se puede traducir un segmento en borrador o en traducido.");
         }
+
+        System.out.println("NUEVA TRADUCCIÓN: [" + nuevaTraduccion + "]");
+
+
         segmento.setTextoTraducido(nuevaTraduccion);
+        
         if (segmento.getEstado().equals(EstadoSegmento.TRADUCIDO)) {
             segmento.setEstado(EstadoSegmento.BORRADOR);
         }
+
+        System.out.println("TEXTO DEL SEGMENTO: [" + segmento.getTextoTraducido() + "]");
+        
         return segmentoRepository.save(segmento);
     }
 

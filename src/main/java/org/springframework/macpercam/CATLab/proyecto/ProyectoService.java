@@ -19,6 +19,7 @@ import org.springframework.macpercam.CATLab.glosario.Glosario;
 import org.springframework.macpercam.CATLab.glosario.GlosarioRepository;
 import org.springframework.macpercam.CATLab.proyecto.idioma.Idioma;
 import org.springframework.macpercam.CATLab.proyecto.idioma.IdiomaRepository;
+import org.springframework.macpercam.CATLab.segmento.EstadoSegmento;
 import org.springframework.macpercam.CATLab.segmento.Segmento;
 import org.springframework.macpercam.CATLab.segmento.SegmentoRepository;
 import org.springframework.macpercam.CATLab.segmento.SegmentoService;
@@ -124,6 +125,11 @@ public class ProyectoService {
             throw new RuntimeException("Error al generar los segmentos del proyecto: " + e.getMessage(), e);
         }
 
+        List<Segmento> segmentos = segmentoService.findByProyectoId(proyectoGuardado.getId());
+        if(segmentos.isEmpty()) {
+            throw new RuntimeException("No se encontraron segmentos para el proyecto.");
+        }
+
         return proyectoGuardado;
     }
 
@@ -174,11 +180,18 @@ public class ProyectoService {
     @Transactional()
     public Proyecto publicarIndividual(Integer id) {
         Proyecto p = proyectoRp.findById(id).orElseThrow(() -> new ResourceNotFoundException("Proyecto", "ID", id));
+        
         if (p.getEstado() != EstadoProyecto.BORRADOR) {
             throw new IllegalStateException("Solo se pueden publicar proyectos en estado BORRADOR.");
         }
-        // TODO: Verificar que todos los segmentos están en revisados antes de traducir.
+        List<Segmento> segmentos = segmentoService.findByProyectoId(id);
+        if (!segmentos.stream().allMatch(s -> s.getEstado() == EstadoSegmento.REVISADO)){
+            throw new IllegalStateException("No se pueden publicar proyectos con segmentos que no estén en estado REVISADO.");
+        }
+        
         p.setEstado(EstadoProyecto.PUBLICADO);
+        segmentos.stream().forEach(s -> {s.setEstado(EstadoSegmento.PUBLICADO);});
+
         return proyectoRp.save(p);
     }
     @Transactional()
@@ -200,6 +213,9 @@ public class ProyectoService {
             throw new IllegalStateException("Solo se pueden reeditar proyectos en estado CORREGIDO.");
         }
         p.setEstado(EstadoProyecto.BORRADOR);
+        List<Segmento> segmentos = segmentoService.findByProyectoId(id);
+        segmentos.stream().forEach(s -> {s.setEstado(EstadoSegmento.BORRADOR);});
+
         return proyectoRp.save(p);
     }
     // #endregion FLUJO DE ESTADOS
@@ -216,10 +232,17 @@ public class ProyectoService {
     public Proyecto marcarCorregido(Integer id){
         Proyecto p = proyectoRp.findById(id).orElseThrow(() -> 
             new ResourceNotFoundException("Proyecto", "ID", id));
-        if (p.getEstado() != EstadoProyecto.PUBLICADO){
+        
+            if (p.getEstado() != EstadoProyecto.PUBLICADO){
             throw new IllegalStateException("Solo se pueden marcar como corregidos proyectos en estado PUBLICADO.");
         }
+        List<Segmento> segmentos = segmentoService.findByProyectoId(id);
+        if (!segmentos.stream().allMatch(s -> s.getEstado() == EstadoSegmento.CORREGIDO)){
+            throw new IllegalStateException("No se pueden marcar como corregidos proyectos con segmentos que no estén en estado CORREGIDO.");
+        }
+
         p.setEstado(EstadoProyecto.CORREGIDO);
+        
         return proyectoRp.save(p);
     }
 

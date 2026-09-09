@@ -104,7 +104,12 @@ public class SecurityConfiguration {
 			 .requestMatchers("/api/proyectos/profesor/**").hasAnyAuthority(ADMIN, PROFESOR)
 			 .requestMatchers("/api/proyectos/**").hasAnyAuthority(ESTUDIANTE, ADMIN)
 
-			 .requestMatchers("/api/segmentos/**").hasAnyAuthority(ESTUDIANTE, ADMIN, PROFESOR)
+			 .requestMatchers("/api/segmentos/feedback/**").hasAnyAuthority(ADMIN, PROFESOR)
+			 .requestMatchers("/api/segmentos/marcarCorregido/**").hasAnyAuthority(ADMIN, PROFESOR)
+			 .requestMatchers("/api/segmentos/volverAPublicado/**").hasAnyAuthority(ADMIN, PROFESOR)
+
+			 .requestMatchers(HttpMethod.PUT, "/api/segmentos/**").hasAnyAuthority(ADMIN, ESTUDIANTE)
+			 .requestMatchers(HttpMethod.GET, "/api/segmentos/**").hasAnyAuthority(ESTUDIANTE, ADMIN, PROFESOR)
 
 
 			// Otras reglas de controal de acceso:
