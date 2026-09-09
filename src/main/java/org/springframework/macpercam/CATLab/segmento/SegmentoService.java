@@ -16,6 +16,8 @@ import org.springframework.macpercam.CATLab.proyecto.Proyecto;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import jakarta.transaction.Transactional;
+
 @Service
 public class SegmentoService {
 
@@ -88,5 +90,11 @@ public class SegmentoService {
         return segmentoRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Segmento", "ID", id));
     }
     // #endregion R
+
+    @Transactional()
+    public void delete(Integer id) {
+        Segmento segmento = segmentoRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Segmento", "ID", id));
+        segmentoRepository.delete(segmento);
+    }
 // #endregion CRUD
 }

@@ -19,6 +19,8 @@ import org.springframework.macpercam.CATLab.glosario.Glosario;
 import org.springframework.macpercam.CATLab.glosario.GlosarioRepository;
 import org.springframework.macpercam.CATLab.proyecto.idioma.Idioma;
 import org.springframework.macpercam.CATLab.proyecto.idioma.IdiomaRepository;
+import org.springframework.macpercam.CATLab.segmento.Segmento;
+import org.springframework.macpercam.CATLab.segmento.SegmentoRepository;
 import org.springframework.macpercam.CATLab.segmento.SegmentoService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,14 +35,17 @@ public class ProyectoService {
     private EstudianteRepository estudianteRp;
     private GlosarioRepository glosarioRp;
     private SegmentoService segmentoService;
+    private SegmentoRepository segmentoRepository;
 
     @Autowired
-    public ProyectoService(ProyectoRepository proyectoRp, IdiomaRepository idiomaRp, EstudianteRepository estudianteRp, GlosarioRepository glosarioRp, SegmentoService segmentoService) {
+    public ProyectoService(ProyectoRepository proyectoRp, IdiomaRepository idiomaRp, EstudianteRepository estudianteRp, 
+            GlosarioRepository glosarioRp, SegmentoService segmentoService, SegmentoRepository segmentoRepository) {
         this.proyectoRp = proyectoRp;
         this.idiomaRp = idiomaRp;
         this.estudianteRp = estudianteRp;
         this.glosarioRp = glosarioRp;
         this.segmentoService = segmentoService;
+        this.segmentoRepository = segmentoRepository;
     }
 
     // #region CRUD
@@ -128,6 +133,8 @@ public class ProyectoService {
         if (p.getEstado() == EstadoProyecto.PUBLICADO) {
             throw new IllegalStateException("No se puede eliminar un proyecto que ya ha sido publicado.");
         }
+        List<Segmento> segmentos = segmentoService.findByProyectoId(id);
+        segmentoRepository.deleteAll(segmentos);    
         proyectoRp.delete(p);
     }
 

@@ -1,4 +1,4 @@
--- One admin user, named admin1 with passwor 4dm1n and authority admin
+-- 1. Usuarios y Autoridades
 INSERT INTO authorities(id,authority) VALUES (1,'ADMIN');
 INSERT INTO authorities(id,authority) VALUES (2,'PROFESOR');
 INSERT INTO authorities(id,authority) VALUES (3,'ESTUDIANTE');
@@ -15,11 +15,8 @@ INSERT INTO estudiantes(id, first_name, last_name, email, user_id) VALUES (1, 'E
 INSERT INTO appusers(id,username,password,authority) VALUES (4,'estudiante2','$2a$12$iTYRfDeDd3prIIytTzWOWOpw1ayxATLT10HqfJ94sDpVoKhqGK9dq',3);
 INSERT INTO estudiantes(id, first_name, last_name, email, user_id) VALUES (2, 'Estudiante', 'Dos','estudiante2@catlab.local', 4);
 
-INSERT INTO glosarios(id) VALUES (1);
-INSERT INTO glosarios(id) VALUES (2);
-INSERT INTO glosarios(id) VALUES (3);
-INSERT INTO glosarios(id) VALUES (4);
-INSERT INTO glosarios(id) VALUES (5);
+-- 2. Glosarios e Idiomas
+INSERT INTO glosarios(id) VALUES (1), (2), (3), (4), (5);
 
 INSERT INTO entradas_glosario(id, origen, destino, glosario_id) VALUES (1, 'A', 'B', 1);
 INSERT INTO entradas_glosario(id, origen, destino, glosario_id) VALUES (2, 'espanyol', 'ingles', 1);
@@ -30,24 +27,30 @@ INSERT INTO idiomas(id, name, codigo) VALUES (2, 'Inglés', 'EN');
 INSERT INTO idiomas(id, name, codigo) VALUES (3, 'Italiano', 'IT');
 INSERT INTO idiomas(id,name, codigo) VALUES (4, 'Francés', 'FR');
 
+-- 3. Proyectos
 INSERT INTO proyectos (id, name, estado, idioma_origen_id, idioma_destino_id, glosario_id) VALUES (1, 'Traducción inversa', 'BORRADOR', 2, 1, 1);
 INSERT INTO proyectos (id, name, estado, idioma_origen_id, idioma_destino_id, glosario_id) VALUES (2, 'Traducción especializada', 'BORRADOR', 1, 2, 2);
---proyectos individuales
 INSERT INTO proyectos (id, name, estado, idioma_origen_id, idioma_destino_id, glosario_id) VALUES (3, 'Traducción 1', 'BORRADOR', 2, 1, 3);
 INSERT INTO proyectos (id, name, estado, idioma_origen_id, idioma_destino_id, glosario_id) VALUES (4, 'Traducción 2', 'PUBLICADO', 2, 1, 4);
 INSERT INTO proyectos (id, name, estado, idioma_origen_id, idioma_destino_id, glosario_id) VALUES (5, 'Traducción 3', 'CORREGIDO', 2, 1, 5);
 
+-- 4. Documentos (Se asigna doc1.pdf a todos los proyectos)
+INSERT INTO documentos(id, nombre_original, nombre_almacenado, ruta, tipo_mime, tamanyo, proyecto_id) VALUES 
+(1, 'texto_proyecto1.pdf', 'doc1.pdf', 'uploads/doc1.pdf', 'application/pdf', 12000, 1),
+(2, 'texto_proyecto2.pdf', 'doc1.pdf', 'uploads/doc1.pdf', 'application/pdf', 12000, 2),
+(3, 'texto_proyecto3.pdf', 'doc1.pdf', 'uploads/doc1.pdf', 'application/pdf', 12000, 3),
+(4, 'texto_proyecto4.pdf', 'doc1.pdf', 'uploads/doc1.pdf', 'application/pdf', 12000, 4),
+(5, 'texto_proyecto5.pdf', 'doc1.pdf', 'uploads/doc1.pdf', 'application/pdf', 12000, 5);
 
-INSERT INTO documentos(id, nombre_original, nombre_almacenado, ruta, tipo_mime, tamanyo, proyecto_id) VALUES (1, 'texto_proyecto1.pdf', 'doc1.pdf', 'uploads/doc1.pdf', 'application/pdf', 12000, 1);
-INSERT INTO documentos(id, nombre_original, nombre_almacenado, ruta, tipo_mime, tamanyo, proyecto_id) VALUES (2, 'texto_proyecto2.pdf', 'doc1.pdf', 'uploads/doc1.pdf', 'application/pdf', 12000, 2);
+-- 5. Relaciones Proyecto-Estudiante
+INSERT INTO proyecto_estudiante (proyecto_id, estudiante_id) VALUES (1, 1), (2, 1), (2, 2), (3, 1), (4, 1), (5, 1);
 
-INSERT INTO proyecto_estudiante (proyecto_id, estudiante_id) VALUES (1, 1);
-INSERT INTO proyecto_estudiante (proyecto_id, estudiante_id) VALUES (2, 1);
-INSERT INTO proyecto_estudiante (proyecto_id, estudiante_id) VALUES (2, 2);
---individuales
-INSERT INTO proyecto_estudiante (proyecto_id, estudiante_id) VALUES (3, 1);
-INSERT INTO proyecto_estudiante (proyecto_id, estudiante_id) VALUES (4, 1);
-INSERT INTO proyecto_estudiante (proyecto_id, estudiante_id) VALUES (5, 1);
+-- 6. Generación Automática de Segmentos (3 por cada proyecto existente)
+INSERT INTO segmentos (id, texto_original, estado, proyecto_id)VALUES (1,'segmento 1 del proyecto 1', 'BORRADOR', 1), (2,'segmento 2 del proyecto 1', 'BORRADOR', 1), (3,'segmento 3 del proyecto 1', 'BORRADOR', 1),
+(4,'segmento 1 del proyecto 2', 'BORRADOR', 2), (5,'segmento 2 del proyecto 2', 'BORRADOR', 2), (6,'segmento 3 del proyecto 2', 'BORRADOR', 2),
+(7,'segmento 1 del proyecto 3', 'BORRADOR', 3), (8,'segmento 2 del proyecto 3', 'BORRADOR', 3), (9,'segmento 3 del proyecto 3', 'BORRADOR', 3),
+(10,'segmento 1 del proyecto 4', 'BORRADOR', 4), (11,'segmento 2 del proyecto 4', 'BORRADOR', 4), (12,'segmento 3 del proyecto 4', 'BORRADOR', 4),
+(13,'segmento 1 del proyecto 5', 'BORRADOR', 5), (14,'segmento 2 del proyecto 5', 'BORRADOR', 5), (15,'segmento 3 del proyecto 5', 'BORRADOR', 5);
 
 
 
