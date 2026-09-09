@@ -4,5 +4,6 @@ public enum EstadoSegmento {
     BORRADOR,
     TRADUCIDO,
     REVISADO,
+    PUBLICADO,
     CORREGIDO
 }

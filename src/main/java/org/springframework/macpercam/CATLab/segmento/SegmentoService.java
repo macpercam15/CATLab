@@ -91,10 +91,82 @@ public class SegmentoService {
     }
     // #endregion R
 
+    // #region U
     @Transactional()
-    public void delete(Integer id) {
-        Segmento segmento = segmentoRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Segmento", "ID", id));
-        segmentoRepository.delete(segmento);
+    public Segmento marcarTraducido(Integer id) {
+        Segmento segmento = findById(id);
+        if (!segmento.getEstado().equals(EstadoSegmento.BORRADOR)) {
+            throw new IllegalStateException("El segmento no está en estado BORRADOR.");
+        }
+        segmento.setEstado(EstadoSegmento.TRADUCIDO);
+        return segmentoRepository.save(segmento);
     }
+
+    @Transactional() 
+    public Segmento marcarRevisado(Integer id) {
+        Segmento segmento = findById(id);
+        if (!segmento.getEstado().equals(EstadoSegmento.TRADUCIDO)) {
+            throw new IllegalStateException("El segmento no está en estado TRADUCIDO.");
+        }
+        segmento.setEstado(EstadoSegmento.REVISADO);
+        return segmentoRepository.save(segmento);
+    }
+
+    @Transactional()
+    public Segmento publicar(Integer id) {
+        Segmento segmento = findById(id);
+        if (!segmento.getEstado().equals(EstadoSegmento.REVISADO)) {
+            throw new IllegalStateException("El segmento no está en estado REVISADO.");
+        }
+        segmento.setEstado(EstadoSegmento.PUBLICADO);
+        return segmentoRepository.save(segmento);
+    }
+
+    // TODO: de revisado a pendiente y de pendiente a acepatdo en colaborativo
+
+    @Transactional()
+    public Segmento marcarCorregido(Integer id) {
+        Segmento segmento = findById(id);
+        if (!segmento.getEstado().equals(EstadoSegmento.PUBLICADO)) {
+            throw new IllegalStateException("El segmento no está en estado PUBLICADO.");
+        }
+        segmento.setEstado(EstadoSegmento.CORREGIDO);
+        return segmentoRepository.save(segmento);
+    }
+
+    @Transactional() //manualmente desde revisado. Automaticamente al modificar segmento traducido. Automaticamente al reeditar.
+    public Segmento marcarBorrador(Integer id) {
+        Segmento segmento = findById(id);
+        if (segmento.getEstado().equals(EstadoSegmento.BORRADOR)) {
+            throw new IllegalStateException("El segmento ya está en estado BORRADOR.");
+        }
+        segmento.setEstado(EstadoSegmento.BORRADOR);
+        return segmentoRepository.save(segmento);
+    }
+
+    @Transactional()
+    public Segmento actualizarTraduccion(Integer id, String nuevaTraduccion) {
+        Segmento segmento = findById(id);
+        if (segmento.getEstado().equals(EstadoSegmento.REVISADO) || segmento.getEstado().equals(EstadoSegmento.CORREGIDO) || segmento.getEstado().equals(EstadoSegmento.PUBLICADO)) {
+            throw new IllegalStateException("No se puede actualizar la traducción de un segmento que ya ha sido revisado, corregido o que esté publicado.");
+        }
+        segmento.setTextoTraducido(nuevaTraduccion);
+        if (segmento.getEstado().equals(EstadoSegmento.TRADUCIDO)) {
+            segmento.setEstado(EstadoSegmento.BORRADOR);
+        }
+        return segmentoRepository.save(segmento);
+    }
+
+    @Transactional()
+    public Segmento actualizarFeedback(Integer id, String nuevoFeedback) {
+        Segmento segmento = findById(id);
+        if (!segmento.getEstado().equals(EstadoSegmento.PUBLICADO)) {
+            throw new IllegalStateException("No se puede actualizar el feedback de un segmento que no esté publicado.");
+        }
+        segmento.setFeedback(nuevoFeedback);
+        return segmentoRepository.save(segmento);
+    }
+
+    // #endregion U
 // #endregion CRUD
 }
