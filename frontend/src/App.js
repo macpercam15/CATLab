@@ -17,6 +17,7 @@ import SwaggerDocs from "./public/swagger";
 import MyProjects from "./student/MyProjects";
 import NewProject from "./student/NewProject";
 import TeacherProjects from "./teacher/TeacherProjects";
+import TranslateEditor from "./student/TranslateEditor";
 
 function ErrorFallback({ error, resetErrorBoundary }) {
   return (
@@ -52,6 +53,7 @@ function App() {
           <Route path="/users" exact={true} element={<PrivateRoute><UserListAdmin /></PrivateRoute>} />
           <Route path="/users/new" exact={true} element={<PrivateRoute><UserEditAdmin /></PrivateRoute>} />
           <Route path="/users/:username" exact={true} element={<PrivateRoute><UserEditAdmin /></PrivateRoute>} />
+          
         </>)
     }
     if (role === "ESTUDIANTE") {
@@ -59,6 +61,7 @@ function App() {
         <>
           <Route path="/my-projects" exact={true} element={<PrivateRoute><MyProjects /></PrivateRoute>} />
           <Route path="/my-projects/new" exact={true} element={<PrivateRoute><NewProject /></PrivateRoute>} />
+          <Route path="/translate/:projectId" exact={true} element={<PrivateRoute><TranslateEditor /></PrivateRoute>} />
           {/* <Route path="/dashboard" element={<PrivateRoute><OwnerDashboard /></PrivateRoute>} /> */}
         </>)
     }

@@ -157,6 +157,12 @@ export default function MyProjects() {
     };
 
     const handleActionClick = async (action, project) => {
+        // Redirigir a la pantalla de traducción
+        if (action === 'Open' || action === 'View') {
+            navigate(`/translate/${project.id}`);
+            return;
+        }
+
         if (action === 'Re-edit') {
             setProjectToReedit(project);
             return;
@@ -283,17 +289,15 @@ export default function MyProjects() {
                         mappedProjects.map((project, index) => (
                             <div key={`${project.id ?? project.name}-${index}`} className="my-project-item">
                                 <div className="project-main">
-                                    {project.canEdit ? (
-                                        <button
-                                            className="project-name project-name-link"
-                                            type="button"
-                                            onClick={() => openEditModal(project)}
-                                        >
-                                            {project.name}
-                                        </button>
-                                    ) : (
-                                        <h2 className="project-name">{project.name}</h2>
-                                    )}
+                                    {/* Al pulsar el nombre redirigimos a la pantalla de traducción sin importar si es editable o no */}
+                                    <button
+                                        className="project-name project-name-link"
+                                        type="button"
+                                        onClick={() => navigate(`/translate/${project.id}`)}
+                                        style={{ textAlign: 'left' }}
+                                    >
+                                        {project.name}
+                                    </button>
                                 </div>
 
                                 <span className={`project-status ${project.statusClass}`}>
@@ -379,7 +383,7 @@ export default function MyProjects() {
                                                     onClick={(e) => {
                                                         e.stopPropagation();
                                                         setOpenMenuProjectId(null);
-                                                        openEditModal(project);
+                                                        openEditModal(project); // La edición del nombre sigue disponible en el menú de 3 puntos
                                                     }}
                                                 >
                                                     Edit
