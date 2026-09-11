@@ -26,7 +26,6 @@ export default function TranslateEditor() {
     
     const [toast, setToast] = useState({ visible: false, message: '', type: '' });
 
-    // Comprobaciones del estado del proyecto
     const isProjectPublished = project?.estado === 'PUBLICADO';
     const canShowPublishBtn = project?.estado !== 'PUBLICADO' && project?.estado !== 'CORREGIDO';
 
@@ -229,7 +228,6 @@ export default function TranslateEditor() {
                                         <div className="segment-text translation">{segment.textoTraducido || ''}</div>
                                     </div>
 
-                                    {/* Si el proyecto está PUBLICADO, ocultamos estados y botones */}
                                     {!isProjectPublished && (
                                         <>
                                             <span className={`segment-status-badge ${config.colorClass}`}>
@@ -268,8 +266,16 @@ export default function TranslateEditor() {
                                                     className="chat-textarea"
                                                     value={currentTranslation}
                                                     onChange={(e) => setCurrentTranslation(e.target.value)}
+                                                    onKeyDown={(e) => {
+                                                        if (e.key === 'Enter' && !e.shiftKey) {
+                                                            e.preventDefault();
+                                                            if (!isSaving && currentTranslation.trim()) {
+                                                                handleSaveTranslation(segment.id, currentTranslation);
+                                                            }
+                                                        }
+                                                    }}
                                                     disabled={isReadOnly}
-                                                    placeholder="Introduce la traducción aquí..."
+                                                    placeholder="Introduce la traducción aquí (Enter para guardar, Shift+Enter para nueva línea)..."
                                                     rows={3}
                                                     autoFocus
                                                 />
@@ -330,7 +336,6 @@ export default function TranslateEditor() {
                 })}
             </div>
 
-            {/* Botón de publicar al final del proyecto si no está publicado ni corregido */}
             {canShowPublishBtn && (
                 <div className="publish-container">
                     <button 

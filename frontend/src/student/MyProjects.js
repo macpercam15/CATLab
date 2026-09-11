@@ -192,7 +192,20 @@ export default function MyProjects() {
                     setVisible(false);
                 } else {
                     const text = await response.text();
-                    setMessage(text || 'Error al publicar el proyecto.');
+                    let cleanMessage = 'Error al publicar el proyecto.';
+                    
+                    try {
+                        const parsedError = JSON.parse(text);
+                        if (parsedError.message) {
+                            cleanMessage = parsedError.message;
+                        }
+                    } catch (e) {
+                        if (!text.includes('<html')) {
+                            cleanMessage = text;
+                        }
+                    }
+                    
+                    setMessage(cleanMessage);
                     setVisible(true);
                 }
             } catch (error) {
@@ -289,12 +302,12 @@ export default function MyProjects() {
                         mappedProjects.map((project, index) => (
                             <div key={`${project.id ?? project.name}-${index}`} className="my-project-item">
                                 <div className="project-main">
-                                    {/* Al pulsar el nombre redirigimos a la pantalla de traducción sin importar si es editable o no */}
                                     <button
                                         className="project-name project-name-link"
                                         type="button"
                                         onClick={() => navigate(`/translate/${project.id}`)}
                                         style={{ textAlign: 'left' }}
+                                        title={project.name}
                                     >
                                         {project.name}
                                     </button>
@@ -383,7 +396,7 @@ export default function MyProjects() {
                                                     onClick={(e) => {
                                                         e.stopPropagation();
                                                         setOpenMenuProjectId(null);
-                                                        openEditModal(project); // La edición del nombre sigue disponible en el menú de 3 puntos
+                                                        openEditModal(project);
                                                     }}
                                                 >
                                                     Edit
