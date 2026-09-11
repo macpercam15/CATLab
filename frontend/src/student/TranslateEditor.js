@@ -3,12 +3,12 @@ import { useParams, useNavigate } from 'react-router-dom';
 import tokenService from '../services/token.service';
 import '../static/css/student/TranslateEditor.css';
 
-const STATUS_COLORS = {
-    BORRADOR: 'status-draft',
-    TRADUCIDO: 'status-traduced',
-    REVISADO: 'status-revised',
-    PUBLICADO: 'status-published',
-    CORREGIDO: 'status-corrected'
+const STATUS_CONFIG = {
+    BORRADOR: { colorClass: 'status-draft', label: 'Draft' },
+    TRADUCIDO: { colorClass: 'status-traduced', label: 'Traduced' },
+    REVISADO: { colorClass: 'status-revised', label: 'Revised' },
+    PUBLICADO: { colorClass: 'status-published', label: 'Published' },
+    CORREGIDO: { colorClass: 'status-corrected', label: 'Corrected' }
 };
 
 export default function TranslateEditor() {
@@ -22,13 +22,48 @@ export default function TranslateEditor() {
     const [currentTranslation, setCurrentTranslation] = useState('');
     const [activeTab, setActiveTab] = useState('TM');
     const [isSaving, setIsSaving] = useState(false);
-    const [saveSuccess, setSaveSuccess] = useState(false);
+    const [isPublishing, setIsPublishing] = useState(false);
+    
+    const [toast, setToast] = useState({ visible: false, message: '', type: '' });
+
+    // Comprobaciones del estado del proyecto
+    const isProjectPublished = project?.estado === 'PUBLICADO';
+    const canShowPublishBtn = project?.estado !== 'PUBLICADO' && project?.estado !== 'CORREGIDO';
 
     useEffect(() => {
         fetchProjectData();
         fetchSegments();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [projectId]);
+
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            if (e.key === 'Escape') {
+                setExpandedId(null);
+            }
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, []);
+
+    const showToast = (message, type = 'error') => {
+        setToast({ visible: true, message, type });
+        setTimeout(() => setToast({ visible: false, message: '', type: '' }), 4000);
+    };
+
+    const parseErrorMessage = (rawText, fallbackMsg) => {
+        if (!rawText) return fallbackMsg;
+        try {
+            const parsed = JSON.parse(rawText);
+            if (parsed.message) return parsed.message;
+        } catch (e) {
+            if (rawText.includes('<html') || rawText.includes('<!DOCTYPE')) {
+                return fallbackMsg;
+            }
+        }
+        const cleaned = rawText.replace(/<[^>]*>?/gm, '').trim();
+        return (cleaned.length > 80 || cleaned.includes('{')) ? fallbackMsg : cleaned;
+    };
 
     const fetchProjectData = async () => {
         try {
@@ -59,18 +94,15 @@ export default function TranslateEditor() {
     };
 
     const handleExpand = (segment) => {
-        if (expandedId === segment.id) return;
+        if (isProjectPublished || expandedId === segment.id) return;
         setExpandedId(segment.id);
         setCurrentTranslation(segment.textoTraducido || '');
         setActiveTab('TM');
-        setSaveSuccess(false);
     };
 
-    // Guarda el texto sin cambiar el estado del segmento[cite: 11]
     const handleSaveTranslation = async (segmentId, text) => {
         if (!text.trim()) return;
         setIsSaving(true);
-        setSaveSuccess(false);
         try {
             const res = await fetch(`/api/segmentos/traducir/${segmentId}`, {
                 method: 'PUT',
@@ -81,23 +113,25 @@ export default function TranslateEditor() {
                 body: text
             });
             if (res.ok) {
-                setSaveSuccess(true);
                 await fetchSegments();
-                setTimeout(() => setSaveSuccess(false), 2000);
+                setExpandedId(null);
+                showToast('Traducción guardada correctamente', 'success');
+            } else {
+                const errorText = await res.text();
+                const friendlyMsg = parseErrorMessage(errorText, 'No se pudo guardar la traducción.');
+                showToast(friendlyMsg, 'error');
             }
         } catch (error) {
-            console.error("Error saving translation:", error);
+            showToast('Error de conexión con el servidor', 'error');
         } finally {
             setIsSaving(false);
         }
     };
 
-    // Cambia el estado del flujo (Draft -> Traduced -> Revised -> Draft)[cite: 13]
     const handleStatusAction = async (e, segment) => {
         e.stopPropagation(); 
         
-        // Si hay texto no guardado, lo guardamos antes de cambiar de estado
-        if (segment.estado !== 'REVISADO' && currentTranslation !== segment.textoTraducido) {
+        if (segment.estado !== 'REVISADO' && currentTranslation !== segment.textoTraducido && expandedId === segment.id) {
             await handleSaveTranslation(segment.id, currentTranslation);
         }
 
@@ -118,19 +152,49 @@ export default function TranslateEditor() {
                 });
                 if (res.ok) {
                     await fetchSegments();
+                } else {
+                    const errorText = await res.text();
+                    const friendlyMsg = parseErrorMessage(
+                        errorText, 
+                        'Debes introducir una traducción antes de marcar el segmento como traducido.'
+                    );
+                    showToast(friendlyMsg, 'error');
                 }
             } catch (error) {
-                console.error("Error updating status:", error);
+                showToast('Error de conexión con el servidor', 'error');
             }
+        }
+    };
+
+    const handlePublishProject = async () => {
+        setIsPublishing(true);
+        try {
+            const res = await fetch(`/api/proyectos/publish/${projectId}`, {
+                method: 'PUT',
+                headers: { 'Authorization': `Bearer ${jwt}` }
+            });
+            if (res.ok) {
+                showToast('Proyecto publicado correctamente', 'success');
+                await fetchProjectData();
+                await fetchSegments();
+            } else {
+                const errorText = await res.text();
+                const friendlyMsg = parseErrorMessage(errorText, 'No se pudo publicar el proyecto. Verifica que todos los segmentos estén listos.');
+                showToast(friendlyMsg, 'error');
+            }
+        } catch (error) {
+            showToast('Error de conexión con el servidor', 'error');
+        } finally {
+            setIsPublishing(false);
         }
     };
 
     const getButtonConfig = (estado) => {
         switch (estado) {
-            case 'BORRADOR': return { text: 'Traduced', class: 'btn-traduced' };
-            case 'TRADUCIDO': return { text: 'Revised', class: 'btn-revised' };
-            case 'REVISADO': return { text: 'Draft', class: 'btn-draft' };
-            default: return { text: estado, class: 'btn-draft' };
+            case 'BORRADOR': return { text: 'Traduced', class: 'btn-catlab-green' };
+            case 'TRADUCIDO': return { text: 'Revised', class: 'btn-catlab-green' };
+            case 'REVISADO': return { text: 'Draft', class: 'btn-catlab-white' };
+            default: return { text: estado, class: 'btn-catlab-white' };
         }
     };
 
@@ -147,30 +211,58 @@ export default function TranslateEditor() {
 
             <div className="segments-container">
                 {segments.map((segment) => {
-                    const isExpanded = expandedId === segment.id;
-                    const statusClass = STATUS_COLORS[segment.estado] || 'status-draft';
+                    const isExpanded = !isProjectPublished && expandedId === segment.id;
+                    const config = STATUS_CONFIG[segment.estado] || { colorClass: 'status-draft', label: segment.estado };
                     const isReadOnly = segment.estado === 'REVISADO';
+                    const btnConfig = getButtonConfig(segment.estado);
 
                     return (
                         <div 
                             key={segment.id} 
-                            className={`segment-card ${statusClass} ${isExpanded ? 'expanded' : ''}`}
+                            className={`segment-card ${isProjectPublished ? 'read-only-card' : config.colorClass} ${isExpanded ? 'expanded' : ''}`}
                             onClick={() => handleExpand(segment)}
                         >
                             {!isExpanded ? (
                                 <div className="segment-collapsed">
-                                    <div className="segment-text original">{segment.textoOriginal}</div>
-                                    <div className="segment-text translation">{segment.textoTraducido || ''}</div>
+                                    <div className="segment-content-clickable">
+                                        <div className="segment-text original">{segment.textoOriginal}</div>
+                                        <div className="segment-text translation">{segment.textoTraducido || ''}</div>
+                                    </div>
+
+                                    {/* Si el proyecto está PUBLICADO, ocultamos estados y botones */}
+                                    {!isProjectPublished && (
+                                        <>
+                                            <span className={`segment-status-badge ${config.colorClass}`}>
+                                                {config.label}
+                                            </span>
+
+                                            <div className="segment-actions-collapsed">
+                                                <button 
+                                                    className={`status-action-btn ${btnConfig.class}`}
+                                                    onClick={(e) => handleStatusAction(e, segment)}
+                                                >
+                                                    {btnConfig.text}
+                                                </button>
+                                            </div>
+                                        </>
+                                    )}
                                 </div>
                             ) : (
                                 <div className="segment-expanded" onClick={(e) => e.stopPropagation()}>
+                                    <button 
+                                        className="segment-close-subtle" 
+                                        onClick={(e) => { e.stopPropagation(); setExpandedId(null); }}
+                                        title="Cerrar detalles (Esc)"
+                                    >
+                                        ✕
+                                    </button>
+
                                     <div className="segment-editor-row">
                                         <div className="segment-text original">{segment.textoOriginal}</div>
                                         
                                         <div className="segment-arrow">→</div>
                                         
                                         <div className="segment-input-section">
-                                            {/* WhatsApp-style Input Wrapper */}
                                             <div className={`chat-input-wrapper ${isReadOnly ? 'readonly' : ''}`}>
                                                 <textarea
                                                     className="chat-textarea"
@@ -179,35 +271,32 @@ export default function TranslateEditor() {
                                                     disabled={isReadOnly}
                                                     placeholder="Introduce la traducción aquí..."
                                                     rows={3}
+                                                    autoFocus
                                                 />
                                                 {!isReadOnly && (
                                                     <button 
-                                                        className={`chat-send-btn ${saveSuccess ? 'saved' : ''}`}
+                                                        className="chat-send-btn"
                                                         onClick={() => handleSaveTranslation(segment.id, currentTranslation)}
                                                         disabled={isSaving || !currentTranslation.trim()}
                                                         title="Guardar traducción"
                                                     >
-                                                        {saveSuccess ? (
-                                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" width="20" height="20">
-                                                                <polyline points="20 6 9 17 4 12"></polyline>
-                                                            </svg>
-                                                        ) : (
-                                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="20" height="20" style={{ transform: 'translateX(-2px) translateY(1px)' }}>
-                                                                <line x1="22" y1="2" x2="11" y2="13"></line>
-                                                                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
-                                                            </svg>
-                                                        )}
+                                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="20" height="20" style={{ transform: 'translateX(-2px) translateY(1px)' }}>
+                                                            <line x1="22" y1="2" x2="11" y2="13"></line>
+                                                            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                                                        </svg>
                                                     </button>
                                                 )}
                                             </div>
 
-                                            {/* Status Action Button Wrapper */}
                                             <div className="segment-actions">
+                                                <span className={`segment-status-badge ${config.colorClass}`}>
+                                                    {config.label}
+                                                </span>
                                                 <button 
-                                                    className={`status-action-btn ${getButtonConfig(segment.estado).class}`}
+                                                    className={`status-action-btn ${btnConfig.class}`}
                                                     onClick={(e) => handleStatusAction(e, segment)}
                                                 >
-                                                    {getButtonConfig(segment.estado).text}
+                                                    {btnConfig.text}
                                                 </button>
                                             </div>
                                         </div>
@@ -240,6 +329,25 @@ export default function TranslateEditor() {
                     );
                 })}
             </div>
+
+            {/* Botón de publicar al final del proyecto si no está publicado ni corregido */}
+            {canShowPublishBtn && (
+                <div className="publish-container">
+                    <button 
+                        className="status-action-btn btn-catlab-green publish-project-btn"
+                        onClick={handlePublishProject}
+                        disabled={isPublishing}
+                    >
+                        {isPublishing ? 'Publicando...' : 'Publicar Proyecto'}
+                    </button>
+                </div>
+            )}
+
+            {toast.visible && (
+                <div className={`toast-notification toast-${toast.type}`}>
+                    <div className="toast-text">{toast.message}</div>
+                </div>
+            )}
         </div>
     );
 }

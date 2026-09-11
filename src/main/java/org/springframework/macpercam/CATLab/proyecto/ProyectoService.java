@@ -186,7 +186,7 @@ public class ProyectoService {
         }
         List<Segmento> segmentos = segmentoService.findByProyectoId(id);
         if (!segmentos.stream().allMatch(s -> s.getEstado() == EstadoSegmento.REVISADO)){
-            throw new IllegalStateException("No se pueden publicar proyectos con segmentos que no estén en estado REVISADO.");
+            throw new IllegalStateException("Projects must have all segments revised before publishing    .");
         }
         
         p.setEstado(EstadoProyecto.PUBLICADO);

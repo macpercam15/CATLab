@@ -99,7 +99,7 @@ public class SegmentoService {
             throw new IllegalStateException("El segmento no está en estado BORRADOR.");
         }
         if (segmento.getTextoTraducido() == null || segmento.getTextoTraducido().isBlank()) {
-            throw new IllegalStateException("El segmento no tiene traducción.");
+            throw new IllegalStateException("Needs to have a translation first.");
         }
 
         segmento.setEstado(EstadoSegmento.TRADUCIDO);

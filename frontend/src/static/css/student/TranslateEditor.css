@@ -3,6 +3,7 @@
     font-family: 'Anonymous Pro', monospace;
     background-color: #f8f9fa;
     min-height: 100vh;
+    position: relative;
 }
 
 .translate-header {
@@ -43,6 +44,7 @@
     gap: 12px;
 }
 
+/* TARJETA DE SEGMENTO Y BORDE DE ESTADO MÁS GRUESO (22px) */
 .segment-card {
     background-color: #ffffff;
     border-radius: 12px;
@@ -50,25 +52,61 @@
     overflow: hidden;
     position: relative;
     box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-    border-right: 12px solid transparent;
+    border-right: 22px solid #a3a3a3;
     transition: all 0.2s ease;
 }
 
-.segment-card.status-draft {
-    border-right-color: #a3a3a3;
-}
-.segment-card.status-traduced {
-    border-right-color: #4ade80;
-}
-.segment-card.status-revised {
-    border-right-color: #4f46e5;
+.segment-card.status-draft { border-right-color: #9ca3af; }
+.segment-card.status-traduced { border-right-color: #10b981; }
+.segment-card.status-revised { border-right-color: #6366f1; }
+
+/* ETIQUETA TEXTUAL DE ESTADO */
+.segment-status-badge {
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    flex-shrink: 0;
 }
 
+.segment-status-badge.status-draft {
+    background-color: #f3f4f6;
+    color: #4b5563;
+    border: 1px solid #d1d5db;
+}
+
+.segment-status-badge.status-traduced {
+    background-color: #d1fae5;
+    color: #065f46;
+    border: 1px solid #6ee7b7;
+}
+
+.segment-status-badge.status-revised {
+    background-color: #e0e7ff;
+    color: #3730a3;
+    border: 1px solid #a5b4fc;
+}
+
+/* VISTA CONTRAÍDA */
 .segment-collapsed {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    gap: 16px;
+}
+
+.segment-content-clickable {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 20px;
-    padding: 16px 20px;
+    flex: 1;
+}
+
+.segment-actions-collapsed {
+    flex-shrink: 0;
 }
 
 .segment-text {
@@ -91,7 +129,7 @@
     display: grid;
     grid-template-columns: 1fr auto 1fr;
     gap: 16px;
-    padding: 20px;
+    padding: 20px 50px 20px 20px;
     align-items: flex-start;
 }
 
@@ -112,7 +150,6 @@
     width: 100%;
 }
 
-/* ESTILO WHATSAPP PARA EL CONTENEDOR DEL TEXTO */
 .chat-input-wrapper {
     display: flex;
     align-items: flex-end;
@@ -143,7 +180,7 @@
     font-size: 1.1rem;
     color: #1f2937;
     padding: 8px 4px;
-    min-height: 44px; /* Ajuste para ~2-3 lineas iniciales */
+    min-height: 44px;
     line-height: 1.4;
 }
 
@@ -152,7 +189,6 @@
     cursor: not-allowed;
 }
 
-/* BOTÓN DE ENVIAR (GUARDAR) REDONDO */
 .chat-send-btn {
     display: flex;
     align-items: center;
@@ -182,40 +218,48 @@
     cursor: not-allowed;
 }
 
-.chat-send-btn.saved {
-    background-color: #15803d; /* Verde éxito */
-}
-
-/* BOTÓN DE ESTADO DEL FLUJO */
 .segment-actions {
     display: flex;
+    align-items: center;
     justify-content: flex-end;
+    gap: 12px;
     width: 100%;
 }
 
+/* ESTILOS DE BOTONES ESTÁNDAR CATLAB */
 .status-action-btn {
-    padding: 8px 24px;
+    padding: 8px 22px;
     border-radius: 999px;
-    border: none;
     font-weight: bold;
     font-size: 1.1rem;
-    color: white;
     cursor: pointer;
     font-family: 'Anonymous Pro', monospace;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: all 0.2s ease;
 }
 
-.btn-traduced {
-    background-color: #0f766e; 
-}
-.btn-revised {
-    background-color: #4f46e5;
-}
-.btn-draft {
-    background-color: #6b7280;
+/* Verde CATLab Principal (Traduced / Revised) */
+.btn-catlab-green {
+    background-color: #0f766e;
+    color: #ffffff;
+    border: 2px solid #0f766e;
 }
 
-/* TABS TM / GLOSARIO */
+.btn-catlab-green:hover {
+    background-color: #0d645d;
+    border-color: #0d645d;
+}
+
+/* Blanco CATLab Secundario (Volver a Draft) */
+.btn-catlab-white {
+    background-color: #ffffff;
+    color: #0f766e;
+    border: 2px solid #0f766e;
+}
+
+.btn-catlab-white:hover {
+    background-color: #f0fdf4;
+}
+
 .segment-tools {
     border-top: 1px solid #e5e7eb;
     background-color: #ffffff;
@@ -261,4 +305,102 @@
     color: #6b7280;
     font-style: italic;
     font-size: 1.1rem;
+}
+
+/* NOTIFICACIONES TOAST LIMPIAS */
+.toast-notification {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 20px;
+    border-radius: 12px;
+    color: #ffffff;
+    font-weight: bold;
+    font-size: 1.05rem;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    animation: slideInBottom 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+.toast-error {
+    background-color: #ef4444;
+    border: 1px solid #dc2626;
+}
+
+.toast-success {
+    background-color: #10b981;
+    border: 1px solid #059669;
+}
+
+.toast-icon {
+    font-size: 1.3rem;
+}
+
+@keyframes slideInBottom {
+    0% {
+        transform: translateY(80px);
+        opacity: 0;
+    }
+    100% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* BOTÓN SUTIL PARA CERRAR VISTA EXPANDIDA */
+.segment-close-subtle {
+    position: absolute;
+    top: 10px;
+    right: 12px;
+    background: transparent;
+    border: none;
+    font-size: 1.2rem;
+    color: #9ca3af;
+    cursor: pointer;
+    padding: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.4;
+    transition: all 0.2s ease;
+    z-index: 10;
+    border-radius: 50%;
+}
+
+.segment-close-subtle:hover {
+    opacity: 1;
+    color: #374151;
+    background-color: #f3f4f6;
+}
+
+/* TARJETA DESHABILITADA CUANDO EL PROYECTO ESTÁ PUBLICADO */
+.segment-card.read-only-card {
+    cursor: default;
+    border-right: none;
+}
+
+.segment-card.read-only-card:hover {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+/* SECCIÓN DEL BOTÓN DE PUBLICAR PROYECTO */
+.publish-container {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 24px;
+    padding-bottom: 20px;
+}
+
+.publish-project-btn {
+    padding: 12px 32px;
+    font-size: 1.2rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.publish-project-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
 }
