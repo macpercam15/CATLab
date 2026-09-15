@@ -18,6 +18,7 @@ import MyProjects from "./student/MyProjects";
 import NewProject from "./student/NewProject";
 import TeacherProjects from "./teacher/TeacherProjects";
 import TranslateEditor from "./student/TranslateEditor";
+import TeacherFeedbackEditor from "./teacher/TeacherFeedbackEditor";
 
 function ErrorFallback({ error, resetErrorBoundary }) {
   return (
@@ -70,6 +71,7 @@ function App() {
         <>
           {/* <Route path="/dashboard" element={<PrivateRoute><OwnerDashboard /></PrivateRoute>} /> */}
           <Route path="/teacher/projects" exact={true} element={<PrivateRoute><TeacherProjects /></PrivateRoute>} />
+          <Route path="/teacher/projects/:projectId/feedback" exact={true} element={<PrivateRoute><TeacherFeedbackEditor /></PrivateRoute>} />
           
         </>)
     }

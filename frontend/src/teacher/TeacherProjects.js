@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import '../static/css/student/myProjects.css';
 import '../static/css/teacher/teacherProjects.css';
 import tokenService from '../services/token.service';
@@ -10,6 +11,7 @@ export default function TeacherProjects() {
     const [activeTab, setActiveTab] = useState('TO_GRADE'); // 'TO_GRADE' | 'GRADED'
     const [studentsModalProject, setStudentsModalProject] = useState(null);
 
+    const navigate = useNavigate();
     const jwt = tokenService.getLocalAccessToken();
 
     const [projects, setProjects] = useFetchState(
@@ -20,7 +22,7 @@ export default function TeacherProjects() {
         setVisible
     );
 
-    // Filtrar según el estado equivalente
+    // Filter according to equivalent status
     const filteredProjects = (projects || []).filter((p) =>
         activeTab === 'TO_GRADE' ? p.estado === 'PUBLICADO' : p.estado === 'CORREGIDO'
     );
@@ -51,11 +53,11 @@ export default function TeacherProjects() {
                 );
             } else {
                 const text = await response.text();
-                setMessage(text || 'Error al actualizar el estado del proyecto.');
+                setMessage(text || 'Error updating project status.');
                 setVisible(true);
             }
         } catch (error) {
-            setMessage('Error al conectar con el servidor.');
+            setMessage('Error connecting to the server.');
             setVisible(true);
         }
     };
@@ -72,7 +74,7 @@ export default function TeacherProjects() {
                 )}
 
                 <div className="teacher-container-card">
-                    {/* Navegación por pestañas (To Grade / Graded) */}
+                    {/* Navigation Tabs (To Grade / Graded) */}
                     <div className="teacher-tabs-bar">
                         <button
                             className={`teacher-tab ${activeTab === 'TO_GRADE' ? 'active' : ''}`}
@@ -88,7 +90,7 @@ export default function TeacherProjects() {
                         </button>
                     </div>
 
-                    {/* Lista de proyectos */}
+                    {/* Projects List */}
                     <div className="teacher-projects-list">
                         {filteredProjects.length === 0 ? (
                             <p className="my-projects-message" style={{ padding: '24px' }}>
@@ -105,7 +107,11 @@ export default function TeacherProjects() {
                                         key={`${project.id ?? index}`}
                                         className="my-project-item teacher-project-item"
                                     >
-                                        <div className="project-main">
+                                        <div 
+                                            className="project-main" 
+                                            style={{ cursor: 'pointer' }}
+                                            onClick={() => navigate(`/teacher/projects/${project.id}/feedback`)}
+                                        >
                                             <h2 className="project-name">{project.name || 'Untitled Project'}</h2>
                                             <span className="project-lang">
                                                 {`${project.idiomaOrigen?.codigo || 'EN'}>${project.idiomaDestino?.codigo || 'ES'}`}
@@ -122,7 +128,15 @@ export default function TeacherProjects() {
                                             </span>
                                         </div>
 
-                                        <div className="project-action">
+                                        <div className="project-action" style={{ display: 'flex', gap: '8px' }}>
+                                            <button
+                                                className="teacher-btn-cancel"
+                                                type="button"
+                                                onClick={() => navigate(`/teacher/projects/${project.id}/feedback`)}
+                                            >
+                                                Review
+                                            </button>
+
                                             {activeTab === 'TO_GRADE' ? (
                                                 <button
                                                     className="teacher-btn-send"
@@ -160,7 +174,7 @@ export default function TeacherProjects() {
                         <ul style={modalStyles.studentList}>
                             {(studentsModalProject.estudiantes || []).map((student, idx) => (
                                 <li key={student.id || idx} style={modalStyles.studentItem}>
-                                    @{student.username || student.user?.username || `usuario_${student.id}`}
+                                    @{student.username || student.user?.username || `user_${student.id}`}
                                 </li>
                             ))}
                         </ul>
@@ -245,19 +259,9 @@ const modalStyles = {
         border: '2px solid transparent',
         transition: 'all 0.2s ease',
     },
-    cancelBtn: {
-        background: '#ffffff',
-        borderColor: '#9ca3af',
-        color: '#4b5563',
-    },
     confirmBtn: {
         background: '#0f766e',
         borderColor: '#0f766e',
-        color: '#ffffff',
-    },
-    deleteBtn: {
-        background: '#b91c1c',
-        borderColor: '#b91c1c',
         color: '#ffffff',
     },
 };
