@@ -4,19 +4,35 @@ import tokenService from '../services/token.service';
 import '../static/css/teacher/teacherFeedbackEditor.css';
 
 const TEACHER_STATUS_CONFIG = {
-    PUBLICADO: { colorClass: 'status-pending', label: 'Pending' },
-    CORREGIDO: { colorClass: 'status-graded', label: 'Graded' },
-    BORRADOR: { colorClass: 'status-pending', label: 'Pending' },
-    TRADUCIDO: { colorClass: 'status-pending', label: 'Pending' },
-    REVISADO: { colorClass: 'status-pending', label: 'Pending' }
+    PUBLICADO: {
+        colorClass: 'status-pending',
+        label: 'Pending'
+    },
+    CORREGIDO: {
+        colorClass: 'status-graded',
+        label: 'Graded'
+    },
+    BORRADOR: {
+        colorClass: 'status-pending',
+        label: 'Pending'
+    },
+    TRADUCIDO: {
+        colorClass: 'status-pending',
+        label: 'Pending'
+    },
+    REVISADO: {
+        colorClass: 'status-pending',
+        label: 'Pending'
+    }
 };
 
-export default function TeacherTranslateEditor() {
+export default function TeacherFeedbackEditor() {
     const { projectId } = useParams();
     const navigate = useNavigate();
 
     const [project, setProject] = useState(null);
     const [segments, setSegments] = useState([]);
+
     const [expandedId, setExpandedId] = useState(null);
     const [currentFeedback, setCurrentFeedback] = useState('');
     const [isSavingFeedback, setIsSavingFeedback] = useState(false);
@@ -27,11 +43,20 @@ export default function TeacherTranslateEditor() {
         type: ''
     });
 
-    const isProjectGraded = project?.estado === 'CORREGIDO';
+    // Si el proyecto está CORREGIDO, toda la vista pasa a modo solo lectura
+    const isProjectGraded =
+        project?.estado === 'CORREGIDO' ||
+        project?.estado === 'CORREGIDO ' ||
+        project?.estado?.toString().trim().toUpperCase() === 'CORREGIDO';
+
+    console.log('PROYECTO:', project);
+    console.log('ESTADO DEL PROYECTO:', project?.estado);
+    console.log('IS PROJECT GRADED:', isProjectGraded);
 
     useEffect(() => {
         fetchProjectData();
         fetchSegments();
+
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [projectId]);
 
@@ -66,7 +91,9 @@ export default function TeacherTranslateEditor() {
     };
 
     const parseErrorMessage = (rawText, fallbackMsg) => {
-        if (!rawText) return fallbackMsg;
+        if (!rawText) {
+            return fallbackMsg;
+        }
 
         try {
             const parsed = JSON.parse(rawText);
@@ -87,11 +114,9 @@ export default function TeacherTranslateEditor() {
             .replace(/<[^>]*>?/gm, '')
             .trim();
 
-        return (
-            cleaned.length > 80 || cleaned.includes('{')
-                ? fallbackMsg
-                : cleaned
-        );
+        return cleaned.length > 80 || cleaned.includes('{')
+            ? fallbackMsg
+            : cleaned;
     };
 
     const fetchProjectData = async () => {
@@ -136,20 +161,28 @@ export default function TeacherTranslateEditor() {
     };
 
     const handleExpand = (segment) => {
-        if (isProjectGraded || expandedId === segment.id) {
+        // Si el proyecto está corregido, no se puede abrir ningún segmento
+        if (isProjectGraded) {
+            return;
+        }
+
+        if (expandedId === segment.id) {
             return;
         }
 
         setExpandedId(segment.id);
 
         setCurrentFeedback(
-            segment.feedback ||
-            segment.comentario ||
-            ''
+            segment.feedback || segment.comentario || ''
         );
     };
 
     const handleSaveFeedback = async (segmentId, text) => {
+        // Bloquear cualquier modificación si el proyecto está corregido
+        if (isProjectGraded) {
+            return;
+        }
+
         const jwt = tokenService.getLocalAccessToken();
 
         setIsSavingFeedback(true);
@@ -179,12 +212,13 @@ export default function TeacherTranslateEditor() {
             } else {
                 const errorText = await res.text();
 
-                const friendlyMsg = parseErrorMessage(
-                    errorText,
-                    'Could not save feedback.'
+                showToast(
+                    parseErrorMessage(
+                        errorText,
+                        'Could not save feedback.'
+                    ),
+                    'error'
                 );
-
-                showToast(friendlyMsg, 'error');
             }
         } catch (error) {
             console.error('Error saving feedback:', error);
@@ -201,9 +235,12 @@ export default function TeacherTranslateEditor() {
     const handleSegmentStatusGraded = async (e, segment) => {
         e.stopPropagation();
 
+        if (isProjectGraded) {
+            return;
+        }
+
         const jwt = tokenService.getLocalAccessToken();
 
-        // Guardar automáticamente el feedback si se ha modificado
         if (
             expandedId === segment.id &&
             currentFeedback !==
@@ -233,12 +270,13 @@ export default function TeacherTranslateEditor() {
             } else {
                 const errorText = await res.text();
 
-                const friendlyMsg = parseErrorMessage(
-                    errorText,
-                    'Could not mark segment as Graded.'
+                showToast(
+                    parseErrorMessage(
+                        errorText,
+                        'Could not mark segment as Graded.'
+                    ),
+                    'error'
                 );
-
-                showToast(friendlyMsg, 'error');
             }
         } catch (error) {
             console.error(
@@ -255,6 +293,10 @@ export default function TeacherTranslateEditor() {
 
     const handleSegmentStatusPublished = async (e, segment) => {
         e.stopPropagation();
+
+        if (isProjectGraded) {
+            return;
+        }
 
         const jwt = tokenService.getLocalAccessToken();
 
@@ -275,12 +317,13 @@ export default function TeacherTranslateEditor() {
             } else {
                 const errorText = await res.text();
 
-                const friendlyMsg = parseErrorMessage(
-                    errorText,
-                    'Could not revert segment to Pending.'
+                showToast(
+                    parseErrorMessage(
+                        errorText,
+                        'Could not revert segment to Pending.'
+                    ),
+                    'error'
                 );
-
-                showToast(friendlyMsg, 'error');
             }
         } catch (error) {
             console.error(
@@ -295,8 +338,11 @@ export default function TeacherTranslateEditor() {
         }
     };
 
-    // Decide si el botón debe hacer Grade o Cancel
     const handleSegmentStatusToggle = (e, segment) => {
+        if (isProjectGraded) {
+            return;
+        }
+
         if (segment.estado === 'CORREGIDO') {
             handleSegmentStatusPublished(e, segment);
         } else {
@@ -305,47 +351,49 @@ export default function TeacherTranslateEditor() {
     };
 
     const handleProjectStatusToggle = async () => {
+        if (isProjectGraded) {
+            return;
+        }
+
         const jwt = tokenService.getLocalAccessToken();
 
-        const action = isProjectGraded
-            ? 'CANCEL'
-            : 'SEND';
-
-        const endpoint =
-            action === 'SEND'
-                ? `/api/proyectos/profesor/grade/${projectId}`
-                : `/api/proyectos/profesor/cancel-grade/${projectId}`;
-
         try {
-            const res = await fetch(endpoint, {
-                method: 'PUT',
-                headers: {
-                    Authorization: `Bearer ${jwt}`,
-                    'Content-Type': 'application/json'
+            const res = await fetch(
+                `/api/proyectos/profesor/grade/${projectId}`,
+                {
+                    method: 'PUT',
+                    headers: {
+                        Authorization: `Bearer ${jwt}`,
+                        'Content-Type': 'application/json'
+                    }
                 }
-            });
+            );
 
             if (res.ok) {
-                showToast(
-                    action === 'SEND'
-                        ? 'Project marked as Graded'
-                        : 'Project status reset to Pending',
-                    'success'
-                );
-
+                // Volvemos a cargar el proyecto para obtener
+                // el nuevo estado CORREGIDO
                 await fetchProjectData();
+
+                // Actualizamos también los segmentos
                 await fetchSegments();
 
+                // Cerramos cualquier segmento abierto
                 setExpandedId(null);
+
+                showToast(
+                    'Project marked as Graded',
+                    'success'
+                );
             } else {
                 const errorText = await res.text();
 
-                const friendlyMsg = parseErrorMessage(
-                    errorText,
-                    'Could not update project status.'
+                showToast(
+                    parseErrorMessage(
+                        errorText,
+                        'Could not update project status.'
+                    ),
+                    'error'
                 );
-
-                showToast(friendlyMsg, 'error');
             }
         } catch (error) {
             console.error(
@@ -363,32 +411,53 @@ export default function TeacherTranslateEditor() {
     return (
         <div className="translate-page teacher-editor-page">
 
-            <header className="translate-header">
-
+            {/* HEADER */}
+            <header
+                className="translate-header"
+                style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '16px'
+                }}
+            >
                 <h2 className="translate-doc-title">
                     {project?.name ||
                         project?.documento?.nombreOriginal ||
                         'project-name.pdf'}
                 </h2>
 
+                {isProjectGraded && (
+                    <span
+                        style={{
+                            backgroundColor: '#e2e8f0',
+                            color: '#475569',
+                            padding: '4px 12px',
+                            borderRadius: '12px',
+                            fontSize: '0.9rem',
+                            fontWeight: 'bold'
+                        }}
+                    >
+                        READ-ONLY MODE
+                    </span>
+                )}
+
                 <button
                     className="back-btn"
                     onClick={() =>
                         navigate('/teacher/projects')
                     }
+                    style={{
+                        marginLeft: 'auto'
+                    }}
                 >
                     Back
                 </button>
-
             </header>
 
+            {/* SEGMENTS */}
             <div className="segments-container">
 
                 {segments.map((segment) => {
-
-                    const isExpanded =
-                        !isProjectGraded &&
-                        expandedId === segment.id;
 
                     const statusKey =
                         segment.estado === 'CORREGIDO'
@@ -398,29 +467,87 @@ export default function TeacherTranslateEditor() {
                     const config =
                         TEACHER_STATUS_CONFIG[statusKey];
 
-                    const isGraded =
-                        segment.estado === 'CORREGIDO';
-
                     const feedbackText =
                         segment.feedback ||
                         segment.comentario;
 
+                    /*
+                     * ==================================================
+                     * MODO READ-ONLY
+                     * ==================================================
+                     */
+
+                    if (isProjectGraded) {
+                        return (
+                            <div
+                                key={segment.id}
+                                className={`segment-card read-only-card ${config.colorClass}`}
+                                style={{
+                                    cursor: 'default'
+                                }}
+                            >
+                                <div className="segment-collapsed">
+
+                                    <div className="segment-collapsed-body">
+
+                                        <div
+                                            className="segment-content-clickable"
+                                            style={{
+                                                cursor: 'default'
+                                            }}
+                                        >
+                                            <div className="segment-text original">
+                                                {segment.textoOriginal}
+                                            </div>
+
+                                            <div className="segment-text translation read-only-translation">
+                                                {segment.textoTraducido ||
+                                                    '(No translation provided)'}
+                                            </div>
+                                        </div>
+
+                                        {feedbackText && (
+                                            <div className="segment-feedback-preview">
+                                                <span className="feedback-tag">
+                                                    Feedback:
+                                                </span>{' '}
+                                                {feedbackText}
+                                            </div>
+                                        )}
+
+                                    </div>
+
+                                    <span
+                                        className={`segment-status-badge ${config.colorClass}`}
+                                    >
+                                        {config.label}
+                                    </span>
+
+                                </div>
+                            </div>
+                        );
+                    }
+
+                    /*
+                     * ==================================================
+                     * MODO NORMAL / EDICIÓN
+                     * ==================================================
+                     */
+
+                    const isExpanded =
+                        expandedId === segment.id;
+
+                    const isGraded =
+                        segment.estado === 'CORREGIDO';
+
                     return (
                         <div
                             key={segment.id}
-                            className={`
-                                segment-card
-                                ${
-                                    isProjectGraded
-                                        ? 'read-only-card'
-                                        : config.colorClass
-                                }
-                                ${
-                                    isExpanded
-                                        ? 'expanded'
-                                        : ''
-                                }
-                            `}
+                            className={`segment-card ${config.colorClass} ${
+                                isExpanded
+                                    ? 'expanded'
+                                    : ''
+                            }`}
                             onClick={() =>
                                 handleExpand(segment)
                             }
@@ -428,6 +555,7 @@ export default function TeacherTranslateEditor() {
 
                             {!isExpanded ? (
 
+                                /* SEGMENTO CERRADO */
                                 <div className="segment-collapsed">
 
                                     <div className="segment-collapsed-body">
@@ -457,45 +585,38 @@ export default function TeacherTranslateEditor() {
                                     </div>
 
                                     <span
-                                        className={`
-                                            segment-status-badge
-                                            ${config.colorClass}
-                                        `}
+                                        className={`segment-status-badge ${config.colorClass}`}
                                     >
                                         {config.label}
                                     </span>
 
-                                    {!isProjectGraded && (
-                                        <div className="segment-actions-collapsed">
+                                    <div className="segment-actions-collapsed">
 
-                                            <button
-                                                className={`
-                                                    status-action-btn
-                                                    ${
-                                                        isGraded
-                                                            ? 'btn-catlab-white'
-                                                            : 'btn-catlab-green'
-                                                    }
-                                                `}
-                                                onClick={(e) =>
-                                                    handleSegmentStatusToggle(
-                                                        e,
-                                                        segment
-                                                    )
-                                                }
-                                            >
-                                                {isGraded
-                                                    ? 'Cancel'
-                                                    : 'Grade'}
-                                            </button>
+                                        <button
+                                            className={`status-action-btn ${
+                                                isGraded
+                                                    ? 'btn-catlab-white'
+                                                    : 'btn-catlab-green'
+                                            }`}
+                                            onClick={(e) =>
+                                                handleSegmentStatusToggle(
+                                                    e,
+                                                    segment
+                                                )
+                                            }
+                                        >
+                                            {isGraded
+                                                ? 'Cancel'
+                                                : 'Grade'}
+                                        </button>
 
-                                        </div>
-                                    )}
+                                    </div>
 
                                 </div>
 
                             ) : (
 
+                                /* SEGMENTO ABIERTO */
                                 <div
                                     className="segment-expanded"
                                     onClick={(e) =>
@@ -542,23 +663,17 @@ export default function TeacherTranslateEditor() {
                                             <div className="segment-actions">
 
                                                 <span
-                                                    className={`
-                                                        segment-status-badge
-                                                        ${config.colorClass}
-                                                    `}
+                                                    className={`segment-status-badge ${config.colorClass}`}
                                                 >
                                                     {config.label}
                                                 </span>
 
                                                 <button
-                                                    className={`
-                                                        status-action-btn
-                                                        ${
-                                                            isGraded
-                                                                ? 'btn-catlab-white'
-                                                                : 'btn-catlab-green'
-                                                        }
-                                                    `}
+                                                    className={`status-action-btn ${
+                                                        isGraded
+                                                            ? 'btn-catlab-white'
+                                                            : 'btn-catlab-green'
+                                                    }`}
                                                     onClick={(e) =>
                                                         handleSegmentStatusToggle(
                                                             e,
@@ -577,6 +692,7 @@ export default function TeacherTranslateEditor() {
 
                                     </div>
 
+                                    {/* FEEDBACK */}
                                     <div className="teacher-feedback-section">
 
                                         <label className="teacher-field-label">
@@ -594,8 +710,10 @@ export default function TeacherTranslateEditor() {
                                                     )
                                                 }
                                                 onKeyDown={(e) => {
+
                                                     if (
-                                                        e.key === 'Enter' &&
+                                                        e.key ===
+                                                            'Enter' &&
                                                         !e.shiftKey
                                                     ) {
                                                         e.preventDefault();
@@ -609,6 +727,7 @@ export default function TeacherTranslateEditor() {
                                                             );
                                                         }
                                                     }
+
                                                 }}
                                                 placeholder="Type feedback for this segment (Enter to save, Shift+Enter for new line)..."
                                                 rows={2}
@@ -643,6 +762,7 @@ export default function TeacherTranslateEditor() {
                                                             'translateX(-2px) translateY(1px)'
                                                     }}
                                                 >
+
                                                     <line
                                                         x1="22"
                                                         y1="2"
@@ -653,6 +773,7 @@ export default function TeacherTranslateEditor() {
                                                     <polygon
                                                         points="22 2 15 22 11 13 2 9 22 2"
                                                     />
+
                                                 </svg>
 
                                             </button>
@@ -662,7 +783,6 @@ export default function TeacherTranslateEditor() {
                                     </div>
 
                                 </div>
-
                             )}
 
                         </div>
@@ -671,33 +791,24 @@ export default function TeacherTranslateEditor() {
 
             </div>
 
-            <div className="publish-container">
+            {/* BOTÓN DE MARCAR PROYECTO COMO CORREGIDO */}
+            {!isProjectGraded && (
+                <div className="publish-container">
 
-                <button
-                    className={`
-                        status-action-btn
-                        ${
-                            isProjectGraded
-                                ? 'btn-catlab-white'
-                                : 'btn-catlab-green'
-                        }
-                        publish-project-btn
-                    `}
-                    onClick={handleProjectStatusToggle}
-                >
-                    {isProjectGraded
-                        ? 'Cancel Grading'
-                        : 'Mark Project as Graded'}
-                </button>
+                    <button
+                        className="status-action-btn btn-catlab-green publish-project-btn"
+                        onClick={handleProjectStatusToggle}
+                    >
+                        Mark Project as Graded
+                    </button>
 
-            </div>
+                </div>
+            )}
 
+            {/* TOAST */}
             {toast.visible && (
                 <div
-                    className={`
-                        toast-notification
-                        toast-${toast.type}
-                    `}
+                    className={`toast-notification toast-${toast.type}`}
                 >
                     <div className="toast-text">
                         {toast.message}

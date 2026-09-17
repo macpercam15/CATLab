@@ -134,7 +134,7 @@ export default function TeacherProjects() {
                                                 type="button"
                                                 onClick={() => navigate(`/teacher/projects/${project.id}/feedback`)}
                                             >
-                                                Review
+                                                {activeTab === 'TO_GRADE' ? 'Review' : 'View'}
                                             </button>
 
                                             {activeTab === 'TO_GRADE' ? (

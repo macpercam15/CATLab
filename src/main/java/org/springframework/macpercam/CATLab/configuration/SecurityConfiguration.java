@@ -102,6 +102,7 @@ public class SecurityConfiguration {
 			 .requestMatchers("/api/glosarios/**").hasAnyAuthority(ESTUDIANTE, ADMIN)
 
 			 .requestMatchers("/api/proyectos/profesor/**").hasAnyAuthority(ADMIN, PROFESOR)
+			 .requestMatchers("/api/proyectos/{projectId}").hasAnyAuthority(ESTUDIANTE, ADMIN, PROFESOR)
 			 .requestMatchers("/api/proyectos/**").hasAnyAuthority(ESTUDIANTE, ADMIN)
 
 			 .requestMatchers("/api/segmentos/feedback/**").hasAnyAuthority(ADMIN, PROFESOR)
