@@ -1,38 +1,25 @@
 @import '../student/TranslateEditor.css';
 
-
-/* BORDES DE ESTADO PARA EL PROFESOR */
+/* BORDES DE ESTADO DE PROFESOR */
 .segment-card.status-pending { 
-    border-right-color: #9ca3af; 
+    border-right-color: #B3B3B3; 
 }
 
 .segment-card.status-graded { 
-    border-right-color: #3b82f6; 
+    border-right-color: #3F33CD; 
 }
 
 /* BADGES DE ESTADO (PENDING = GRIS, GRADED = AZUL) */
 .segment-status-badge.status-pending {
-    background-color: #f3f4f6;
+    background-color: #e2e2e2;
     color: #4b5563;
-    border: 1px solid #d1d5db;
+    border: 1px solid #B3B3B3;
 }
 
 .segment-status-badge.status-graded {
     background-color: #dbeafe;
-    color: #1e40af;
-    border: 1px solid #93c5fd;
-}
-
-/* BOTÓN DE ACCIÓN AZUL (GRADED) */
-.btn-teacher-blue {
-    background-color: #2563eb;
-    color: #ffffff;
-    border: 2px solid #2563eb;
-}
-
-.btn-teacher-blue:hover {
-    background-color: #1d4ed8;
-    border-color: #1d4ed8;
+    color: #3F33CD;
+    border: 1px solid rgb(164, 205, 252);
 }
 
 /* ESTRUCTURA VISTA COLAPSADA */
@@ -50,10 +37,10 @@
 
 /* PREVISUALIZACIÓN DE FEEDBACK EN TARJETA CERRADA */
 .segment-feedback-preview {
-    font-size: 0.95rem;
-    color: #1e40af;
-    background-color: #eff6ff;
-    border: 1px dashed #bfdbfe;
+    font-size: 1rem;
+    color: #718096;
+    background-color: #0f766d23;
+    border: 1px dashed #0f766d80;
     padding: 6px 12px;
     border-radius: 8px;
     margin-top: 4px;
@@ -62,7 +49,7 @@
 
 .feedback-tag {
     font-weight: bold;
-    color: #1d4ed8;
+    color: #0f766d;
     text-transform: uppercase;
     font-size: 0.8rem;
     margin-right: 6px;
@@ -100,12 +87,4 @@
     font-size: 1.1rem;
     color: #1f2937;
     white-space: pre-wrap;
-}
-
-.teacher-send-btn {
-    background-color: #2563eb;
-}
-
-.teacher-send-btn:hover:not(:disabled) {
-    background-color: #1d4ed8;
 }

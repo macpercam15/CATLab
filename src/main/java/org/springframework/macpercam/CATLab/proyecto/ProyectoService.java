@@ -238,7 +238,7 @@ public class ProyectoService {
         }
         List<Segmento> segmentos = segmentoService.findByProyectoId(id);
         if (!segmentos.stream().allMatch(s -> s.getEstado() == EstadoSegmento.CORREGIDO)){
-            throw new IllegalStateException("No se pueden marcar como corregidos proyectos con segmentos que no estén en estado CORREGIDO.");
+            throw new IllegalStateException("Proyects must have all segments in state GRADED.");
         }
 
         p.setEstado(EstadoProyecto.CORREGIDO);
