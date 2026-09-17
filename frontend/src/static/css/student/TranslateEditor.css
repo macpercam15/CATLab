@@ -59,6 +59,9 @@
 .segment-card.status-draft { border-right-color: #9ca3af; }
 .segment-card.status-traduced { border-right-color: #10b981; }
 .segment-card.status-revised { border-right-color: #6366f1; }
+.segment-card.status-corrected {
+    border-right-color: #2563eb;
+}
 
 /* ETIQUETA TEXTUAL DE ESTADO */
 .segment-status-badge {
@@ -89,20 +92,50 @@
     border: 1px solid #a5b4fc;
 }
 
-/* VISTA CONTRAÍDA */
 .segment-collapsed {
-    display: flex;
+    display: grid;
+    grid-template-columns: 1fr auto;
     align-items: center;
-    justify-content: space-between;
     padding: 16px 20px;
-    gap: 16px;
+    gap: 12px 16px;
 }
 
 .segment-content-clickable {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 20px;
-    flex: 1;
+    min-width: 0;
+    grid-column: 1;
+    grid-row: 1;
+}
+
+.segment-status-badge {
+    grid-column: 2;
+    grid-row: 1;
+}
+
+.segment-actions-collapsed {
+    grid-column: 2;
+    grid-row: 1;
+    flex-shrink: 0;
+}
+
+.segment-feedback-preview {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    width: 100%;
+    padding-top: 12px;
+    margin-top: 4px;
+    border-top: 1px solid #e5e7eb;
+    color: #6b7280;
+    font-size: 0.95rem;
+    line-height: 1.4;
+    white-space: pre-wrap;
+}
+
+.feedback-tag {
+    font-weight: bold;
+    color: #374151;
 }
 
 .segment-actions-collapsed {
@@ -403,4 +436,70 @@
 .publish-project-btn:disabled {
     opacity: 0.6;
     cursor: not-allowed;
+}
+
+.segment-card.status-corrected {
+    border-right-color: #2563eb;
+}
+
+.segment-card.published-card {
+    cursor: default;
+    border-right: none;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.segment-card.published-card:hover {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.segment-card.published-card .segment-collapsed {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    padding: 16px 20px;
+    gap: 20px;
+}
+
+.segment-card.published-card .segment-content-clickable {
+    display: contents;
+}
+
+.segment-card.published-card .segment-text {
+    grid-column: auto;
+    grid-row: auto;
+}
+
+.segment-actions-collapsed {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 12px;
+    flex-shrink: 0;
+}
+
+/* ESTADO TRADUCIDO */
+.segment-status-badge.status-traduced {
+    background-color: transparent;
+    color: #10b981;
+    border: none;
+}
+
+/* ESTADO REVISADO */
+.segment-status-badge.status-revised {
+    background-color: transparent;
+    color: #6366f1;
+    border: none;
+}
+
+/* ESTADO BORRADOR */
+.segment-status-badge.status-draft {
+    background-color: transparent;
+    color: #9ca3af;
+    border: none;
+}
+
+/* ESTADO CORREGIDO */
+.segment-status-badge.status-corrected {
+    background-color: transparent;
+    color: #2563eb;
+    border: none;
 }
