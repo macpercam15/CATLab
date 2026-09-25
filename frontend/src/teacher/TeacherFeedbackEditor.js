@@ -426,21 +426,7 @@ export default function TeacherFeedbackEditor() {
                         'project-name.pdf'}
                 </h2>
 
-                {isProjectGraded && (
-                    <span
-                        style={{
-                            backgroundColor: '#e2e8f0',
-                            color: '#475569',
-                            padding: '4px 12px',
-                            borderRadius: '12px',
-                            fontSize: '0.9rem',
-                            fontWeight: 'bold'
-                        }}
-                    >
-                        READ-ONLY MODE
-                    </span>
-                )}
-
+                {isProjectGraded }
                 <button
                     className="back-btn"
                     onClick={() =>
@@ -584,13 +570,14 @@ export default function TeacherFeedbackEditor() {
 
                                     </div>
 
-                                    <span
-                                        className={`segment-status-badge ${config.colorClass}`}
-                                    >
-                                        {config.label}
-                                    </span>
-
+                                    {/* Agrupamos la etiqueta de estado y el botón dentro de segment-actions-collapsed */}
                                     <div className="segment-actions-collapsed">
+
+                                        <span
+                                            className={`segment-status-badge ${config.colorClass}`}
+                                        >
+                                            {config.label}
+                                        </span>
 
                                         <button
                                             className={`status-action-btn ${
