@@ -457,6 +457,58 @@ export default function TranslateEditor() {
                     const feedbackText =
                         segment.feedback ||
                         segment.comentario;
+                    
+                    if (isProjectCorrected) {
+                        return (
+                            <div
+                                key={segment.id}
+                                className={`segment-card read-only-card ${config.colorClass}`}
+                                style={{
+                                    cursor: 'default'
+                                }}
+                            >
+                                <div className="segment-collapsed">
+
+                                    <div className="segment-collapsed-body">
+
+                                        <div
+                                            className="segment-content-clickable"
+                                            style={{
+                                                cursor: 'default'
+                                            }}
+                                        >
+                                            <div className="segment-text original">
+                                                {segment.textoOriginal}
+                                            </div>
+
+                                            <div className="segment-text translation read-only-translation">
+                                                {segment.textoTraducido || ''}
+                                            </div>
+                                        </div>
+
+                                        {feedbackText && (
+                                            <div className="segment-feedback-preview">
+                                                <span className="feedback-tag">
+                                                    Feedback:
+                                                </span>{' '}
+                                                {feedbackText}
+                                            </div>
+                                        )}
+
+                                    </div>
+
+                                    <div className="segment-actions-collapsed">
+                                        <span
+                                            className={`segment-status-badge ${config.colorClass}`}
+                                        >
+                                            {config.label}
+                                        </span>
+                                    </div>
+
+                                </div>
+                            </div>
+                        );
+                    }
 
                     return (
                         <div
