@@ -51,13 +51,31 @@ export default function TeacherProjects() {
                             : p
                     )
                 );
+                setMessage(null);
+                setVisible(false);
             } else {
                 const text = await response.text();
-                setMessage(text || 'Error updating project status.');
+                let cleanMessage = 'Error al actualizar el estado del proyecto.';
+
+                try {
+                    const parsedError = JSON.parse(text);
+                    if (parsedError.message) {
+                        cleanMessage = parsedError.message;
+                    } else if (typeof parsedError === 'string') {
+                        cleanMessage = parsedError;
+                    }
+                } catch (e) {
+                    // Si no es un HTML y hay texto, se utiliza el texto directamente
+                    if (!text.includes('<html') && text.trim().length > 0) {
+                        cleanMessage = text;
+                    }
+                }
+
+                setMessage(cleanMessage);
                 setVisible(true);
             }
         } catch (error) {
-            setMessage('Error connecting to the server.');
+            setMessage('Error al conectar con el servidor.');
             setVisible(true);
         }
     };
