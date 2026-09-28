@@ -34,6 +34,7 @@ export default function TranslateEditor() {
     const [project, setProject] = useState(null);
     const [segments, setSegments] = useState([]);
     const [expandedId, setExpandedId] = useState(null);
+    const [feedbackPopupId, setFeedbackPopupId] = useState(null);
     const [currentTranslation, setCurrentTranslation] = useState('');
     const [activeTab, setActiveTab] = useState('TM');
     const [isSaving, setIsSaving] = useState(false);
@@ -66,6 +67,7 @@ export default function TranslateEditor() {
         const handleKeyDown = (e) => {
             if (e.key === 'Escape') {
                 setExpandedId(null);
+                setFeedbackPopupId(null);
             }
         };
 
@@ -406,6 +408,94 @@ export default function TranslateEditor() {
         }
     };
 
+    const renderFeedbackButton = (segment, feedbackText) => {
+        if (!feedbackText) return null;
+        if (isProjectPublished || isProjectCorrected) return null;
+
+        const isOpen = feedbackPopupId === segment.id;
+
+        return (
+            <div className="feedback-button-container">
+                <button
+                    type="button"
+                    className="feedback-trigger-btn"
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        setFeedbackPopupId(isOpen ? null : segment.id);
+                    }}
+                    title="View reviewer feedback"
+                >
+                    <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        width="20"
+                        height="20"
+                    >
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                    </svg>
+                    <span className="feedback-badge">!</span>
+                </button>
+
+                {isOpen && (
+                    <div
+                        className="feedback-popup"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <div className="feedback-popup-header">
+                            <h4>Reviewer Feedback</h4>
+                            <button
+                                type="button"
+                                className="feedback-close-btn"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    setFeedbackPopupId(null);
+                                }}
+                                title="Close"
+                            >
+                                ✕
+                            </button>
+                        </div>
+
+                        <div className="feedback-popup-body">
+                            {feedbackText}
+                        </div>
+
+                        <div className="feedback-popup-footer">
+                            {expandedId !== segment.id && (
+                                <button
+                                    type="button"
+                                    className="status-action-btn btn-catlab-green small-btn"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        setFeedbackPopupId(null);
+                                        handleExpand(segment);
+                                    }}
+                                >
+                                    Edit Translation
+                                </button>
+                            )}
+
+                            <button
+                                type="button"
+                                className="status-action-btn btn-catlab-white small-btn"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    setFeedbackPopupId(null);
+                                }}
+                            >
+                                Close
+                            </button>
+                        </div>
+                    </div>
+                )}
+            </div>
+        );
+    };
+
     return (
         <div className="translate-page">
 
@@ -457,7 +547,7 @@ export default function TranslateEditor() {
                     const feedbackText =
                         segment.feedback ||
                         segment.comentario;
-                    
+
                     if (isProjectCorrected) {
                         return (
                             <div
@@ -524,6 +614,7 @@ export default function TranslateEditor() {
                                             : config.colorClass
                                 }
                                 ${isExpanded ? 'expanded' : ''}
+                                ${feedbackPopupId === segment.id ? 'has-open-popup' : ''}
                             `}
 
                             onClick={() =>
@@ -545,10 +636,15 @@ export default function TranslateEditor() {
 
                                     {!isProjectPublished && (
                                         <div className="segment-actions-collapsed">
+                                            {/* 1. Botón de Feedback (A LA IZQUIERDA DEL ESTADO) */}
+                                            {renderFeedbackButton(segment, feedbackText)}
+
+                                            {/* 2. Etiqueta de Estado */}
                                             <span className={`segment-status-badge ${config.colorClass}`}>
                                                 {config.label}
                                             </span>
 
+                                            {/* 3. Botón de cambio de estado */}
                                             <button 
                                                 className={`status-action-btn ${btnConfig.class}`}
                                                 onClick={(e) => handleStatusAction(e, segment)}
@@ -702,8 +798,12 @@ export default function TranslateEditor() {
 
                                             </div>
 
-                                            <div className="segment-actions">
+                                           <div className="segment-actions">
 
+                                                {/* 1. Botón de Feedback (A LA IZQUIERDA DEL ESTADO) */}
+                                                {renderFeedbackButton(segment, feedbackText)}
+
+                                                {/* 2. Etiqueta de Estado */}
                                                 <span
                                                     className={
                                                         isProjectCorrected
@@ -713,39 +813,23 @@ export default function TranslateEditor() {
                                                     style={
                                                         isProjectCorrected
                                                             ? {
-                                                                backgroundColor:
-                                                                    '#dbeafe',
-                                                                color:
-                                                                    '#2563eb',
-                                                                border:
-                                                                    '1px solid #93c5fd'
+                                                                backgroundColor: '#dbeafe',
+                                                                color: '#2563eb',
+                                                                border: '1px solid #93c5fd'
                                                             }
                                                             : undefined
                                                     }
                                                 >
-                                                    {
-                                                        isProjectCorrected
-                                                            ? 'Corrected'
-                                                            : config.label
-                                                    }
+                                                    {isProjectCorrected ? 'Corrected' : config.label}
                                                 </span>
 
+                                                {/* 3. Botón de cambio de estado */}
                                                 {!isProjectCorrected && (
                                                     <button
-                                                        className={`
-                                                            status-action-btn
-                                                            ${btnConfig.class}
-                                                        `}
-                                                        onClick={(e) =>
-                                                            handleStatusAction(
-                                                                e,
-                                                                segment
-                                                            )
-                                                        }
+                                                        className={`status-action-btn ${btnConfig.class}`}
+                                                        onClick={(e) => handleStatusAction(e, segment)}
                                                     >
-                                                        {
-                                                            btnConfig.text
-                                                        }
+                                                        {btnConfig.text}
                                                     </button>
                                                 )}
 
