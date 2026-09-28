@@ -16,7 +16,7 @@
 .translate-doc-title {
     font-size: 1.5rem;
     font-weight: bold;
-    color: #374151;
+    color: #202124;
     margin: 0;
 }
 
@@ -36,7 +36,7 @@
 }
 
 .segments-container {
-    background-color: #e2e8f0;
+    background-color: #cdd4dd80;
     padding: 20px;
     border-radius: 16px;
     display: flex;
@@ -46,13 +46,13 @@
 
 /* TARJETA DE SEGMENTO Y BORDE DE ESTADO MÁS GRUESO (22px) */
 .segment-card {
-    background-color: #ffffff;
+    background-color: #F8F9FA;
     border-radius: 12px;
     cursor: pointer;
     overflow: visible; /* Cambiado a visible para evitar recortes del pop-up flotante */
     position: relative;
     box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-    border-right: 22px solid #a3a3a3;
+    border-right: 22px solid #CECECE;
     transition: all 0.2s ease;
     z-index: 1;
 }
@@ -62,11 +62,11 @@
     z-index: 100; /* Asegura que la tarjeta con el pop-up activo flote sobre los demás segmentos */
 }
 
-.segment-card.status-draft { border-right-color: #9ca3af; }
-.segment-card.status-traduced { border-right-color: #10b981; }
-.segment-card.status-revised { border-right-color: #6366f1; }
+.segment-card.status-draft { border-right-color: #B3B3B3; }
+.segment-card.status-traduced { border-right-color: #549464; }
+.segment-card.status-revised { border-right-color: #3F33CD; }
 .segment-card.status-corrected {
-    border-right-color: #2563eb;
+    border-right-color: #ec0c0c;
 }
 
 /* ETIQUETA TEXTUAL DE ESTADO */
@@ -88,20 +88,20 @@
 
 .segment-status-badge.status-traduced {
     background-color: #d1fae5;
-    color: #065f46;
+    color: #549464;
     border: 1px solid #6ee7b7;
 }
 
 .segment-status-badge.status-revised {
     background-color: #e0e7ff;
-    color: #3730a3;
+    color: #3F33CD;
     border: 1px solid #a5b4fc;
 }
 
 .segment-status-badge.status-corrected {
-    background-color: #e0f2fe;
-    color: #1e3a8a;
-    border: 1px solid #93c5fd;
+    background-color: #fee0e0;
+    color: #ec0c0c;
+    border: 1px solid #fd9393;
 }
 
 .segment-collapsed {
