@@ -46,12 +46,26 @@ INSERT INTO documentos(id, nombre_original, nombre_almacenado, ruta, tipo_mime, 
 INSERT INTO proyecto_estudiante (proyecto_id, estudiante_id) VALUES (1, 1), (2, 1), (2, 2), (3, 1), (4, 1), (5, 1);
 
 -- 6. Generación Automática de Segmentos (3 por cada proyecto existente)
-INSERT INTO segmentos (id, texto_original, estado, proyecto_id)VALUES (1,'segmento 1 del proyecto 1', 'BORRADOR', 1), (2,'segmento 2 del proyecto 1', 'BORRADOR', 1), (3,'segmento 3 del proyecto 1', 'BORRADOR', 1),
-(4,'segmento 1 del proyecto 2', 'BORRADOR', 2), (5,'segmento 2 del proyecto 2', 'BORRADOR', 2), (6,'segmento 3 del proyecto 2', 'BORRADOR', 2),
-(7,'segmento 1 del proyecto 3', 'BORRADOR', 3), (8,'segmento 2 del proyecto 3', 'BORRADOR', 3), (9,'segmento 3 del proyecto 3', 'BORRADOR', 3),
-(10,'segmento 1 del proyecto 4', 'BORRADOR', 4), (11,'segmento 2 del proyecto 4', 'BORRADOR', 4), (12,'segmento 3 del proyecto 4', 'BORRADOR', 4),
-(13,'segmento 1 del proyecto 5', 'BORRADOR', 5), (14,'segmento 2 del proyecto 5', 'BORRADOR', 5), (15,'segmento 3 del proyecto 5', 'BORRADOR', 5);
+INSERT INTO segmentos (id, texto_original, estado, proyecto_id) VALUES 
+(1,'segmento 1 del proyecto 1', 'BORRADOR', 1), 
+(2,'segmento 2 del proyecto 1', 'BORRADOR', 1), 
+(3,'segmento 3 del proyecto 1', 'BORRADOR', 1),
 
+(4,'segmento 1 del proyecto 2', 'BORRADOR', 2), 
+(5,'segmento 2 del proyecto 2', 'BORRADOR', 2), 
+(6,'segmento 3 del proyecto 2', 'BORRADOR', 2),
+
+(7,'segmento 1 del proyecto 3', 'BORRADOR', 3), 
+(8,'segmento 2 del proyecto 3', 'BORRADOR', 3), 
+(9,'segmento 3 del proyecto 3', 'BORRADOR', 3),
+
+(10,'segmento 1 del proyecto 4', 'PUBLICADO', 4), 
+(11,'segmento 2 del proyecto 4', 'PUBLICADO', 4), 
+(12,'segmento 3 del proyecto 4', 'PUBLICADO', 4),
+
+(13,'segmento 1 del proyecto 5', 'CORREGIDO', 5), 
+(14,'segmento 2 del proyecto 5', 'CORREGIDO', 5), 
+(15,'segmento 3 del proyecto 5', 'CORREGIDO', 5);
 
 
 -- -- Three clinic owners, with password "clinic_owner"
