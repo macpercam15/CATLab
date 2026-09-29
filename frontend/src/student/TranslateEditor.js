@@ -662,21 +662,21 @@ export default function TranslateEditor() {
                                     {group.traducciones.map((entry) => (
                                         <div key={entry.id} style={{ display: 'flex', alignItems: 'center', gap: '8px', width: '100%' }}>
                                             <span className="glossary-arrow">↳</span>
-                                            <span className="glossary-translation">{entry.destino}</span>
+                                            
+                                            {/* Aquí hacemos que el texto de la traducción sea clicable */}
+                                            <span 
+                                                className={`glossary-translation ${!isReadOnly ? 'glossary-translation-clickable' : ''}`}
+                                                onClick={() => {
+                                                    if (!isReadOnly) insertGlossaryTerm(entry.destino);
+                                                }}
+                                                title={!isReadOnly ? "Haz clic para insertar en la traducción" : ""}
+                                            >
+                                                {entry.destino}
+                                            </span>
 
                                             {!isReadOnly && (
                                                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                                    {/* Botón Principal: Insertar */}
-                                                    <button
-                                                        type="button"
-                                                        className="status-action-btn btn-catlab-white small-btn"
-                                                        onClick={() => insertGlossaryTerm(entry.destino)}
-                                                        title="Insertar en la traducción"
-                                                    >
-                                                        Insertar
-                                                    </button>
-
-                                                    {/* Menú de 3 Puntos */}
+                                                    {/* Menú de 3 Puntos (El botón Insertar ya no está) */}
                                                     <div className="glossary-menu-container">
                                                         <button
                                                             type="button"
@@ -708,7 +708,7 @@ export default function TranslateEditor() {
                                                                         openEditEntry(entry);
                                                                     }}
                                                                 >
-                                                                    Edit
+                                                                    Editar
                                                                 </button>
                                                                 <button
                                                                     type="button"
@@ -719,7 +719,7 @@ export default function TranslateEditor() {
                                                                         handleDeleteEntry(entry.id);
                                                                     }}
                                                                 >
-                                                                    Delete
+                                                                    Eliminar
                                                                 </button>
                                                             </div>
                                                         )}
@@ -737,10 +737,10 @@ export default function TranslateEditor() {
                 <div className="glossary-footer">
                     <button
                         type="button"
-                        className="status-action-btn btn-catlab-green small-btn"
+                        className="status-action-btn btn-catlab-green"
                         onClick={openManualEntry}
                     >
-                        + Nueva entrada
+                        New entry
                     </button>
                 </div>
             </div>
