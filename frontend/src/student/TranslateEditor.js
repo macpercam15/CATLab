@@ -45,8 +45,10 @@ export default function TranslateEditor() {
     const [glossaryLoading, setGlossaryLoading] = useState(false);
     const [selectionBtn, setSelectionBtn] = useState(null); // { text, x, y }
     const [isSavingEntry, setIsSavingEntry] = useState(false);
+    const [glossaryMenuOpenId, setGlossaryMenuOpenId] = useState(null);
     const [glossaryModal, setGlossaryModal] = useState({
         open: false,
+        id: null,
         origen: '',
         destino: '',
         lockOrigen: false
@@ -93,6 +95,19 @@ export default function TranslateEditor() {
             );
         };
     }, []);
+
+    useEffect(() => {
+        if (!glossaryMenuOpenId) return;
+
+        const handleClickOutside = (e) => {
+            if (!e.target.closest('.glossary-menu-container')) {
+                setGlossaryMenuOpenId(null);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, [glossaryMenuOpenId]);
 
     const showToast = (message, type = 'error') => {
         setToast({
@@ -491,6 +506,7 @@ export default function TranslateEditor() {
     const openManualEntry = () => {
         setGlossaryModal({
             open: true,
+            id: null,
             origen: '',
             destino: '',
             lockOrigen: false
@@ -502,6 +518,7 @@ export default function TranslateEditor() {
 
         setGlossaryModal({
             open: true,
+            id: null,
             origen: selectionBtn.text,
             destino: '',
             lockOrigen: true
@@ -512,11 +529,22 @@ export default function TranslateEditor() {
         setActiveTab('GLOSARIO');
     };
 
+    const openEditEntry = (entry) => {
+        setGlossaryModal({
+            open: true,
+            id: entry.id,
+            origen: entry.origen,
+            destino: entry.destino,
+            lockOrigen: false
+        });
+    };
+
     const closeGlossaryModal = () => {
         setGlossaryModal((prev) => ({ ...prev, open: false }));
     };
 
-    const handleCreateEntry = async () => {
+    // Función para CREAR o ACTUALIZAR
+    const handleSaveEntry = async () => {
         const origen = glossaryModal.origen.trim();
         const destino = glossaryModal.destino.trim();
 
@@ -524,36 +552,40 @@ export default function TranslateEditor() {
 
         setIsSavingEntry(true);
 
+        const isEdit = glossaryModal.id !== null;
+        
+        // Rutas y métodos según EntradaGlosarioRestController.java
+        const url = isEdit ? `/api/entradas/update/${glossaryModal.id}` : '/api/entradas/create';
+        const method = isEdit ? 'PUT' : 'POST';
+        
+        // Payload (para actualizar no solemos enviar el proyectoId de nuevo)
+        const bodyData = isEdit 
+            ? { origen, destino } 
+            : { origen, destino, proyectoId: Number(projectId) };
+
         try {
-            const res = await fetch('/api/entradas/create', {
-                method: 'POST',
+            const res = await fetch(url, {
+                method: method,
                 headers: {
                     Authorization: `Bearer ${jwt}`,
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({
-                    origen,
-                    destino,
-                    proyectoId: Number(projectId)
-                })
+                body: JSON.stringify(bodyData)
             });
 
             if (res.ok) {
                 closeGlossaryModal();
 
                 if (expandedId) {
-                    await fetchGlossaryMatches(expandedId);
+                    // cache: 'no-store' asumimos que ya lo pusiste en el paso anterior
+                    await fetchGlossaryMatches(expandedId); 
                 }
 
-                showToast('Entrada añadida al glosario', 'success');
+                showToast(isEdit ? 'Entrada actualizada' : 'Entrada añadida', 'success');
             } else {
                 const errorText = await res.text();
-
                 showToast(
-                    parseErrorMessage(
-                        errorText,
-                        'No se pudo añadir la entrada al glosario.'
-                    ),
+                    parseErrorMessage(errorText, isEdit ? 'No se pudo actualizar la entrada.' : 'No se pudo añadir la entrada.'),
                     'error'
                 );
             }
@@ -561,6 +593,29 @@ export default function TranslateEditor() {
             showToast('Error de conexión con el servidor', 'error');
         } finally {
             setIsSavingEntry(false);
+        }
+    };
+
+    // Nueva función para ELIMINAR
+    const handleDeleteEntry = async (id) => {
+        if (!window.confirm('¿Seguro que quieres eliminar esta entrada del glosario?')) return;
+        
+        try {
+            const res = await fetch(`/api/entradas/delete/${id}`, {
+                method: 'POST',
+                headers: { Authorization: `Bearer ${jwt}` }
+            });
+
+            if (res.ok) {
+                showToast('Entrada eliminada', 'success');
+                if (expandedId) {
+                    await fetchGlossaryMatches(expandedId);
+                }
+            } else {
+                showToast('No se pudo eliminar la entrada.', 'error');
+            }
+        } catch (error) {
+            showToast('Error de conexión con el servidor', 'error');
         }
     };
 
@@ -605,19 +660,71 @@ export default function TranslateEditor() {
                                 
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', width: '100%', paddingLeft: '8px' }}>
                                     {group.traducciones.map((entry) => (
-                                        <div key={entry.id} style={{ display: 'flex', alignItems: 'center', gap: '12px', width: '100%' }}>
+                                        <div key={entry.id} style={{ display: 'flex', alignItems: 'center', gap: '8px', width: '100%' }}>
                                             <span className="glossary-arrow">↳</span>
                                             <span className="glossary-translation">{entry.destino}</span>
 
                                             {!isReadOnly && (
-                                                <button
-                                                    type="button"
-                                                    className="status-action-btn btn-catlab-white small-btn"
-                                                    onClick={() => insertGlossaryTerm(entry.destino)}
-                                                    title="Insertar en la traducción"
-                                                >
-                                                    Insertar
-                                                </button>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                                    {/* Botón Principal: Insertar */}
+                                                    <button
+                                                        type="button"
+                                                        className="status-action-btn btn-catlab-white small-btn"
+                                                        onClick={() => insertGlossaryTerm(entry.destino)}
+                                                        title="Insertar en la traducción"
+                                                    >
+                                                        Insertar
+                                                    </button>
+
+                                                    {/* Menú de 3 Puntos */}
+                                                    <div className="glossary-menu-container">
+                                                        <button
+                                                            type="button"
+                                                            className="glossary-menu-btn"
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                setGlossaryMenuOpenId(
+                                                                    glossaryMenuOpenId === entry.id ? null : entry.id
+                                                                );
+                                                            }}
+                                                            title="Más opciones"
+                                                        >
+                                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                                                                <circle cx="12" cy="5" r="2.2" />
+                                                                <circle cx="12" cy="12" r="2.2" />
+                                                                <circle cx="12" cy="19" r="2.2" />
+                                                            </svg>
+                                                        </button>
+
+                                                        {/* Menú Flotante Opciones */}
+                                                        {glossaryMenuOpenId === entry.id && (
+                                                            <div className="glossary-dropdown-menu">
+                                                                <button
+                                                                    type="button"
+                                                                    className="glossary-dropdown-item"
+                                                                    onClick={(e) => {
+                                                                        e.stopPropagation();
+                                                                        setGlossaryMenuOpenId(null);
+                                                                        openEditEntry(entry);
+                                                                    }}
+                                                                >
+                                                                    Edit
+                                                                </button>
+                                                                <button
+                                                                    type="button"
+                                                                    className="glossary-dropdown-item danger"
+                                                                    onClick={(e) => {
+                                                                        e.stopPropagation();
+                                                                        setGlossaryMenuOpenId(null);
+                                                                        handleDeleteEntry(entry.id);
+                                                                    }}
+                                                                >
+                                                                    Delete
+                                                                </button>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </div>
                                             )}
                                         </div>
                                     ))}
@@ -1267,7 +1374,7 @@ export default function TranslateEditor() {
                         aria-modal="true"
                     >
                         <h3 className="glossary-modal-title">
-                            Nueva entrada del glosario
+                            {glossaryModal.id ? 'Editar entrada' : 'Nueva entrada del glosario'}
                         </h3>
 
                         <label className="glossary-label">Origen</label>
@@ -1301,7 +1408,7 @@ export default function TranslateEditor() {
                             onKeyDown={(e) => {
                                 if (e.key === 'Enter') {
                                     e.preventDefault();
-                                    handleCreateEntry();
+                                    handleSaveEntry();
                                 }
                             }}
                             placeholder="Traducción"
@@ -1319,14 +1426,14 @@ export default function TranslateEditor() {
                             <button
                                 type="button"
                                 className="status-action-btn btn-catlab-green small-btn"
-                                onClick={handleCreateEntry}
+                                onClick={handleSaveEntry}
                                 disabled={
                                     isSavingEntry ||
                                     !glossaryModal.origen.trim() ||
                                     !glossaryModal.destino.trim()
                                 }
                             >
-                                {isSavingEntry ? 'Guardando...' : 'Añadir'}
+                                {isSavingEntry ? 'Guardando...' : (glossaryModal.id ? 'Guardar' : 'Añadir')}
                             </button>
                         </div>
                     </div>

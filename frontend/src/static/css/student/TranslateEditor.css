@@ -764,3 +764,71 @@
     gap: 8px;
     margin-top: 16px;
 }
+
+/* ========================================================
+   MENÚ DE OPCIONES DE ENTRADA DEL GLOSARIO (3 PUNTOS)
+======================================================== */
+.glossary-menu-container {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+}
+
+.glossary-menu-btn {
+    background: transparent;
+    border: none;
+    color: #6b7280;
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.glossary-menu-btn:hover {
+    background-color: #e5e7eb;
+    color: #1f2937;
+}
+
+.glossary-dropdown-menu {
+    position: absolute;
+    top: calc(100% + 4px);
+    right: 0;
+    background-color: #ffffff;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 100;
+    min-width: 110px;
+    padding: 4px 0;
+    display: flex;
+    flex-direction: column;
+    animation: fadeInPopup 0.15s ease;
+}
+
+.glossary-dropdown-item {
+    background: transparent;
+    border: none;
+    padding: 8px 14px;
+    font-family: 'Anonymous Pro', monospace;
+    font-size: 0.95rem;
+    text-align: left;
+    cursor: pointer;
+    color: #374151;
+    width: 100%;
+    transition: background-color 0.15s ease;
+}
+
+.glossary-dropdown-item:hover {
+    background-color: #f3f4f6;
+}
+
+.glossary-dropdown-item.danger {
+    color: #ef4444;
+}
+
+.glossary-dropdown-item.danger:hover {
+    background-color: #fee2e2 !important;
+}
