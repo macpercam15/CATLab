@@ -7,6 +7,8 @@ import java.util.regex.Pattern;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.macpercam.CATLab.exceptions.ResourceNotFoundException;
+import org.springframework.macpercam.CATLab.proyecto.Proyecto;
+import org.springframework.macpercam.CATLab.proyecto.ProyectoRepository;
 import org.springframework.macpercam.CATLab.segmento.Segmento;
 import org.springframework.macpercam.CATLab.segmento.SegmentoRepository;
 import org.springframework.stereotype.Service;
@@ -19,12 +21,15 @@ public class GlosarioService {
     private EntradaGlosarioRepository entradaRepo;
     private GlosarioRepository glosarioRepo;
     private SegmentoRepository segmentoRepo;
+    private ProyectoRepository proyectoRepo;
 
     @Autowired
-    public GlosarioService(EntradaGlosarioRepository entradaGlosarioRp, GlosarioRepository glosarioRp, SegmentoRepository segmentoRepo) {
+    public GlosarioService(EntradaGlosarioRepository entradaGlosarioRp, GlosarioRepository glosarioRp, 
+        SegmentoRepository segmentoRepo, ProyectoRepository proyectoRepo) {
         this.entradaRepo = entradaGlosarioRp;
         this.glosarioRepo = glosarioRp;
         this.segmentoRepo = segmentoRepo;
+        this.proyectoRepo = proyectoRepo;
     }
 
     @Transactional(readOnly = true)
@@ -40,16 +45,28 @@ public class GlosarioService {
     }
 
     @Transactional()
-    public EntradaGlosario createEntrada(SaveEntradaDTO data) throws DataAccessException{
-        EntradaGlosario entrada = new EntradaGlosario();
-        entrada.setOrigen(data.getOrigen());
-        entrada.setDestino(data.getDestino());
+    public EntradaGlosario createEntrada(SaveEntradaDTO data) throws DataAccessException {
+        String origen = data.getOrigen().trim().replaceAll("\\s+", " ");
+        String destino = data.getDestino().trim();
 
-        Glosario gl = glosarioRepo.findById(data.getGlosarioId()).orElseThrow(() -> new ResourceNotFoundException("Glosario", "ID", data.getGlosarioId()));
+        Proyecto proyecto = proyectoRepo.findById(data.getProyectoId())
+                .orElseThrow(() -> new ResourceNotFoundException("Proyecto", "ID", data.getProyectoId()));
+
+        Glosario gl = proyecto.getGlosario();
+        if (gl == null) {
+            throw new IllegalStateException("El proyecto no tiene glosario asociado.");
+        }
+
+        if (entradaRepo.findByGlosarioIdAndOrigen(gl.getId(), origen).isPresent()) {
+            throw new IllegalStateException("Ya existe una entrada con ese término en el glosario.");
+        }
+
+        EntradaGlosario entrada = new EntradaGlosario();
+        entrada.setOrigen(origen);
+        entrada.setDestino(destino);
         entrada.setGlosario(gl);
 
-        entradaRepo.save(entrada);
-        return entrada;
+        return entradaRepo.save(entrada);
     }
 
     @Transactional()

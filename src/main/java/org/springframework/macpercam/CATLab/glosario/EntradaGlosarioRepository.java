@@ -11,4 +11,7 @@ public interface EntradaGlosarioRepository extends CrudRepository<EntradaGlosari
 
     @Query("SELECT e FROM EntradaGlosario e WHERE e.glosario.id = :glosarioId")
     public List<EntradaGlosario> getAllEntradasByGlosarioId(@Param("glosarioId") int glosarioId);
+
+    @Query("SELECT e FROM EntradaGlosario e WHERE e.glosario.id = :glosarioId AND LOWER(e.origen) = LOWER(:origen)")
+    Optional<EntradaGlosario> findByGlosarioIdAndOrigen(@Param("glosarioId") int glosarioId, @Param("origen") String origen);
 }

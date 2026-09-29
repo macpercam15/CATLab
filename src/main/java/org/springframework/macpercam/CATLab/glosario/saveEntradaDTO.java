@@ -16,6 +16,6 @@ public class SaveEntradaDTO {
     @NotEmpty
     private String destino;
     @NotEmpty
-    private Integer glosarioId;
+    private Integer proyectoId;
 
 }
