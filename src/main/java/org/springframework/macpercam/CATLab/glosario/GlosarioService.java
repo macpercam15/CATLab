@@ -57,8 +57,8 @@ public class GlosarioService {
             throw new IllegalStateException("El proyecto no tiene glosario asociado.");
         }
 
-        if (entradaRepo.findByGlosarioIdAndOrigen(gl.getId(), origen).isPresent()) {
-            throw new IllegalStateException("Ya existe una entrada con ese término en el glosario.");
+        if (entradaRepo.findByGlosarioIdAndOrigen(gl.getId(), origen, destino).isPresent()) {
+            throw new IllegalStateException("This translation already exists in the glossary for this project.");
         }
 
         EntradaGlosario entrada = new EntradaGlosario();

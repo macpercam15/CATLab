@@ -204,8 +204,6 @@ export default function TranslateEditor() {
         setCurrentTranslation(
             segment.textoTraducido || ''
         );
-
-        setActiveTab('TM');
     };
 
     const handleSaveTranslation = async (
@@ -490,12 +488,6 @@ export default function TranslateEditor() {
         });
     };
 
-    const selectionAlreadyInGlossary =
-        selectionBtn &&
-        glossaryMatches.some(
-            (m) => normalizeTerm(m.origen) === normalizeTerm(selectionBtn.text)
-        );
-
     const openManualEntry = () => {
         setGlossaryModal({
             open: true,
@@ -581,50 +573,72 @@ export default function TranslateEditor() {
         });
     };
 
-    const renderGlossaryTab = (isReadOnly) => (
-        <div className="glossary-panel">
+    const renderGlossaryTab = (isReadOnly) => {
+        // 1. Agrupar las coincidencias por el término de origen (ignorando mayúsculas/minúsculas)
+        const groupedMatches = glossaryMatches.reduce((acc, entry) => {
+            const key = normalizeTerm(entry.origen);
+            if (!acc[key]) {
+                acc[key] = { origen: entry.origen, traducciones: [] };
+            }
+            acc[key].traducciones.push(entry);
+            return acc;
+        }, {});
 
-            {glossaryLoading ? (
-                <p className="glossary-empty">Cargando glosario...</p>
-            ) : glossaryMatches.length === 0 ? (
-                <p className="glossary-empty">
-                    No hay entradas del glosario para este segmento.
-                </p>
-            ) : (
-                <ul className="glossary-list">
-                    {glossaryMatches.map((entry) => (
-                        <li key={entry.id} className="glossary-item">
-                            <span className="glossary-term">{entry.origen}</span>
-                            <span className="glossary-arrow">→</span>
-                            <span className="glossary-translation">{entry.destino}</span>
+        return (
+            <div className="glossary-panel">
+                {glossaryLoading ? (
+                    <p className="glossary-empty">Cargando glosario...</p>
+                ) : glossaryMatches.length === 0 ? (
+                    <p className="glossary-empty">
+                        No hay entradas del glosario para este segmento.
+                    </p>
+                ) : (
+                    <ul className="glossary-list">
+                        {/* 2. Renderizar los grupos en lugar de entradas sueltas */}
+                        {Object.values(groupedMatches).map((group) => (
+                            <li 
+                                key={group.origen} 
+                                className="glossary-item" 
+                                style={{ flexDirection: 'column', alignItems: 'flex-start', gap: '8px' }}
+                            >
+                                <span className="glossary-term">{group.origen}</span>
+                                
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', width: '100%', paddingLeft: '8px' }}>
+                                    {group.traducciones.map((entry) => (
+                                        <div key={entry.id} style={{ display: 'flex', alignItems: 'center', gap: '12px', width: '100%' }}>
+                                            <span className="glossary-arrow">↳</span>
+                                            <span className="glossary-translation">{entry.destino}</span>
 
-                            {!isReadOnly && (
-                                <button
-                                    type="button"
-                                    className="status-action-btn btn-catlab-white small-btn"
-                                    onClick={() => insertGlossaryTerm(entry.destino)}
-                                    title="Insertar en la traducción"
-                                >
-                                    Insertar
-                                </button>
-                            )}
-                        </li>
-                    ))}
-                </ul>
-            )}
+                                            {!isReadOnly && (
+                                                <button
+                                                    type="button"
+                                                    className="status-action-btn btn-catlab-white small-btn"
+                                                    onClick={() => insertGlossaryTerm(entry.destino)}
+                                                    title="Insertar en la traducción"
+                                                >
+                                                    Insertar
+                                                </button>
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
+                            </li>
+                        ))}
+                    </ul>
+                )}
 
-            <div className="glossary-footer">
-                <button
-                    type="button"
-                    className="status-action-btn btn-catlab-green small-btn"
-                    onClick={openManualEntry}
-                >
-                    + Nueva entrada
-                </button>
+                <div className="glossary-footer">
+                    <button
+                        type="button"
+                        className="status-action-btn btn-catlab-green small-btn"
+                        onClick={openManualEntry}
+                    >
+                        + Nueva entrada
+                    </button>
+                </div>
             </div>
-
-        </div>
-    );
+        );
+    };
     // #endregion GLOSARIO
 
     const getButtonConfig = (estado) => {
@@ -1225,7 +1239,7 @@ export default function TranslateEditor() {
                 </div>
             )}
 
-            {selectionBtn && !selectionAlreadyInGlossary && (
+            {selectionBtn && (
                 <button
                     type="button"
                     className="glossary-selection-btn"
