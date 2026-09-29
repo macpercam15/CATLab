@@ -18,9 +18,13 @@ INSERT INTO estudiantes(id, first_name, last_name, email, user_id) VALUES (2, 'E
 -- 2. Glosarios e Idiomas
 INSERT INTO glosarios(id) VALUES (1), (2), (3), (4), (5);
 
-INSERT INTO entradas_glosario(id, origen, destino, glosario_id) VALUES (1, 'A', 'B', 1);
-INSERT INTO entradas_glosario(id, origen, destino, glosario_id) VALUES (2, 'espanyol', 'ingles', 1);
-INSERT INTO entradas_glosario(id, origen, destino, glosario_id) VALUES (3, 'frances', 'aleman', 2);
+INSERT INTO entradas_glosario(id, origen, destino, glosario_id) VALUES (1, 'segmento', 'segment', 1);
+INSERT INTO entradas_glosario(id, origen, destino, glosario_id) VALUES (2, 'proyecto', 'project', 1);
+INSERT INTO entradas_glosario(id, origen, destino, glosario_id) VALUES (3, 'segmento', 'segment', 2);
+INSERT INTO entradas_glosario(id, origen, destino, glosario_id) VALUES (4, 'proyecto', 'projet', 2);
+INSERT INTO entradas_glosario(id, origen, destino, glosario_id) VALUES (5, 'del', 'of the', 3);
+INSERT INTO entradas_glosario(id, origen, destino, glosario_id) VALUES (6, 'segmento', 'segment', 4);
+INSERT INTO entradas_glosario(id, origen, destino, glosario_id) VALUES (7, 'proyecto', 'project', 5);
 
 INSERT INTO idiomas(id, name, codigo) VALUES (1, 'Español', 'ES');
 INSERT INTO idiomas(id, name, codigo) VALUES (2, 'Inglés', 'EN');

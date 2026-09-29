@@ -1,5 +1,7 @@
 package org.springframework.macpercam.CATLab.glosario;
 
+import java.util.List;
+
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -38,6 +40,12 @@ public class GlosarioRestController {
     @PostMapping(value = "/delete/{id}")
     public void deleteGlosario(@PathVariable("id") int id) {
         glosarioService.deleteGlosario(id);
+    }
+
+
+    @GetMapping("/segmento/{segmentoId}/coincidencias")
+    public List<EntradaGlosario> getCoincidencias(@PathVariable("segmentoId") int segmentoId) {
+        return glosarioService.getCoincidenciasBySegmentoId(segmentoId);
     }
 
 }
