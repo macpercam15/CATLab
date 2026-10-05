@@ -112,6 +112,8 @@ public class SecurityConfiguration {
 			 .requestMatchers(HttpMethod.PUT, "/api/segmentos/**").hasAnyAuthority(ADMIN, ESTUDIANTE)
 			 .requestMatchers(HttpMethod.GET, "/api/segmentos/**").hasAnyAuthority(ESTUDIANTE, ADMIN, PROFESOR)
 
+			 .requestMatchers("/api/tm/**").hasAnyAuthority(ADMIN, ESTUDIANTE)
+
 
 			// Otras reglas de controal de acceso:
 			// .requestMatchers("/api/v1/clinicOwners/**").hasAnyAuthority(ADMIN, CLINIC_OWNER)

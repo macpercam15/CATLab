@@ -72,6 +72,12 @@ public class ProyectoService {
         return proyectos;
     }
 
+    public List<Proyecto> findProjectsByTmId(Integer tmId) {
+        Tm tm = tmRepository.findById(tmId).orElseThrow(() -> new ResourceNotFoundException("Tm", "ID", tmId));
+        List<Proyecto> proyectos = proyectoRp.findByTmId(tm.getId());
+        return proyectos;
+    }
+
     @Transactional()
     public Proyecto save(SaveProyectoDTO proyecto, MultipartFile file, String username) throws IOException{
         if (file == null || file.isEmpty()) {
@@ -92,7 +98,19 @@ public class ProyectoService {
         Idioma idiomaDestino = idiomaRp.findById(proyecto.getIdiomaDestino_id()).orElseThrow(() -> new ResourceNotFoundException("Idioma", "ID", proyecto.getIdiomaDestino_id()));
         p.setIdiomaOrigen(idiomaOrigen);
         p.setIdiomaDestino(idiomaDestino);
+        
         Tm tm = tmRepository.findById(proyecto.getTm_id()).orElseThrow(() -> new ResourceNotFoundException("Tm", "ID", proyecto.getTm_id()));
+        if (!(
+            (tm.getIdiomaA().getId() == idiomaOrigen.getId() &&
+            tm.getIdiomaB().getId() == idiomaDestino.getId())
+            ||
+            (tm.getIdiomaA().getId() == idiomaDestino.getId() &&
+            tm.getIdiomaB().getId() == idiomaOrigen.getId())
+        )) {
+            throw new IllegalArgumentException(
+                "TM must be compatible with the project's source and target languages."
+            );
+        }
         p.setTm(tm);
 
         Glosario g = new Glosario();
@@ -160,6 +178,17 @@ public class ProyectoService {
         p.setName(proyecto.getName());
 
         Tm tm = tmRepository.findById(proyecto.getTm_id()).orElseThrow(() -> new ResourceNotFoundException("Tm", "ID", proyecto.getTm_id()));
+        if (!(
+            (tm.getIdiomaA().getId() == p.getIdiomaOrigen().getId() &&
+            tm.getIdiomaB().getId() == p.getIdiomaDestino().getId())
+            ||
+            (tm.getIdiomaA().getId() == p.getIdiomaDestino().getId() &&
+            tm.getIdiomaB().getId() == p.getIdiomaOrigen().getId())
+        )) {
+            throw new IllegalArgumentException(
+                "TM must be compatible with the project's source and target languages."
+            );
+        }
         p.setTm(tm);
 
         return proyectoRp.save(p);
