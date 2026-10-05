@@ -31,12 +31,22 @@ INSERT INTO idiomas(id, name, codigo) VALUES (2, 'Inglés', 'EN');
 INSERT INTO idiomas(id, name, codigo) VALUES (3, 'Italiano', 'IT');
 INSERT INTO idiomas(id,name, codigo) VALUES (4, 'Francés', 'FR');
 
+-- TM
+INSERT INTO tm(id, name, idiomaA_id, idiomaB_id) VALUES 
+(1, 'TM 1', 1, 2),
+(2, 'TM 2', 1, 2),
+(3, 'TM 3', 3, 1);
+
+-- TU
+INSERT INTO tu(id, origen, destino, tm_id) VALUES (1, 'segmento 1 del proyecto 1', 'segment 1 of the project 1', 1);
+
+
 -- 3. Proyectos
-INSERT INTO proyectos (id, name, estado, idioma_origen_id, idioma_destino_id, glosario_id) VALUES (1, 'Traducción inversa', 'BORRADOR', 2, 1, 1);
-INSERT INTO proyectos (id, name, estado, idioma_origen_id, idioma_destino_id, glosario_id) VALUES (2, 'Traducción especializada', 'BORRADOR', 1, 2, 2);
-INSERT INTO proyectos (id, name, estado, idioma_origen_id, idioma_destino_id, glosario_id) VALUES (3, 'Traducción 1', 'BORRADOR', 2, 1, 3);
-INSERT INTO proyectos (id, name, estado, idioma_origen_id, idioma_destino_id, glosario_id) VALUES (4, 'Traducción 2', 'PUBLICADO', 2, 1, 4);
-INSERT INTO proyectos (id, name, estado, idioma_origen_id, idioma_destino_id, glosario_id) VALUES (5, 'Traducción 3', 'CORREGIDO', 2, 1, 5);
+INSERT INTO proyectos (id, name, estado, idioma_origen_id, idioma_destino_id, glosario_id, tm_id) VALUES (1, 'Traducción inversa', 'BORRADOR', 2, 1, 1, 1);
+INSERT INTO proyectos (id, name, estado, idioma_origen_id, idioma_destino_id, glosario_id, tm_id) VALUES (2, 'Traducción especializada', 'BORRADOR', 1, 2, 2, 1);
+INSERT INTO proyectos (id, name, estado, idioma_origen_id, idioma_destino_id, glosario_id, tm_id) VALUES (3, 'Traducción 1', 'BORRADOR', 2, 1, 3, 1);
+INSERT INTO proyectos (id, name, estado, idioma_origen_id, idioma_destino_id, glosario_id, tm_id) VALUES (4, 'Traducción 2', 'PUBLICADO', 2, 1, 4, 1);
+INSERT INTO proyectos (id, name, estado, idioma_origen_id, idioma_destino_id, glosario_id, tm_id) VALUES (5, 'Traducción 3', 'CORREGIDO', 2, 1, 5, 1);
 
 -- 4. Documentos (Se asigna doc1.pdf a todos los proyectos)
 INSERT INTO documentos(id, nombre_original, nombre_almacenado, ruta, tipo_mime, tamanyo, proyecto_id) VALUES 
@@ -70,6 +80,8 @@ INSERT INTO segmentos (id, texto_original, estado, proyecto_id) VALUES
 (13,'segmento 1 del proyecto 5', 'CORREGIDO', 5), 
 (14,'segmento 2 del proyecto 5', 'CORREGIDO', 5), 
 (15,'segmento 3 del proyecto 5', 'CORREGIDO', 5);
+
+
 
 
 -- -- Three clinic owners, with password "clinic_owner"

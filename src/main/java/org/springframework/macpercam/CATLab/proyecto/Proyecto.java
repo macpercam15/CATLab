@@ -8,6 +8,7 @@ import org.springframework.macpercam.CATLab.estudiante.Estudiante;
 import org.springframework.macpercam.CATLab.glosario.Glosario;
 import org.springframework.macpercam.CATLab.model.NamedEntity;
 import org.springframework.macpercam.CATLab.proyecto.idioma.Idioma;
+import org.springframework.macpercam.CATLab.tm.Tm;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
@@ -57,10 +58,8 @@ public class Proyecto extends NamedEntity{
             orphanRemoval = true)
     private Documento documento;
 
-    /*
-    TODO:
-    - SEGEMENTO: (Este mejor desde su porpia entidad)
-    - TM: ManyToOne (una tm pertenece a muchos proyectos, un proyecto tiene una tm)
-    */
+    @ManyToOne 
+    @JoinColumn(name = "tm_id", referencedColumnName = "id")
+    private Tm tm;
 
 }

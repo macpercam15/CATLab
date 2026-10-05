@@ -23,6 +23,8 @@ import org.springframework.macpercam.CATLab.segmento.EstadoSegmento;
 import org.springframework.macpercam.CATLab.segmento.Segmento;
 import org.springframework.macpercam.CATLab.segmento.SegmentoRepository;
 import org.springframework.macpercam.CATLab.segmento.SegmentoService;
+import org.springframework.macpercam.CATLab.tm.Tm;
+import org.springframework.macpercam.CATLab.tm.TmRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -37,16 +39,19 @@ public class ProyectoService {
     private GlosarioRepository glosarioRp;
     private SegmentoService segmentoService;
     private SegmentoRepository segmentoRepository;
+    private TmRepository tmRepository;
 
     @Autowired
     public ProyectoService(ProyectoRepository proyectoRp, IdiomaRepository idiomaRp, EstudianteRepository estudianteRp, 
-            GlosarioRepository glosarioRp, SegmentoService segmentoService, SegmentoRepository segmentoRepository) {
+            GlosarioRepository glosarioRp, SegmentoService segmentoService, 
+            SegmentoRepository segmentoRepository, TmRepository tmRepository) {
         this.proyectoRp = proyectoRp;
         this.idiomaRp = idiomaRp;
         this.estudianteRp = estudianteRp;
         this.glosarioRp = glosarioRp;
         this.segmentoService = segmentoService;
         this.segmentoRepository = segmentoRepository;
+        this.tmRepository = tmRepository;
     }
 
     // #region CRUD
@@ -87,7 +92,8 @@ public class ProyectoService {
         Idioma idiomaDestino = idiomaRp.findById(proyecto.getIdiomaDestino_id()).orElseThrow(() -> new ResourceNotFoundException("Idioma", "ID", proyecto.getIdiomaDestino_id()));
         p.setIdiomaOrigen(idiomaOrigen);
         p.setIdiomaDestino(idiomaDestino);
-        // p.setTm(proyecto.getTM());
+        Tm tm = tmRepository.findById(proyecto.getTm_id()).orElseThrow(() -> new ResourceNotFoundException("Tm", "ID", proyecto.getTm_id()));
+        p.setTm(tm);
 
         Glosario g = new Glosario();
         glosarioRp.save(g);
@@ -148,10 +154,14 @@ public class ProyectoService {
     public Proyecto update(Integer id, UpdateProyectoDTO proyecto) {
         Proyecto p = proyectoRp.findById(id).orElseThrow(() -> new ResourceNotFoundException("Proyecto", "ID", id));
         if (p.getEstado() == EstadoProyecto.PUBLICADO  || p.getEstado() == EstadoProyecto.CORREGIDO) {
-            throw new IllegalStateException("No se puede actualizar un proyecto que ya ha sido publicado o corregido.");
+            throw new IllegalStateException("Published projects cannot be edited.");
         }
+        
         p.setName(proyecto.getName());
-        // p.setTm(proyecto.getTM());
+
+        Tm tm = tmRepository.findById(proyecto.getTm_id()).orElseThrow(() -> new ResourceNotFoundException("Tm", "ID", proyecto.getTm_id()));
+        p.setTm(tm);
+
         return proyectoRp.save(p);
     }
 

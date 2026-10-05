@@ -11,5 +11,5 @@ import lombok.Setter;
 @AllArgsConstructor
 public class UpdateProyectoDTO {
     private String name;
-    //private TM TM;
+    private Integer tm_id;
 }
