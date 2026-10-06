@@ -11,8 +11,10 @@ export default function NewProject() {
     const [projectName, setProjectName] = useState('');
     const [originId, setOriginId] = useState('');
     const [destinationId, setDestinationId] = useState('');
+    const [tmId, setTmId] = useState('');
     const [file, setFile] = useState(null);
     const [languages, setLanguages] = useState([]);
+    const [tms, setTms] = useState([]);
     const [loadingLanguages, setLoadingLanguages] = useState(true);
     const [submitting, setSubmitting] = useState(false);
     const [message, setMessage] = useState('');
@@ -45,12 +47,44 @@ export default function NewProject() {
             }
         };
 
+        const loadTms = async () => {
+            try {
+                const response = await fetch('/api/tm/all', { // Ajusta la ruta si tu controlador de TM es diferente
+                    headers: jwt ? { Authorization: `Bearer ${jwt}` } : undefined,
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    if (active) setTms(Array.isArray(data) ? data : []);
+                }
+            } catch (error) {
+                console.error("Error al cargar las memorias de traducción", error);
+            }
+        };
+
         loadLanguages();
+        loadTms();
 
         return () => {
             active = false;
         };
     }, [jwt]);
+
+    const compatibleTms = useMemo(() => {
+        if (!originId || !destinationId) return [];
+        return tms.filter(tm => {
+            const idA = tm.idiomaA?.id;
+            const idB = tm.idiomaB?.id;
+            const oId = Number(originId);
+            const dId = Number(destinationId);
+            return (idA === oId && idB === dId) || (idA === dId && idB === oId);
+        });
+    }, [tms, originId, destinationId]);
+
+    useEffect(() => {
+        if (tmId && !compatibleTms.find(tm => tm.id === Number(tmId))) {
+            setTmId('');
+        }
+    }, [compatibleTms, tmId]);
 
     const languageOptions = useMemo(() => languages.map((language) => ({
         id: language.id,
@@ -90,6 +124,7 @@ export default function NewProject() {
             name: projectName.trim(),
             idiomaOrigen_id: Number(originId),
             idiomaDestino_id: Number(destinationId),
+            tm_id: Number(tmId),
         };
 
         const formData = new FormData();
@@ -171,10 +206,25 @@ export default function NewProject() {
                             </select>
                         </label>
 
-                        <label className="new-project-field new-project-tm-field">
+                        <label className="new-project-field">
                             <span>TM</span>
-                            <select disabled value="soon">
-                                <option value="soon">Soon</option>
+                            <select 
+                                value={tmId} 
+                                onChange={(event) => setTmId(event.target.value)}
+                                disabled={!originId || !destinationId || compatibleTms.length === 0}
+                            >
+                                <option value="">
+                                    {!originId || !destinationId 
+                                        ? 'Select languages first' 
+                                        : compatibleTms.length === 0 
+                                            ? 'No compatible TM' 
+                                            : 'Select TM'}
+                                </option>
+                                {compatibleTms.map((tm) => (
+                                    <option key={tm.id} value={tm.id}>
+                                        {tm.name}
+                                    </option>
+                                ))}
                             </select>
                         </label>
                     </div>

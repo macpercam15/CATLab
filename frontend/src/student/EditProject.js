@@ -11,7 +11,10 @@ export default function EditProject() {
 
     const [project, setProject] = useState(null);
     const [projectName, setProjectName] = useState('');
+    const [tmId, setTmId] = useState('');
+    const [tms, setTms] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [loadingTms, setLoadingTms] = useState(true);
     const [submitting, setSubmitting] = useState(false);
     const [message, setMessage] = useState('');
 
@@ -33,6 +36,7 @@ export default function EditProject() {
                 if (active) {
                     setProject(data);
                     setProjectName(data?.name || '');
+                    setTmId(data?.tm?.id ? String(data.tm.id) : '');
                 }
             } catch (error) {
                 if (active) {
@@ -52,12 +56,63 @@ export default function EditProject() {
         };
     }, [id, jwt]);
 
+    useEffect(() => {
+        let active = true;
+
+        const loadTms = async () => {
+            try {
+                const response = await fetch('/api/tm/all', {
+                    headers: jwt ? { Authorization: `****** } : undefined,
+                });
+
+                if (!response.ok) {
+                    throw new Error('No se pudieron cargar las memorias de traducción.');
+                }
+
+                const data = await response.json();
+                if (active) {
+                    setTms(Array.isArray(data) ? data : []);
+                }
+            } catch (error) {
+                if (active) {
+                    setMessage(error.message || 'No se pudieron cargar las memorias de traducción.');
+                }
+            } finally {
+                if (active) {
+                    setLoadingTms(false);
+                }
+            }
+        };
+
+        loadTms();
+
+        return () => {
+            active = false;
+        };
+    }, [jwt]);
+
+    const compatibleTms = tms.filter((tm) => {
+        const idiomaAId = tm.idiomaA?.id;
+        const idiomaBId = tm.idiomaB?.id;
+        const originId = project?.idiomaOrigen?.id;
+        const destinationId = project?.idiomaDestino?.id;
+        return (
+            (idiomaAId === originId && idiomaBId === destinationId)
+            || (idiomaAId === destinationId && idiomaBId === originId)
+        );
+    });
+
     const handleSubmit = async (event) => {
         event.preventDefault();
         setMessage('');
 
         if (!projectName.trim()) {
             setMessage('Introduce un nombre para el proyecto.');
+            return;
+        }
+
+        if (!tmId) {
+            setMessage('Selecciona una memoria de traducción.');
             return;
         }
 
@@ -70,7 +125,7 @@ export default function EditProject() {
                     ...(jwt ? { Authorization: `Bearer ${jwt}` } : {}),
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ name: projectName.trim() }),
+                body: JSON.stringify({ name: projectName.trim(), tm_id: Number(tmId) }),
             });
 
             if (!response.ok) {
@@ -103,8 +158,26 @@ export default function EditProject() {
 
                 <form className="new-project-card new-project-edit-card" onSubmit={handleSubmit}>
                     <p className="new-project-edit-note">
-                        {project?.idiomaOrigen?.codigo || '—'} &gt; {project?.idiomaDestino?.codigo || '—'} · only the title is editable.
+                        {project?.idiomaOrigen?.codigo || '—'} &gt; {project?.idiomaDestino?.codigo || '—'}
                     </p>
+
+                    <label className="new-project-field new-project-edit-tm-field">
+                        <span>TM</span>
+                        <select
+                            value={tmId}
+                            onChange={(event) => setTmId(event.target.value)}
+                            disabled={loading || loadingTms}
+                        >
+                            <option value="">
+                                {loadingTms ? 'Loading...' : 'Select'}
+                            </option>
+                            {compatibleTms.map((tm) => (
+                                <option key={tm.id} value={tm.id}>
+                                    {tm.name || `TM ${tm.id}`}
+                                </option>
+                            ))}
+                        </select>
+                    </label>
 
                     {message && <p className="new-project-message">{message}</p>}
 

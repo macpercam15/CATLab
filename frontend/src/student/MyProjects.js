@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { FiUserPlus } from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
 import '../static/css/student/myProjects.css';
@@ -39,6 +39,8 @@ export default function MyProjects() {
     const [editProjectName, setEditProjectName] = useState('');
     const [editProjectSubmitting, setEditProjectSubmitting] = useState(false);
     const [projectCannotDelete, setProjectCannotDelete] = useState(null);
+    const [tms, setTms] = useState([]);
+    const [editTmId, setEditTmId] = useState('');
 
     const jwt = tokenService.getLocalAccessToken();
     const currentUser = tokenService.getUser();
@@ -89,6 +91,15 @@ export default function MyProjects() {
         setMappedProjects(nextProjects);
     }, [projects, currentUserId]);
 
+    useEffect(() => {
+        fetch('/api/tm/all', {
+            headers: jwt ? { Authorization: `Bearer ${jwt}` } : undefined,
+        })
+        .then(res => res.ok ? res.json() : [])
+        .then(data => setTms(Array.isArray(data) ? data : []))
+        .catch(err => console.error(err));
+    }, [jwt]);
+
     const showNotImplementedAlert = () => {
         setMessage('Not implemented yet');
         setVisible(true);
@@ -103,6 +114,7 @@ export default function MyProjects() {
 
         setProjectToEdit(project);
         setEditProjectName(project?.name || '');
+        setEditTmId(project?.rawProject?.tm?.id || '');
         setMessage(null);
         setVisible(false);
     };
@@ -110,8 +122,20 @@ export default function MyProjects() {
     const closeEditModal = () => {
         setProjectToEdit(null);
         setEditProjectName('');
+        setEditTmId('');
         setEditProjectSubmitting(false);
     };
+
+    const compatibleTmsEdit = useMemo(() => {
+        if (!projectToEdit) return [];
+        const originId = projectToEdit.rawProject?.idiomaOrigen?.id;
+        const destinationId = projectToEdit.rawProject?.idiomaDestino?.id;
+        return tms.filter(tm => {
+            const idA = tm.idiomaA?.id;
+            const idB = tm.idiomaB?.id;
+            return (idA === originId && idB === destinationId) || (idA === destinationId && idB === originId);
+        });
+    }, [tms, projectToEdit]);
 
     const handleEditSubmit = async (event) => {
         event.preventDefault();
@@ -121,6 +145,11 @@ export default function MyProjects() {
         const nextName = editProjectName.trim();
         if (!nextName) {
             setMessage('Introduce un nombre para el proyecto.');
+            setVisible(true);
+            return;
+        }
+        if (!editTmId) {
+            setMessage('Selecciona una TM para el proyecto.');
             setVisible(true);
             return;
         }
@@ -134,7 +163,7 @@ export default function MyProjects() {
                     'Authorization': `Bearer ${jwt}`,
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ name: nextName }),
+                body: JSON.stringify({ name: nextName, tm_id: Number(editTmId) }),
             });
 
             if (response.ok) {
@@ -461,7 +490,7 @@ export default function MyProjects() {
             {projectToEdit && (
                 <div style={modalStyles.overlay} onClick={closeEditModal}>
                     <div style={modalStyles.editContent} onClick={(e) => e.stopPropagation()}>
-                        <h3 style={modalStyles.editTitle}>Edit title</h3>
+                        <h3 style={modalStyles.editTitle}>Edit project</h3>
 
                         <form onSubmit={handleEditSubmit}>
                             <input
@@ -473,8 +502,31 @@ export default function MyProjects() {
                                 autoFocus
                             />
 
+                            <label style={modalStyles.editField}>
+                                <span style={modalStyles.editLabel}>TM</span>
+
+                                <select
+                                    value={editTmId}
+                                    onChange={(e) => setEditTmId(e.target.value)}
+                                    style={modalStyles.editSelect}
+                                    disabled={compatibleTmsEdit.length === 0}
+                                >
+                                    <option value="">
+                                        {compatibleTmsEdit.length === 0
+                                            ? 'No compatible TM'
+                                            : 'Select TM'}
+                                    </option>
+
+                                    {compatibleTmsEdit.map((tm) => (
+                                        <option key={tm.id} value={tm.id}>
+                                            {tm.name}
+                                        </option>
+                                    ))}
+                                </select>
+                            </label>
+
                             <p style={modalStyles.editHint}>
-                                Only the project name can be changed.
+                                You can change the project name and translation memory.
                             </p>
 
                             <div style={modalStyles.buttonContainer}>
@@ -486,6 +538,7 @@ export default function MyProjects() {
                                 >
                                     Cancel
                                 </button>
+
                                 <button
                                     style={{ ...modalStyles.button, ...modalStyles.confirmBtn }}
                                     type="submit"
@@ -640,6 +693,32 @@ const modalStyles = {
         boxSizing: 'border-box',
         outline: 'none',
         marginBottom: '14px',
+    },
+    editField: {
+        display: 'flex',
+        flexDirection: 'column',
+        textAlign: 'left',
+        marginBottom: '14px',
+    },
+
+    editLabel: {
+        fontSize: '1.1rem',
+        fontWeight: 'bold',
+        color: '#1f2937',
+        marginBottom: '6px',
+    },
+
+    editSelect: {
+        width: '100%',
+        borderRadius: '12px',
+        border: '1px solid #d1d5db',
+        padding: '12px 14px',
+        fontSize: '1.15rem',
+        fontFamily: "'Anonymous Pro', monospace",
+        color: '#1f2937',
+        backgroundColor: '#ffffff',
+        boxSizing: 'border-box',
+        outline: 'none',
     },
     editHint: {
         fontSize: '1.05rem',
