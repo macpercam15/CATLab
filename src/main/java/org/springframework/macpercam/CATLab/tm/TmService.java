@@ -1,6 +1,7 @@
 package org.springframework.macpercam.CATLab.tm;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,15 +70,17 @@ public class TmService {
     }
 
     @Transactional
-    public Tm createTm(CreateTmDTO createTmDTO) {
+    public Tm createTm(CreateTmDTO createTmDTO, String username) {
         Tm tm = new Tm();
         tm.setName(createTmDTO.getName());
         Idioma idioma_a = idiomaRepo.findById(createTmDTO.getIdiomaA_id()).orElseThrow(() -> new RuntimeException("Idioma A not found with id: " + createTmDTO.getIdiomaA_id()));
         Idioma idioma_b = idiomaRepo.findById(createTmDTO.getIdiomaB_id()).orElseThrow(() -> new RuntimeException("Idioma B not found with id: " + createTmDTO.getIdiomaB_id()));
         tm.setIdiomaA(idioma_a);
         tm.setIdiomaB(idioma_b);
-        Estudiante estudiante = estudianteRepo.findById(createTmDTO.getEstudiante_id()).orElseThrow(() -> new RuntimeException("Estudiante not found with id: " + createTmDTO.getEstudiante_id()));
-        tm.setEstudiante(estudiante);
+        
+        Estudiante actual = estudianteRepo.findByUsername(username).orElseThrow(() -> new ResourceNotFoundException("Estudiante", "username", username));
+        tm.setEstudiante(actual);
+        
         return tmrepo.save(tm);
     }
 

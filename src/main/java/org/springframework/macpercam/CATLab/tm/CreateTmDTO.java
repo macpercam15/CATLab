@@ -13,5 +13,4 @@ public class CreateTmDTO {
     private String name;
     private Integer idiomaA_id;
     private Integer idiomaB_id;
-    private Integer estudiante_id;
 }

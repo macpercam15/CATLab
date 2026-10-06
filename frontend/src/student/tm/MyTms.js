@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import '../../static/css/tm/tm.css';
 import tokenService from '../../services/token.service';
 
@@ -9,6 +10,8 @@ export default function MyTMs() {
 
     const jwt = tokenService.getLocalAccessToken();
     const currentUser = tokenService.getUser();
+    const navigate = useNavigate();
+    
 
     // Importante: 'User' y 'Estudiante' son entidades distintas.
     // El endpoint /api/tm/student/{studentId} requiere el ID de Estudiante.
@@ -59,7 +62,9 @@ export default function MyTMs() {
                         </svg>
                     </div>
 
-                    <button className="tm-new-btn">New TM</button>
+                    <button className="tm-new-btn" onClick={() => navigate('/student/tms/new')}>
+                        New TM
+                    </button>
                 </div>
 
                 <div className="tm-list">

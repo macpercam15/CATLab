@@ -15,16 +15,154 @@
     margin: 0 auto;
 }
 
+/* Reducimos el ancho máximo para la pantalla de New TM para centrar el formulario */
+.tm-shell-narrow {
+    max-width: 600px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
 .tm-title {
-    margin: 0;
+    margin: 0 0 32px 0;
     font-size: 4.5rem;
     line-height: 1.1;
     letter-spacing: normal;
     color: #1f1f1f;
     font-weight: 700;
+    text-align: center;
 }
 
-/* ---- Toolbar: buscador + botón New TM ---- */
+/* ---- Formulario New TM (Estilo Mockup) ---- */
+
+.tm-card {
+    background: #f0f2f5; /* Fondo gris claro redondeado */
+    border-radius: 24px;
+    padding: 40px;
+    width: 100%;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+}
+
+.tm-field {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    text-align: left;
+}
+
+.tm-field > span {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #1f1f1f;
+}
+
+.tm-field input[type="text"],
+.tm-field select {
+    width: 100%;
+    height: 48px;
+    border-radius: 999px;
+    border: 1px solid #7386a5;
+    background: transparent;
+    padding: 0 20px;
+    font-family: inherit;
+    font-size: 1.3rem;
+    color: #5c6c85; /* Color del texto del placeholder/input */
+    outline: none;
+    box-sizing: border-box;
+}
+
+.tm-field input[type="text"]:focus,
+.tm-field select:focus {
+    border-color: #0f766e;
+    background: #ffffff;
+}
+
+.tm-field input::placeholder {
+    color: #8c9bb3;
+}
+
+.tm-lang-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    background: transparent;
+    border-radius: 24px;
+}
+
+.tm-swap {
+    background: transparent;
+    border: none;
+    font-size: 1.8rem;
+    color: #0f766e;
+    cursor: pointer;
+    padding: 0 10px;
+    transition: transform 0.2s ease;
+}
+
+.tm-swap:hover {
+    transform: scale(1.1);
+}
+
+.tm-hint {
+    font-size: 1rem;
+    color: #7386a5;
+    margin-top: 4px;
+}
+
+.tm-message.error {
+    color: #b91c1c;
+    font-weight: bold;
+    text-align: center;
+    margin-top: 16px;
+    font-size: 1.2rem;
+}
+
+/* ---- Botones Actions ---- */
+.tm-form-actions {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    margin-top: 32px;
+    width: 100%;
+}
+
+.tm-button {
+    border: none;
+    border-radius: 999px;
+    font-family: inherit;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #ffffff;
+    padding: 12px 40px;
+    cursor: pointer;
+    min-width: 160px;
+    transition: transform 0.2s ease, filter 0.2s ease;
+}
+
+.tm-button:hover:not(:disabled) {
+    transform: translateY(-2px);
+    filter: brightness(0.96);
+}
+
+.tm-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.tm-button.primary {
+    background: #0f766e;
+}
+
+.tm-button.danger {
+    background: #b90000;
+}
+
+/* ---- Toolbar y Tabla (Mantenido de tu versión anterior) ---- */
 
 .tm-toolbar {
     display: flex;
@@ -216,5 +354,15 @@
     .tm-btn {
         flex: 1 1 120px;
         min-width: 0;
+    }
+
+    .tm-form-actions {
+        flex-direction: column;
+        width: 100%;
+        gap: 16px;
+    }
+
+    .tm-button {
+        width: 100%;
     }
 }
