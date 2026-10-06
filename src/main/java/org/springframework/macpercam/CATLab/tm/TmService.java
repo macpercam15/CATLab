@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.macpercam.CATLab.estudiante.Estudiante;
 import org.springframework.macpercam.CATLab.estudiante.EstudianteRepository;
+import org.springframework.macpercam.CATLab.exceptions.ResourceNotFoundException;
 import org.springframework.macpercam.CATLab.proyecto.Proyecto;
 import org.springframework.macpercam.CATLab.proyecto.ProyectoRepository;
 import org.springframework.macpercam.CATLab.proyecto.ProyectoService;
@@ -62,8 +63,9 @@ public class TmService {
     }
 
     @Transactional(readOnly = true)
-    public List<Tm> getTmsByStudentId(Integer studentId) {
-        return tmrepo.findByStudentId(studentId);
+    public List<Tm> getTmsByUserId(Integer userId) {
+        Estudiante estudiante = estudianteRepo.findByUser(userId).orElseThrow(() -> new ResourceNotFoundException("Estudiante", "userId", userId));
+        return tmrepo.findByStudentId(estudiante.getId());
     }
 
     @Transactional

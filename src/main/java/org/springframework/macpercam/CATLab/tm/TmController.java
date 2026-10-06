@@ -45,9 +45,9 @@ public class TmController {
         return tmService.getTusByTmId(tmId);
     }
 
-    @GetMapping ("/student/{studentId}")
-    public List<Tm> getTmsByStudentId(@PathVariable Integer studentId) {
-        return tmService.getTmsByStudentId(studentId);
+    @GetMapping ("/student/{userId}")
+    public List<Tm> getTmsByStudentId(@PathVariable Integer userId) {
+        return tmService.getTmsByUserId(userId);
     }
 
     @PostMapping ("/new")

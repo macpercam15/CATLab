@@ -32,10 +32,10 @@ INSERT INTO idiomas(id, name, codigo) VALUES (3, 'Italiano', 'IT');
 INSERT INTO idiomas(id,name, codigo) VALUES (4, 'Francés', 'FR');
 
 -- TM
-INSERT INTO tm(id, name, idiomaA_id, idiomaB_id) VALUES 
-(1, 'TM 1', 1, 2),
-(2, 'TM 2', 1, 2),
-(3, 'TM 3', 3, 1);
+INSERT INTO tm(id, name, idiomaA_id, idiomaB_id, estudiante_id) VALUES 
+(1, 'TM 1', 1, 2, 1),
+(2, 'TM 2', 1, 2, 1),
+(3, 'TM 3', 3, 1, 1);
 
 -- TU
 INSERT INTO tu(id, origen, destino, tm_id) VALUES (1, 'segmento 1 del proyecto 1', 'segment 1 of the project 1', 1);

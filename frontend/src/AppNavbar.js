@@ -64,6 +64,9 @@ function AppNavbar() {
         if (role === "ESTUDIANTE") {
             studentLinks = (
                 <>
+                    <NavItem>
+                        <NavLink style={{ color: "black" }} tag={Link} to="/student/tms">My TMs</NavLink>
+                    </NavItem>
                 </>
             )
         }
