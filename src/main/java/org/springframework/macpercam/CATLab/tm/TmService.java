@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.macpercam.CATLab.estudiante.Estudiante;
+import org.springframework.macpercam.CATLab.estudiante.EstudianteRepository;
 import org.springframework.macpercam.CATLab.proyecto.Proyecto;
 import org.springframework.macpercam.CATLab.proyecto.ProyectoRepository;
 import org.springframework.macpercam.CATLab.proyecto.ProyectoService;
@@ -20,15 +22,17 @@ public class TmService {
     private ProyectoRepository proyectoRepo;
     private IdiomaRepository idiomaRepo;
     private ProyectoService proyectoService;
+    private EstudianteRepository estudianteRepo;
 
     @Autowired 
     public TmService(TmRepository tmrepo, ProyectoRepository proyectoRepo, TuRepository tuRepo,
-        IdiomaRepository idiomaRepo, ProyectoService proyectoService) {
+        IdiomaRepository idiomaRepo, ProyectoService proyectoService, EstudianteRepository estudianteRepo) {
         this.tmrepo = tmrepo;
         this.proyectoRepo = proyectoRepo;
         this.tuRepo = tuRepo;
         this.idiomaRepo = idiomaRepo;
         this.proyectoService = proyectoService;
+        this.estudianteRepo = estudianteRepo;
     }
 
 
@@ -57,6 +61,11 @@ public class TmService {
         return tus;
     }
 
+    @Transactional(readOnly = true)
+    public List<Tm> getTmsByStudentId(Integer studentId) {
+        return tmrepo.findByStudentId(studentId);
+    }
+
     @Transactional
     public Tm createTm(CreateTmDTO createTmDTO) {
         Tm tm = new Tm();
@@ -65,6 +74,8 @@ public class TmService {
         Idioma idioma_b = idiomaRepo.findById(createTmDTO.getIdiomaB_id()).orElseThrow(() -> new RuntimeException("Idioma B not found with id: " + createTmDTO.getIdiomaB_id()));
         tm.setIdiomaA(idioma_a);
         tm.setIdiomaB(idioma_b);
+        Estudiante estudiante = estudianteRepo.findById(createTmDTO.getEstudiante_id()).orElseThrow(() -> new RuntimeException("Estudiante not found with id: " + createTmDTO.getEstudiante_id()));
+        tm.setEstudiante(estudiante);
         return tmrepo.save(tm);
     }
 

@@ -45,6 +45,11 @@ public class TmController {
         return tmService.getTusByTmId(tmId);
     }
 
+    @GetMapping ("/student/{studentId}")
+    public List<Tm> getTmsByStudentId(@PathVariable Integer studentId) {
+        return tmService.getTmsByStudentId(studentId);
+    }
+
     @PostMapping ("/new")
     public Tm createTm(@RequestBody CreateTmDTO tm) {
         return tmService.createTm(tm);
