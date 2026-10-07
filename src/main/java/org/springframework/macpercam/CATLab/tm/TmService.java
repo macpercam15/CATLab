@@ -57,13 +57,6 @@ public class TmService {
     }
 
     @Transactional(readOnly = true)
-    public List<Tu> getTusByTmId(Integer tmId) {
-        Tm tm = tmrepo.findById(tmId).orElseThrow(() -> new RuntimeException("TM not found with id: " + tmId));
-        List<Tu> tus = tuRepo.findByTmId(tm.getId());
-        return tus;
-    }
-
-    @Transactional(readOnly = true)
     public List<Tm> getTmsByUserId(Integer userId) {
         Estudiante estudiante = estudianteRepo.findByUser(userId).orElseThrow(() -> new ResourceNotFoundException("Estudiante", "userId", userId));
         return tmrepo.findByStudentId(estudiante.getId());
@@ -105,6 +98,51 @@ public class TmService {
         }
         tmrepo.delete(tm);
     }
+
+    // #region CRUD - TUs
+    @Transactional(readOnly = true)
+    public List<Tu> getTusByTmId(Integer tmId) {
+        Tm tm = tmrepo.findById(tmId).orElseThrow(() -> new RuntimeException("TM not found with id: " + tmId));
+        List<Tu> tus = tuRepo.findByTmId(tm.getId());
+        return tus;
+    }
+
+    @Transactional 
+    public Tu editTu(Integer tuId, EditTuDTO editTuDTO) {
+        Tu tu = tuRepo.findById(tuId).orElseThrow(() -> new RuntimeException("TU not found with id: " + tuId));
+        List <Tu> existingTus = tuRepo.findByTmId(tu.getTm().getId());
+        for (Tu existingTu : existingTus) {
+            if (!existingTu.getId().equals(tuId) && existingTu.getOrigen().equals(editTuDTO.getOrigen()) && existingTu.getDestino().equals(editTuDTO.getDestino())) {
+                throw new RuntimeException("A TU with the same origin and target already exists in this TM.");
+            }
+        }
+        tu.setOrigen(editTuDTO.getOrigen());
+        tu.setDestino(editTuDTO.getDestino());
+        return tuRepo.save(tu);
+    }
+
+    @Transactional void deleteTu(Integer tuId) {
+        Tu tu = tuRepo.findById(tuId).orElseThrow(() -> new RuntimeException("TU not found with id: " + tuId));
+        tuRepo.delete(tu);
+    }
+
+    @Transactional 
+    public Tu createTu(Integer tmId, EditTuDTO editTuDTO) {
+        Tm tm = tmrepo.findById(tmId).orElseThrow(() -> new RuntimeException("TM not found with id: " + tmId));
+        List<Tu> existingTus = tuRepo.findByTmId(tmId);
+        for (Tu existingTu : existingTus) {
+            if (existingTu.getOrigen().equals(editTuDTO.getOrigen()) && existingTu.getDestino().equals(editTuDTO.getDestino())) {
+                throw new RuntimeException("A TU with the same origin and target already exists in this TM.");
+            }
+        }
+        Tu tu = new Tu();
+        tu.setOrigen(editTuDTO.getOrigen());
+        tu.setDestino(editTuDTO.getDestino());
+        tu.setTm(tm);
+        return tuRepo.save(tu);
+    }
+
+    // #endregion CRUD - TUs
     // #endregion CRUD
 
 }

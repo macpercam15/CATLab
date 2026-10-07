@@ -30,6 +30,7 @@ public class TmController {
         this.tmService = tmService;
     }
 
+    // #region CRUD - TMs
     @GetMapping("/all") 
     public List<Tm> getAllTms() {
         return tmService.getAllTms();
@@ -45,10 +46,6 @@ public class TmController {
         return tmService.getTmByProjectId(projectId);
     }
 
-    @GetMapping ("/{tmId}/tus")
-    public List<Tu> getTusByTmId(@PathVariable Integer tmId) {
-        return tmService.getTusByTmId(tmId);
-    }
 
     @GetMapping ("/student/{userId}")
     public List<Tm> getTmsByStudentId(@PathVariable Integer userId) {
@@ -70,5 +67,27 @@ public class TmController {
     public void deleteTm(@PathVariable Integer id) {
         tmService.deleteTm(id);
     }
+
+    // #endregion CRUD - TMs
+    // #region CRUD - TUs
+    @GetMapping ("/{tmId}/tus")
+    public List<Tu> getTusByTmId(@PathVariable Integer tmId) {
+        return tmService.getTusByTmId(tmId);
+    }
+    @PutMapping ("/tu/edit/{tuId}")
+    public Tu editTu(@PathVariable Integer tuId, @RequestBody EditTuDTO tu) {
+        return tmService.editTu(tuId, tu);
+    }
+
+    @PostMapping ("/tu/delete/{tuId}")
+    public void deleteTu(@PathVariable Integer tuId) {
+        tmService.deleteTu(tuId);
+    }
+
+    @PostMapping ("/tu/create/{tmId}")
+    public Tu createTu(@PathVariable Integer tmId, @RequestBody EditTuDTO tu) {
+        return tmService.createTu(tmId, tu);
+    }
+    // #endregion CRUD - TUs
 
 }
