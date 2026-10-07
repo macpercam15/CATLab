@@ -1,21 +1,20 @@
-/* ===== TM pages (coherente con myProjects.css / newProject.css) ===== */
+/* ===== TM & TU Pages (100% idéntico a myProjects.css) ===== */
 
 .tm-page {
-    min-height: calc(100vh - 84px);
+    min-height: 100vh;
     width: 100%;
-    background: #f8f9fb;
-    padding: 32px 120px 48px;
+    background: #f6f6f6;
+    padding: 36px 24px 60px;
     font-family: 'Anonymous Pro', monospace;
     color: #1f2937;
     box-sizing: border-box;
 }
 
 .tm-shell {
-    width: 100%;
+    max-width: 1100px;
     margin: 0 auto;
 }
 
-/* Reducimos el ancho máximo para la pantalla de New TM para centrar el formulario */
 .tm-shell-narrow {
     max-width: 600px;
     margin: 0 auto;
@@ -24,20 +23,313 @@
     align-items: center;
 }
 
-.tm-title {
-    margin: 0 0 32px 0;
-    font-size: 4.5rem;
-    line-height: 1.1;
-    letter-spacing: normal;
-    color: #1f1f1f;
+/* Enlace Volver */
+.tm-back-link {
+    background: none;
+    border: none;
+    color: #0f766e;
+    cursor: pointer;
+    font-size: 1.3rem;
     font-weight: 700;
-    text-align: center;
+    padding: 0;
+    margin-bottom: 20px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: inherit;
 }
 
-/* ---- Formulario New TM (Estilo Mockup) ---- */
+.tm-back-link:hover {
+    text-decoration: underline;
+}
 
+/* Header principal (Título gigante a la izquierda + Botón New a la derecha) */
+.tm-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 40px;
+}
+
+.tm-header-title-box {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.tm-title {
+    font-size: clamp(2.6rem, 4vw, 5rem);
+    line-height: 1.1;
+    margin: 0;
+    color: #1d1d1d;
+    letter-spacing: -0.06em;
+    font-weight: 700;
+    text-align: left;
+}
+
+.tm-subtitle {
+    font-size: 1.4rem;
+    color: #4b5563;
+    font-weight: 700;
+}
+
+/* Botón "New TM" / "New TU" superior (Igual a .my-projects-new-btn) */
+.tm-new-btn {
+    background: #0f766e;
+    border: none;
+    border-radius: 999px;
+    color: white;
+    font-size: 2rem;
+    font-weight: 700;
+    padding: 10px 28px;
+    cursor: pointer;
+    box-shadow: 0 6px 14px rgba(15, 118, 110, 0.22);
+    transition: transform 0.2s ease, opacity 0.2s ease;
+    white-space: nowrap;
+    font-family: inherit;
+}
+
+.tm-new-btn:hover {
+    transform: translateY(-2px);
+    opacity: 0.96;
+}
+
+/* Barra de Búsqueda */
+.tm-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.tm-search {
+    position: relative;
+    width: 300px;
+    max-width: 100%;
+}
+
+.tm-search input {
+    width: 100%;
+    height: 42px;
+    border-radius: 999px;
+    border: 1px solid #c7ced8;
+    background: #ffffff;
+    padding: 0 40px 0 18px;
+    font-family: inherit;
+    font-size: 1.2rem;
+    color: #374151;
+    outline: none;
+    box-sizing: border-box;
+}
+
+.tm-search input:focus {
+    border-color: #0f766e;
+}
+
+.tm-search svg {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #7386a5;
+    pointer-events: none;
+}
+
+/* Contenedor gris del listado (TM = 2 columnas | TU = 3 columnas) */
+.tm-list {
+    display: grid;
+    grid-template-columns: 1fr auto; /* 2 columnas: Título+Idiomas, Acciones */
+    gap: 18px;
+    background: #e7e7e7;
+    border-radius: 22px;
+    padding: 18px;
+    box-sizing: border-box;
+}
+
+.tu-list {
+    display: grid;
+    grid-template-columns: 1fr auto; 
+    gap: 18px;
+    background: #e7e7e7;
+    border-radius: 22px;
+    padding: 18px;
+    box-sizing: border-box;
+}
+
+/* Tarjeta individual (Diferenciamos span para TMs y TUs) */
+.tm-list .tm-item {
+    grid-column: span 2;
+}
+
+.tu-list .tm-item {
+    grid-column: span 2;
+    align-items: flex-start; /* Alineamos arriba por si el texto es muy largo */
+}
+
+/* Envoltorio para los textos apilados */
+.tu-content-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 16px; /* Separación entre el bloque Origen y el bloque Destino */
+    min-width: 0;
+    width: 100%;
+}
+
+/* Bloque individual de idioma */
+.tu-text-block {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+/* Etiqueta del idioma (Ej: Origen (EN)) */
+.tu-label {
+    font-size: 1.1rem;
+    color: #6b7280;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+/* Texto de la traducción (Permite saltos de línea para frases largas) */
+.tu-text {
+    font-size: 1.6rem;
+    color: #1f2937;
+    line-height: 1.4;
+    margin: 0;
+    word-wrap: break-word;
+}
+
+.tm-item {
+    display: grid;
+    grid-template-columns: subgrid;
+    align-items: center;
+    gap: 18px;
+    width: 100%;
+    min-height: 90px;
+    border: 1px solid #e1e1e1;
+    border-radius: 20px;
+    background: #ffffff;
+    padding: 18px 28px;
+    box-sizing: border-box;
+}
+
+.tm-item-main {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    min-width: 0;
+}
+
+.tm-item-title {
+    font-size: 1.7rem;
+    line-height: 1.2;
+    margin: 0;
+    color: #1f2937;
+    font-weight: 700;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+}
+
+.tm-item-title-link {
+    background: transparent;
+    border: none;
+    padding: 0;
+    text-align: left;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.tm-item-title-link:hover {
+    text-decoration: underline;
+}
+
+/* Idiomas en gris (Calcado a .project-lang) */
+.tm-item-lang {
+    font-size: 1.2rem;
+    color: #4b5563;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    margin-top: 6px;
+}
+
+.tm-item-subtext {
+    font-size: 1.1rem;
+    color: #6b7280;
+    font-weight: 700;
+    margin-top: 4px;
+}
+
+/* Botones de Acción (Igual a .project-button) */
+.tm-item-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+.tm-btn {
+    border: 2px solid #0f766e;
+    border-radius: 999px;
+    padding: 9px 20px;
+    font-family: inherit;
+    font-size: 1.45rem;
+    font-weight: 700;
+    cursor: pointer;
+    min-width: 110px;
+    line-height: 1.2;
+    transition: transform 0.2s ease, background 0.2s ease, filter 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.tm-btn:hover {
+    filter: brightness(0.98);
+    transform: translateY(-2px);
+}
+
+.tm-btn-primary {
+    background: #0f766e;
+    border-color: #0f766e;
+    color: #ffffff;
+    box-shadow: 0 6px 14px rgba(15, 118, 110, 0.2);
+}
+
+.tm-btn-secondary {
+    background: #ffffff;
+    border-color: #0f766e;
+    color: #0f766e;
+}
+
+.tm-btn-danger {
+    background: #ffffff;
+    border-color: #b91c1c;
+    color: #b91c1c;
+}
+
+.tm-btn-danger:hover {
+    background: #fef2f2;
+}
+
+.tm-message {
+    margin: 16px 0 0;
+    font-size: 1.5rem;
+    color: #374151;
+}
+
+.tm-message.error {
+    color: #b91c1c;
+}
+
+/* Form Card (Crear TM) */
 .tm-card {
-    background: #f0f2f5; /* Fondo gris claro redondeado */
+    background: #f0f2f5;
     border-radius: 24px;
     padding: 40px;
     width: 100%;
@@ -70,7 +362,7 @@
     padding: 0 20px;
     font-family: inherit;
     font-size: 1.3rem;
-    color: #5c6c85; /* Color del texto del placeholder/input */
+    color: #5c6c85;
     outline: none;
     box-sizing: border-box;
 }
@@ -81,288 +373,27 @@
     background: #ffffff;
 }
 
-.tm-field input::placeholder {
-    color: #8c9bb3;
-}
-
-.tm-lang-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    background: transparent;
-    border-radius: 24px;
-}
-
-.tm-swap {
-    background: transparent;
-    border: none;
-    font-size: 1.8rem;
-    color: #0f766e;
-    cursor: pointer;
-    padding: 0 10px;
-    transition: transform 0.2s ease;
-}
-
-.tm-swap:hover {
-    transform: scale(1.1);
-}
-
-.tm-hint {
-    font-size: 1rem;
-    color: #7386a5;
-    margin-top: 4px;
-}
-
-.tm-message.error {
-    color: #b91c1c;
-    font-weight: bold;
-    text-align: center;
-    margin-top: 16px;
-    font-size: 1.2rem;
-}
-
-/* ---- Botones Actions ---- */
-.tm-form-actions {
-    display: flex;
-    justify-content: center;
-    gap: 24px;
-    margin-top: 32px;
-    width: 100%;
-}
-
-.tm-button {
-    border: none;
-    border-radius: 999px;
-    font-family: inherit;
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: #ffffff;
-    padding: 12px 40px;
-    cursor: pointer;
-    min-width: 160px;
-    transition: transform 0.2s ease, filter 0.2s ease;
-}
-
-.tm-button:hover:not(:disabled) {
-    transform: translateY(-2px);
-    filter: brightness(0.96);
-}
-
-.tm-button:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-}
-
-.tm-button.primary {
-    background: #0f766e;
-}
-
-.tm-button.danger {
-    background: #b90000;
-}
-
-/* ---- Toolbar y Tabla (Mantenido de tu versión anterior) ---- */
-
-.tm-toolbar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-    margin: 10px 0 20px;
-    flex-wrap: wrap;
-}
-
-.tm-search {
-    position: relative;
-    width: 260px;
-    max-width: 100%;
-}
-
-.tm-search input {
-    width: 100%;
-    height: 34px;
-    border-radius: 999px;
-    border: 1px solid #c7ced8;
-    background: #f4f5f8;
-    padding: 0 40px 0 14px;
-    font-family: inherit;
-    font-size: 1.1rem;
-    color: #374151;
-    outline: none;
-    box-sizing: border-box;
-}
-
-.tm-search input::placeholder {
-    color: #7386a5;
-}
-
-.tm-search input:focus {
-    border-color: #0f766e;
-}
-
-.tm-search svg {
-    position: absolute;
-    right: 14px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #7386a5;
-    pointer-events: none;
-}
-
-.tm-new-btn {
-    border: none;
-    border-radius: 999px;
-    background: #0f766e;
-    color: #ffffff;
-    font-family: inherit;
-    font-size: 1.4rem;
-    font-weight: 700;
-    padding: 8px 34px;
-    cursor: pointer;
-    box-shadow: 0 6px 14px rgba(15, 118, 110, 0.22);
-    transition: transform 0.2s ease, opacity 0.2s ease;
-}
-
-.tm-new-btn:hover {
-    transform: translateY(-2px);
-    opacity: 0.96;
-}
-
-/* ---- Tabla ---- */
-
-.tm-list {
-    width: 100%;
-    background: rgba(205, 212, 221, 0.5);
-    border-radius: 22px;
-    padding: 18px;
-    box-sizing: border-box;
-}
-
-.tm-rows {
-    border-radius: 22px;
-    overflow: hidden;
-    background: #ffffff;
-}
-
-.tm-row {
-    display: grid;
-    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr) minmax(0, 1fr);
-    align-items: center;
-    gap: 16px;
-    padding: 0 22px;
-    text-align: center;
-}
-
-.tm-row-head {
-    padding-top: 5px;
-    padding-bottom: 5px;
-    font-size: 1.8rem;
-    font-weight: 700;
-    color: #3a3f4a;
-    background: rgba(205, 212, 221, 0.5);
-}
-
-.tm-row-item {
-    min-height: 72px;
-    background: #ffffff;
-    font-size: 1.5rem;
-}
-
-.tm-row-item:nth-child(even) {
-    background: #f3f4f6;
-}
-
-.tm-name {
-    font-weight: 700;
-    color: #1f2937;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.tm-langs {
-    font-weight: 700;
-    color: #374151;
-    letter-spacing: 0.03em;
-}
-
-.tm-actions {
-    display: flex;
-    gap: 10px;
-    justify-content: center;
-}
-
-.tm-btn {
-    border: none;
-    border-radius: 999px;
-    padding: 5px 22px;
-    font-family: inherit;
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: #ffffff;
-    cursor: pointer;
-    min-width: 150px;
-    transition: transform 0.2s ease, filter 0.2s ease;
-}
-
-.tm-btn:hover {
-    transform: translateY(-1px);
-    filter: brightness(0.96);
-}
-
-.tm-btn-edit {
-    background: #0f766e;
-}
-
-.tm-btn-delete {
-    background: #b91c1c;
-}
-
-@media (max-width: 720px) {
-    .tm-page {
-        padding: 20px 28px;
-    }
-
-    .tm-title {
-        font-size: 3.4rem;
-    }
-
-    .tm-toolbar {
+@media (max-width: 820px) {
+    .tm-header {
         flex-direction: column;
-        align-items: stretch;
+        align-items: flex-start;
     }
 
-    .tm-search {
-        width: 100%;
-    }
-
-    .tm-row {
-        grid-template-columns: 1fr;
-        gap: 8px;
-        padding: 12px 18px;
-    }
-
-    .tm-row-head {
-        display: none;
-    }
-
-    .tm-actions {
-        flex-wrap: wrap;
-    }
-
-    .tm-btn {
-        flex: 1 1 120px;
-        min-width: 0;
-    }
-
-    .tm-form-actions {
+    .tm-list, .tu-list {
+        display: flex;
         flex-direction: column;
-        width: 100%;
-        gap: 16px;
     }
 
-    .tm-button {
+    .tm-item {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+        padding: 18px 20px;
+    }
+
+    .tm-item-actions {
         width: 100%;
+        justify-content: flex-start;
     }
 }

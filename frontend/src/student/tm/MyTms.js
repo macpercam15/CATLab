@@ -8,7 +8,6 @@ export default function MyTMs() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    // Estados para la edición y eliminación
     const [tmToDelete, setTmToDelete] = useState(null);
     const [tmToEdit, setTmToEdit] = useState(null);
     const [editTmName, setEditTmName] = useState('');
@@ -20,8 +19,6 @@ export default function MyTMs() {
     const currentUser = tokenService.getUser();
     const navigate = useNavigate();
 
-    // Importante: 'User' y 'Estudiante' son entidades distintas.
-    // El endpoint /api/tm/student/{studentId} requiere el ID de Estudiante.
     const studentId = currentUser?.student?.id || currentUser?.estudiante?.id || currentUser?.id;
 
     useEffect(() => {
@@ -55,7 +52,6 @@ export default function MyTMs() {
             });
     }, [studentId, jwt]);
 
-    // Lógica para el modal de edición
     const openEditModal = (tm) => {
         setTmToEdit(tm);
         setEditTmName(tm.name || '');
@@ -114,13 +110,12 @@ export default function MyTMs() {
         }
     };
 
-    // Lógica para confirmar la eliminación
     const confirmDelete = async () => {
         if (!tmToDelete) return;
 
         try {
             const response = await fetch(`/api/tm/delete/${tmToDelete.id}`, {
-                method: 'POST', // Siguiendo el @PostMapping de tu controlador
+                method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${jwt}`,
                 },
@@ -148,7 +143,15 @@ export default function MyTMs() {
     return (
         <div className="tm-page">
             <div className="tm-shell">
-                <h1 className="tm-title">My TMs</h1>
+                <header className="tm-header">
+                    <h1 className="tm-title">My TMs</h1>
+                    <button 
+                        className="tm-new-btn" 
+                        onClick={() => navigate('/student/tms/new')}
+                    >
+                        New TM
+                    </button>
+                </header>
 
                 <div className="tm-toolbar">
                     <div className="tm-search">
@@ -158,59 +161,59 @@ export default function MyTMs() {
                             <line x1="16.5" y1="16.5" x2="21" y2="21" />
                         </svg>
                     </div>
-
-                    <button className="tm-new-btn" onClick={() => navigate('/student/tms/new')}>
-                        New TM
-                    </button>
                 </div>
-                
+
                 {visible && message && !tmToEdit && (
-                    <p style={{ color: '#b91c1c', textAlign: 'center', marginBottom: '16px' }}>{message}</p>
+                    <p className="tm-message error">{message}</p>
                 )}
 
-                <div className="tm-list">
-                    <div className="tm-row tm-row-head">
-                        <span>Name</span>
-                        <span>Languages</span>
-                        <span>Actions</span>
-                    </div>
-
-                    {loading ? (
-                        <p style={{ textAlign: 'center', padding: '20px' }}>Cargando memorias...</p>
-                    ) : error ? (
-                        <p style={{ textAlign: 'center', padding: '20px', color: '#b91c1c' }}>{error}</p>
-                    ) : tms.length === 0 ? (
-                        <p style={{ textAlign: 'center', padding: '20px' }}>No hay memorias de traducción disponibles.</p>
-                    ) : (
-                        <div className="tm-rows">
-                            {tms.map((tm) => (
-                                <div className="tm-row tm-row-item" key={tm.id}>
-                                    <span className="tm-name">{tm.name}</span>
-                                    <span className="tm-langs">
-                                        {`${tm.idiomaA?.codigo || '—'}-${tm.idiomaB?.codigo || '—'}`}
+                {loading ? (
+                    <p className="tm-message">Cargando memorias de traducción...</p>
+                ) : error ? (
+                    <p className="tm-message error">{error}</p>
+                ) : tms.length === 0 ? (
+                    <p className="tm-message">No hay memorias de traducción disponibles.</p>
+                ) : (
+                    <div className="tm-list">
+                        {tms.map((tm) => (
+                            <div className="tm-item" key={tm.id}>
+                                <div className="tm-item-main">
+                                    <button
+                                        className="tm-item-title tm-item-title-link"
+                                        type="button"
+                                        onClick={() => navigate(`/student/tms/${tm.id}/tus`)}
+                                        title={`Ver TUs de ${tm.name}`}
+                                    >
+                                        {tm.name}
+                                    </button>
+                                    
+                                    {/* Idiomas movidos aquí debajo con su nueva clase */}
+                                    <span className="tm-item-lang">
+                                        {`${tm.idiomaA?.codigo || '—'} - ${tm.idiomaB?.codigo || '—'}`}
                                     </span>
-                                    <div className="tm-actions">
-                                        <button 
-                                            className="tm-btn tm-btn-edit" 
-                                            onClick={() => openEditModal(tm)}
-                                        >
-                                            Edit
-                                        </button>
-                                        <button 
-                                            className="tm-btn tm-btn-delete" 
-                                            onClick={() => setTmToDelete(tm)}
-                                        >
-                                            Delete
-                                        </button>
-                                    </div>
                                 </div>
-                            ))}
-                        </div>
-                    )}
-                </div>
+
+                                <div className="tm-item-actions">
+                                    <button 
+                                        className="tm-btn tm-btn-secondary" 
+                                        onClick={() => openEditModal(tm)}
+                                    >
+                                        Edit
+                                    </button>
+                                    <button 
+                                        className="tm-btn tm-btn-danger" 
+                                        onClick={() => setTmToDelete(tm)}
+                                    >
+                                        Delete
+                                    </button>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                )}
             </div>
 
-            {/* Modal para Editar TM */}
+            {/* Modal Editar TM */}
             {tmToEdit && (
                 <div style={modalStyles.overlay} onClick={closeEditModal}>
                     <div style={modalStyles.editContent} onClick={(e) => e.stopPropagation()}>
@@ -255,7 +258,7 @@ export default function MyTMs() {
                 </div>
             )}
 
-            {/* Modal para Confirmar Eliminación */}
+            {/* Modal Confirmar Eliminar */}
             {tmToDelete && (
                 <div style={modalStyles.overlay}>
                     <div style={modalStyles.content}>
@@ -285,107 +288,31 @@ export default function MyTMs() {
     );
 }
 
-// Estilos de los modales (Copiados de MyProjects.js para mantener consistencia)
 const modalStyles = {
     overlay: {
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        backgroundColor: 'rgba(0, 0, 0, 0.4)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        zIndex: 1000,
+        position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+        backgroundColor: 'rgba(0, 0, 0, 0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000,
     },
     content: {
-        background: '#ffffff',
-        borderRadius: '16px',
-        padding: '28px',
-        maxWidth: '420px',
-        width: '90%',
-        boxShadow: '0 10px 25px rgba(0, 0, 0, 0.15)',
-        textAlign: 'center',
-        fontFamily: "'Anonymous Pro', monospace",
+        background: '#ffffff', borderRadius: '16px', padding: '28px', maxWidth: '420px', width: '90%',
+        boxShadow: '0 10px 25px rgba(0, 0, 0, 0.15)', textAlign: 'center', fontFamily: "'Anonymous Pro', monospace",
     },
     editContent: {
-        background: '#ffffff',
-        borderRadius: '18px',
-        padding: '24px',
-        maxWidth: '520px',
-        width: '92%',
-        boxShadow: '0 10px 25px rgba(0, 0, 0, 0.15)',
-        textAlign: 'center',
-        fontFamily: "'Anonymous Pro', monospace",
+        background: '#ffffff', borderRadius: '18px', padding: '24px', maxWidth: '520px', width: '92%',
+        boxShadow: '0 10px 25px rgba(0, 0, 0, 0.15)', textAlign: 'center', fontFamily: "'Anonymous Pro', monospace",
     },
-    title: {
-        fontSize: '1.8rem',
-        margin: '0 0 12px 0',
-        color: '#1f2937',
-    },
-    editTitle: {
-        fontSize: '1.9rem',
-        margin: '0 0 18px 0',
-        color: '#1f2937',
-    },
+    title: { fontSize: '1.8rem', margin: '0 0 12px 0', color: '#1f2937' },
+    editTitle: { fontSize: '1.9rem', margin: '0 0 18px 0', color: '#1f2937' },
     editInput: {
-        width: '100%',
-        borderRadius: '12px',
-        border: '1px solid #d1d5db',
-        padding: '12px 14px',
-        fontSize: '1.3rem',
-        fontFamily: "'Anonymous Pro', monospace",
-        color: '#1f2937',
-        boxSizing: 'border-box',
-        outline: 'none',
-        marginBottom: '14px',
+        width: '100%', borderRadius: '12px', border: '1px solid #d1d5db', padding: '12px 14px', fontSize: '1.3rem',
+        fontFamily: "'Anonymous Pro', monospace", color: '#1f2937', boxSizing: 'border-box', outline: 'none', marginBottom: '14px',
     },
-    editField: {
-        display: 'flex',
-        flexDirection: 'column',
-        textAlign: 'left',
-        marginBottom: '14px',
-    },
-    editLabel: {
-        fontSize: '1.1rem',
-        fontWeight: 'bold',
-        color: '#1f2937',
-        marginBottom: '6px',
-    },
-    text: {
-        fontSize: '1.2rem',
-        color: '#4b5563',
-        marginBottom: '24px',
-        lineHeight: '1.4',
-    },
-    buttonContainer: {
-        display: 'flex',
-        justifyContent: 'center',
-        gap: '12px',
-    },
-    button: {
-        padding: '10px 20px',
-        borderRadius: '999px',
-        fontSize: '1.2rem',
-        fontWeight: 'bold',
-        cursor: 'pointer',
-        border: '2px solid transparent',
-        transition: 'all 0.2s ease',
-    },
-    cancelBtn: {
-        background: '#ffffff',
-        borderColor: '#9ca3af',
-        color: '#4b5563',
-    },
-    confirmBtn: {
-        background: '#0f766e',
-        borderColor: '#0f766e',
-        color: '#ffffff',
-    },
-    deleteBtn: {
-        background: '#b91c1c',
-        borderColor: '#b91c1c',
-        color: '#ffffff',
-    }
+    editField: { display: 'flex', flexDirection: 'column', textAlign: 'left', marginBottom: '14px' },
+    editLabel: { fontSize: '1.1rem', fontWeight: 'bold', color: '#1f2937', marginBottom: '6px' },
+    text: { fontSize: '1.2rem', color: '#4b5563', marginBottom: '24px', lineHeight: '1.4' },
+    buttonContainer: { display: 'flex', justifyContent: 'center', gap: '12px' },
+    button: { padding: '10px 20px', borderRadius: '999px', fontSize: '1.2rem', fontWeight: 'bold', cursor: 'pointer', border: '2px solid transparent', transition: 'all 0.2s ease' },
+    cancelBtn: { background: '#ffffff', borderColor: '#9ca3af', color: '#4b5563' },
+    confirmBtn: { background: '#0f766e', borderColor: '#0f766e', color: '#ffffff' },
+    deleteBtn: { background: '#b91c1c', borderColor: '#b91c1c', color: '#ffffff' }
 };

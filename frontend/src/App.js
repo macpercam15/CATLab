@@ -21,6 +21,7 @@ import TranslateEditor from "./student/TranslateEditor";
 import TeacherFeedbackEditor from "./teacher/TeacherFeedbackEditor";
 import MyTms from "./student/tm/MyTms";
 import NewTm from "./student/tm/NewTm";
+import ListTus from "./student/tm/ListTus";
 
 function ErrorFallback({ error, resetErrorBoundary }) {
   return (
@@ -67,6 +68,7 @@ function App() {
           <Route path="/translate/:projectId" exact={true} element={<PrivateRoute><TranslateEditor /></PrivateRoute>} />
           <Route path="/student/tms" exact={true} element={<PrivateRoute><MyTms /></PrivateRoute>} />
           <Route path="/student/tms/new" exact={true} element={<PrivateRoute><NewTm /></PrivateRoute>} />
+          <Route path="/student/tms/:tmId/tus" exact={true} element={<PrivateRoute><ListTus/></PrivateRoute>} />
           {/* <Route path="/dashboard" element={<PrivateRoute><OwnerDashboard /></PrivateRoute>} /> */}
         </>)
     }
