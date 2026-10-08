@@ -1,7 +1,10 @@
 package org.springframework.macpercam.CATLab.segmento;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.springframework.macpercam.CATLab.model.BaseEntity;
 import org.springframework.macpercam.CATLab.proyecto.Proyecto;
+import org.springframework.macpercam.CATLab.tm.Tu;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -25,6 +28,12 @@ public class Segmento extends BaseEntity{
     private EstadoSegmento estado;
 
     private String feedback;
+
+    @JsonIgnore 
+    @ManyToOne (fetch = FetchType.LAZY)
+    @JoinColumn (name = "tu_id")
+    @OnDelete(action = OnDeleteAction.SET_NULL)
+    private Tu tuId;
 
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)

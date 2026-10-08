@@ -90,4 +90,11 @@ public class TmController {
     }
     // #endregion CRUD - TUs
 
+    // #region match
+    @GetMapping ("/segmento/{segmentoId}/matches")
+    public List<TmMatchDTO> getMatchesForSegmento(@PathVariable Integer segmentoId) {
+        return tmService.buscarCoincidencias(segmentoId);
+    }
+    // #endregion match
+
 }

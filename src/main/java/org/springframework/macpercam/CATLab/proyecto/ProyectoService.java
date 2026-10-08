@@ -101,11 +101,11 @@ public class ProyectoService {
         
         Tm tm = tmRepository.findById(proyecto.getTm_id()).orElseThrow(() -> new ResourceNotFoundException("Tm", "ID", proyecto.getTm_id()));
         if (!(
-            (tm.getIdiomaA().getId() == idiomaOrigen.getId() &&
-            tm.getIdiomaB().getId() == idiomaDestino.getId())
+            (tm.getIdiomaA().getId().equals(idiomaOrigen.getId())) &&
+            tm.getIdiomaB().getId().equals(idiomaDestino.getId())
             ||
-            (tm.getIdiomaA().getId() == idiomaDestino.getId() &&
-            tm.getIdiomaB().getId() == idiomaOrigen.getId())
+            (tm.getIdiomaA().getId().equals(idiomaDestino.getId()) &&
+            tm.getIdiomaB().getId().equals(idiomaOrigen.getId()))
         )) {
             throw new IllegalArgumentException(
                 "TM must be compatible with the project's source and target languages."

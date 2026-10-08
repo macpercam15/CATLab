@@ -1,8 +1,8 @@
 package org.springframework.macpercam.CATLab.tm;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.macpercam.CATLab.estudiante.Estudiante;
@@ -10,9 +10,10 @@ import org.springframework.macpercam.CATLab.estudiante.EstudianteRepository;
 import org.springframework.macpercam.CATLab.exceptions.ResourceNotFoundException;
 import org.springframework.macpercam.CATLab.proyecto.Proyecto;
 import org.springframework.macpercam.CATLab.proyecto.ProyectoRepository;
-import org.springframework.macpercam.CATLab.proyecto.ProyectoService;
 import org.springframework.macpercam.CATLab.proyecto.idioma.Idioma;
 import org.springframework.macpercam.CATLab.proyecto.idioma.IdiomaRepository;
+import org.springframework.macpercam.CATLab.segmento.Segmento;
+import org.springframework.macpercam.CATLab.segmento.SegmentoRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,18 +24,19 @@ public class TmService {
     private TuRepository tuRepo;
     private ProyectoRepository proyectoRepo;
     private IdiomaRepository idiomaRepo;
-    private ProyectoService proyectoService;
     private EstudianteRepository estudianteRepo;
+    private SegmentoRepository segmentoRepo;
 
     @Autowired 
     public TmService(TmRepository tmrepo, ProyectoRepository proyectoRepo, TuRepository tuRepo,
-        IdiomaRepository idiomaRepo, ProyectoService proyectoService, EstudianteRepository estudianteRepo) {
+        IdiomaRepository idiomaRepo, EstudianteRepository estudianteRepo, SegmentoRepository segmentoRepo) {
         this.tmrepo = tmrepo;
         this.proyectoRepo = proyectoRepo;
         this.tuRepo = tuRepo;
         this.idiomaRepo = idiomaRepo;
-        this.proyectoService = proyectoService;
         this.estudianteRepo = estudianteRepo;
+        this.segmentoRepo = segmentoRepo;
+
     }
 
 
@@ -88,7 +90,7 @@ public class TmService {
     public void deleteTm(Integer id) {
         Tm tm = tmrepo.findById(id).orElseThrow(() -> new RuntimeException("TM not found with id: " + id));
         
-        List<Proyecto> proyectos = proyectoService.findProjectsByTmId(id);
+        List<Proyecto> proyectos = proyectoRepo.findByTmId(tm.getId());
         if (!proyectos.isEmpty()) {
             throw new RuntimeException("Cannot delete TM with id: " + id + " because it is associated with existing projects.");
         }
@@ -144,5 +146,67 @@ public class TmService {
 
     // #endregion CRUD - TUs
     // #endregion CRUD
+
+    // #region Level 1
+    private boolean mismoSentido(Tm tm, Proyecto p){
+        return Objects.equals(tm.getIdiomaA().getId(), p.getIdiomaOrigen().getId());
+    }
+
+    private String limpiar(String s){
+        return s == null ? "" : s.trim();
+    }
+
+    // Al marcar como revisado:
+    @Transactional 
+    public void guardarDesdeSegmento(Segmento segmento){
+        Proyecto p = segmento.getProyecto();
+        if (p== null || p.getTm() == null) return;
+        Tm tm = p.getTm();
+
+        String source = limpiar(segmento.getTextoOriginal());
+        String target = limpiar(segmento.getTextoTraducido());
+        if (source.isEmpty() || target.isEmpty()) return;
+
+        String origen = mismoSentido(tm, p) ? source : target;
+        String destino = mismoSentido(tm, p) ? target : source;
+
+        if (tuRepo.existsByTmIdAndOrigenAndDestino(tm.getId(), origen, destino)) return;
+
+        Tu tu = new Tu();
+        tu.setTm(tm);
+        tu.setOrigen(origen);
+        tu.setDestino(destino);
+        tuRepo.save(tu); 
+        
+        segmento.setTuId(tu);
+    }
+
+    // Coincidencias al 100% TODO: Cambiar al 70%
+    @Transactional(readOnly = true)
+    public List<TmMatchDTO> buscarCoincidencias(Integer segmentoId){
+        Segmento segmento = segmentoRepo.findById(segmentoId)
+            .orElseThrow(() -> new RuntimeException("Segmento not found with id: " + segmentoId));
+        
+        Proyecto p = segmento.getProyecto();
+        List<TmMatchDTO> resultado = new ArrayList<>();
+        if (p== null || p.getTm() == null) return resultado;
+        Tm tm = p.getTm();
+
+        String texto = limpiar(segmento.getTextoOriginal());
+        if (texto.isEmpty()) return resultado;
+
+        if (mismoSentido(tm, p)){
+            for (Tu tu : tuRepo.findByTmIdAndOrigen(tm.getId(), texto)){
+                resultado.add(new TmMatchDTO(tu.getId(), tu.getOrigen(), tu.getDestino()));
+            }
+        } else {
+            for (Tu tu : tuRepo.findByTmIdAndDestino(tm.getId(), texto)){
+                resultado.add(new TmMatchDTO(tu.getId(), tu.getOrigen(), tu.getDestino()));
+            }
+        }
+        return resultado;
+    }
+
+    // #endregion Level 1
 
 }

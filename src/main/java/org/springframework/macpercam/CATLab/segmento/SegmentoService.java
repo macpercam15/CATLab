@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.macpercam.CATLab.exceptions.ResourceNotFoundException;
 import org.springframework.macpercam.CATLab.proyecto.Documento;
 import org.springframework.macpercam.CATLab.proyecto.Proyecto;
+import org.springframework.macpercam.CATLab.tm.TmService;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -22,10 +23,12 @@ import jakarta.transaction.Transactional;
 public class SegmentoService {
 
     private final SegmentoRepository segmentoRepository;
+    private final TmService tmService;
 
     @Autowired
-    public SegmentoService(SegmentoRepository segmentoRepository) {
+    public SegmentoService(SegmentoRepository segmentoRepository, TmService tmService) {
         this.segmentoRepository = segmentoRepository;
+        this.tmService = tmService;
     }
 
 // #region PDF
@@ -110,10 +113,14 @@ public class SegmentoService {
     public Segmento marcarRevisado(Integer id) {
         Segmento segmento = findById(id);
         if (!segmento.getEstado().equals(EstadoSegmento.TRADUCIDO)) {
-            throw new IllegalStateException("El segmento no está en estado TRADUCIDO.");
+            throw new IllegalStateException("The segment is not in TRANSLATED state.");
         }
         segmento.setEstado(EstadoSegmento.REVISADO);
-        return segmentoRepository.save(segmento);
+        Segmento guardado = segmentoRepository.save(segmento);
+
+        tmService.guardarDesdeSegmento(guardado);
+
+        return guardado;
     }
 
     @Transactional()

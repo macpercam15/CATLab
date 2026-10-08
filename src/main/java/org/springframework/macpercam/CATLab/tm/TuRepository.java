@@ -10,4 +10,10 @@ public interface TuRepository extends CrudRepository<Tu, Integer> {
     @Query("SELECT t FROM Tu t WHERE t.tm.id = :tmId")
     public List<Tu> findByTmId(Integer tmId);
 
+    boolean existsByTmIdAndOrigenAndDestino(Integer tmId, String origen, String destino);
+
+    List<Tu> findByTmIdAndOrigen(Integer tmId, String origen);
+
+    List <Tu> findByTmIdAndDestino(Integer tmId, String destino);
+
 }
