@@ -40,7 +40,10 @@ export default function TranslateEditor() {
     const [isSaving, setIsSaving] = useState(false);
     const [isPublishing, setIsPublishing] = useState(false);
 
-    // --- Glosario ---
+    const [tmMatches, setTmMatches] = useState([]);
+    const [tmLoading, setTmLoading] = useState(false);
+    const tmRequestRef = useRef(0);
+
     const [glossaryMatches, setGlossaryMatches] = useState([]);
     const [glossaryLoading, setGlossaryLoading] = useState(false);
     const [selectionBtn, setSelectionBtn] = useState(null); // { text, x, y }
@@ -74,8 +77,6 @@ export default function TranslateEditor() {
     useEffect(() => {
         fetchProjectData();
         fetchSegments();
-
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [projectId]);
 
     useEffect(() => {
@@ -438,19 +439,42 @@ export default function TranslateEditor() {
         }
     };
 
-    // Carga las coincidencias al abrir un segmento
+    const fetchTmMatches = async (segmentId) => {
+        const requestId = ++tmRequestRef.current;
+        setTmLoading(true);
+
+        try {
+            const res = await fetch(
+                `/api/tm/segmento/${segmentId}/matches`,
+                {
+                    headers: { Authorization: `Bearer ${jwt}` },
+                }
+            );
+
+            if (requestId !== tmRequestRef.current) return;
+
+            setTmMatches(res.ok ? await res.json() : []);
+        } catch (error) {
+            if (requestId === tmRequestRef.current) setTmMatches([]);
+            console.error('Error fetching TM matches:', error);
+        } finally {
+            if (requestId === tmRequestRef.current) setTmLoading(false);       
+        }
+    };
+
     useEffect(() => {
         if (expandedId) {
             fetchGlossaryMatches(expandedId);
+            fetchTmMatches(expandedId);
         } else {
             glossaryRequestRef.current++;
+            tmRequestRef.current++;
             setGlossaryMatches([]);
+            setTmMatches([]);
             setSelectionBtn(null);
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [expandedId]);
 
-    // Oculta el botón flotante al hacer clic fuera o al hacer scroll
     useEffect(() => {
         if (!selectionBtn) return;
 
@@ -628,6 +652,32 @@ export default function TranslateEditor() {
         });
     };
 
+    const renderTmTab = (isReadOnly) => (
+        <div className="glossary-panel">
+            {tmLoading ? (
+                <p className="glossary-empty">Cargando TM...</p>
+            ) : tmMatches.length === 0 ? (
+                <p className="glossary-empty">No hay coincidencias 100% en la TM.</p>
+            ) : (
+                <ul className="glossary-list">
+                    {tmMatches.map((m) => (
+                        <li
+                            key={m.tuId}
+                            className={`glossary-item tm-item ${!isReadOnly ? 'tm-item-clickable' : ''}`}
+                            onClick={() => {
+                                if (!isReadOnly) setCurrentTranslation(m.target);
+                            }}
+                            title={!isReadOnly ? 'Click para usar esta traducción' : ''}
+                        >
+                            <span className="tm-badge">100%</span>
+                            <span className="glossary-translation">{m.target}</span>
+                        </li>
+                    ))}
+                </ul>
+            )}
+        </div>
+    );
+    
     const renderGlossaryTab = (isReadOnly) => {
         // 1. Agrupar las coincidencias por el término de origen (ignorando mayúsculas/minúsculas)
         const groupedMatches = glossaryMatches.reduce((acc, entry) => {
@@ -1296,20 +1346,10 @@ export default function TranslateEditor() {
 
                                         </div>
 
-                                        <div className={`tools-content ${activeTab === 'GLOSARIO' ? 'glossary-content' : ''}`}>
-
-                                            {activeTab === 'GLOSARIO' ? (
-                                                renderGlossaryTab(isReadOnly)
-                                            ) : (
-                                                <div className="not-implemented-msg">
-                                                    <p>
-                                                        La funcionalidad de{' '}
-                                                        <strong>{activeTab}</strong>{' '}
-                                                        está por implementar.
-                                                    </p>
-                                                </div>
-                                            )}
-
+                                        <div className={`tools-content ${activeTab === 'GLOSARIO' || activeTab === 'TM' ? 'glossary-content' : ''}`}>
+                                            {activeTab === 'GLOSARIO'
+                                                ? renderGlossaryTab(isReadOnly)
+                                                : renderTmTab(isReadOnly)}
                                         </div>
 
                                     </div>
