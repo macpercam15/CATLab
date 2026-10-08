@@ -652,27 +652,49 @@ export default function TranslateEditor() {
         });
     };
 
+    // Función auxiliar para los colores de las etiquetas según el porcentaje
+    const getMatchColorClass = (percentage) => {
+        if (percentage >= 100) return 'match-perfect';
+        if (percentage >= 75) return 'match-high';
+        return 'match-low';
+    };
+
     const renderTmTab = (isReadOnly) => (
         <div className="glossary-panel">
             {tmLoading ? (
                 <p className="glossary-empty">Cargando TM...</p>
             ) : tmMatches.length === 0 ? (
-                <p className="glossary-empty">No hay coincidencias 100% en la TM.</p>
+                <p className="glossary-empty">No hay coincidencias en la TM.</p>
             ) : (
-                <ul className="glossary-list">
-                    {tmMatches.map((m) => (
-                        <li
-                            key={m.tuId}
-                            className={`glossary-item tm-item ${!isReadOnly ? 'tm-item-clickable' : ''}`}
-                            onClick={() => {
-                                if (!isReadOnly) setCurrentTranslation(m.target);
-                            }}
-                            title={!isReadOnly ? 'Click para usar esta traducción' : ''}
-                        >
-                            <span className="tm-badge">100%</span>
-                            <span className="glossary-translation">{m.target}</span>
-                        </li>
-                    ))}
+                <ul className="tm-list">
+                    {tmMatches.map((m) => {
+                        // Preparado para el futuro: usa m.matchPercentage si existe, si no, asume 100
+                        const matchPct = m.matchPercentage || 100; 
+                        
+                        return (
+                            <li
+                                key={m.tuId}
+                                className={`tm-match-card ${!isReadOnly ? 'tm-clickable' : ''}`}
+                                onClick={() => {
+                                    if (!isReadOnly) setCurrentTranslation(m.target);
+                                }}
+                                title={!isReadOnly ? 'Haz clic para usar esta traducción' : ''}
+                            >
+                                <div className="tm-match-header">
+                                    <span className={`tm-match-badge ${getMatchColorClass(matchPct)}`}>
+                                        {matchPct}%
+                                    </span>
+                                    <span className="tm-match-meta">Translation Memory</span>
+                                </div>
+                                
+                                <div className="tm-match-body">
+                                    {/* Si en el futuro tu API devuelve el segmento original (ej. m.source), aparecerá aquí */}
+                                    {m.source && <div className="tm-match-source">{m.source}</div>}
+                                    <div className="tm-match-target">{m.target}</div>
+                                </div>
+                            </li>
+                        );
+                    })}
                 </ul>
             )}
         </div>
