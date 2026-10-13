@@ -396,4 +396,66 @@
         width: 100%;
         justify-content: flex-start;
     }
+
+
+
+
+    /* Panel de coincidencias de la TM (nivel 2). Ruta sugerida: src/static/css/student/TmMatches.css */
+
+    .tm-threshold {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 4px 2px 12px;
+        font-size: 0.95rem;
+        color: #4b5563;
+    }
+
+    .tm-threshold input[type='range'] {
+        flex: 1;
+        max-width: 220px;
+        accent-color: #0f766e;
+    }
+
+    /* Etiqueta de porcentaje */
+    .tm-match-badge.match-placeables {
+        background: #fef3c7;
+        color: #92400e;
+        border: 1px solid #fcd34d;
+    }
+
+    .tm-match-warning {
+        margin-top: 6px;
+        font-size: 0.85rem;
+        color: #b45309;
+    }
+
+    .tm-match-note {
+        margin-top: 6px;
+        font-size: 0.85rem;
+        color: #92400e;
+    }
+
+    /* Diff sobre el origen de la UT */
+    .tm-diff-delete {
+        background: #fee2e2;
+        color: #991b1b;
+        text-decoration: line-through;
+        border-radius: 3px;
+        padding: 0 2px;
+    }
+
+    .tm-diff-insert {
+        background: #dcfce7;
+        color: #166534;
+        border-radius: 3px;
+        padding: 0 2px;
+    }
+
+    .tm-diff-placeable {
+        background: #fef3c7;
+        color: #92400e;
+        border-radius: 3px;
+        padding: 0 2px;
+    }
 }

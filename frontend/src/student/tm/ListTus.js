@@ -198,6 +198,13 @@ export default function MyTus() {
                                         <span className="tu-label">Target ({idiomaB})</span>
                                         <p className="tu-text">{tu.destino}</p>
                                     </div>
+
+                                    <div className="tu-text-block">
+                                        <span className="tu-label">Usage</span>
+                                        <p className="tu-text">
+                                            {tu.usoCount ?? 0} {(tu.usoCount ?? 0) === 1 ? 'time' : 'times'}
+                                        </p>
+                                    </div>
                                 </div>
 
                                 <div className="tm-item-actions">

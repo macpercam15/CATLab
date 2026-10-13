@@ -2,6 +2,19 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import tokenService from '../services/token.service';
 import '../static/css/student/TranslateEditor.css';
+import '../static/css/tm/tm.css';
+
+const TM_THRESHOLD_KEY = 'catlab.tm.threshold';
+const TM_THRESHOLD_DEFAULT = 70;
+
+const loadTmThreshold = () => {
+    try {
+        const v = parseInt(localStorage.getItem(TM_THRESHOLD_KEY), 10);
+        return Number.isNaN(v) ? TM_THRESHOLD_DEFAULT : Math.min(100, Math.max(50, v));
+    } catch {
+        return TM_THRESHOLD_DEFAULT;
+    }
+};
 
 const STATUS_CONFIG = {
     BORRADOR: {
@@ -43,6 +56,7 @@ export default function TranslateEditor() {
     const [tmMatches, setTmMatches] = useState([]);
     const [tmLoading, setTmLoading] = useState(false);
     const tmRequestRef = useRef(0);
+    const [tmThreshold, setTmThreshold] = useState(loadTmThreshold);
 
     const [glossaryMatches, setGlossaryMatches] = useState([]);
     const [glossaryLoading, setGlossaryLoading] = useState(false);
@@ -439,13 +453,13 @@ export default function TranslateEditor() {
         }
     };
 
-    const fetchTmMatches = async (segmentId) => {
+    const fetchTmMatches = async (segmentId, threshold = tmThreshold) => {
         const requestId = ++tmRequestRef.current;
         setTmLoading(true);
 
         try {
             const res = await fetch(
-                `/api/tm/segmento/${segmentId}/matches`,
+                `/api/tm/segmento/${segmentId}/matches?umbral=${threshold}`,
                 {
                     headers: { Authorization: `Bearer ${jwt}` },
                 }
@@ -474,6 +488,18 @@ export default function TranslateEditor() {
             setSelectionBtn(null);
         }
     }, [expandedId]);
+
+    // Al mover el umbral: se guarda y se vuelve a buscar (con debounce) en el segmento abierto
+    useEffect(() => {
+        try {
+            localStorage.setItem(TM_THRESHOLD_KEY, String(tmThreshold));
+        } catch { /* sin localStorage no pasa nada */ }
+
+        if (!expandedId) return;
+        const timer = setTimeout(() => fetchTmMatches(expandedId, tmThreshold), 250);
+        return () => clearTimeout(timer);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [tmThreshold]);
 
     useEffect(() => {
         if (!selectionBtn) return;
@@ -652,49 +678,95 @@ export default function TranslateEditor() {
         });
     };
 
-    // Función auxiliar para los colores de las etiquetas según el porcentaje
-    const getMatchColorClass = (percentage) => {
-        if (percentage >= 100) return 'match-perfect';
-        if (percentage >= 75) return 'match-high';
+    // Color de la etiqueta según el tipo de coincidencia / porcentaje
+    const getMatchColorClass = (m) => {
+        if (m.matchType === 'PLACEABLES') return 'match-placeables';
+        if (m.matchPercentage >= 100) return 'match-perfect';
+        if (m.matchPercentage >= 85) return 'match-high';
         return 'match-low';
+    };
+
+    const getMatchLabel = (m) =>
+        m.matchType === 'PLACEABLES'
+            ? '100% · placeables adaptados'
+            : `${m.matchPercentage}%`;
+
+    // Origen de la UT con las diferencias respecto al segmento actual resaltadas
+    const renderDiff = (m) => {
+        if (!m.diff || m.diff.length === 0) return m.source;
+
+        return m.diff.map((part, i) => {
+            const space = i > 0 && part.spaceBefore ? ' ' : '';
+            return (
+                <React.Fragment key={i}>
+                    {space}
+                    <span className={`tm-diff tm-diff-${part.type.toLowerCase()}`}>{part.text}</span>
+                </React.Fragment>
+            );
+        });
     };
 
     const renderTmTab = (isReadOnly) => (
         <div className="glossary-panel">
+            <div className="tm-threshold">
+                <label htmlFor="tm-threshold-range">
+                    Umbral mínimo: <strong>{tmThreshold}%</strong>
+                </label>
+                <input
+                    id="tm-threshold-range"
+                    type="range"
+                    min="50"
+                    max="100"
+                    step="5"
+                    value={tmThreshold}
+                    onChange={(e) => setTmThreshold(Number(e.target.value))}
+                />
+            </div>
+
             {tmLoading ? (
                 <p className="glossary-empty">Cargando TM...</p>
             ) : tmMatches.length === 0 ? (
-                <p className="glossary-empty">No hay coincidencias en la TM.</p>
+                <p className="glossary-empty">
+                    No hay coincidencias en la TM por encima del {tmThreshold}%.
+                </p>
             ) : (
                 <ul className="tm-list">
-                    {tmMatches.map((m) => {
-                        // Preparado para el futuro: usa m.matchPercentage si existe, si no, asume 100
-                        const matchPct = m.matchPercentage || 100; 
-                        
-                        return (
-                            <li
-                                key={m.tuId}
-                                className={`tm-match-card ${!isReadOnly ? 'tm-clickable' : ''}`}
-                                onClick={() => {
-                                    if (!isReadOnly) setCurrentTranslation(m.target);
-                                }}
-                                title={!isReadOnly ? 'Haz clic para usar esta traducción' : ''}
-                            >
-                                <div className="tm-match-header">
-                                    <span className={`tm-match-badge ${getMatchColorClass(matchPct)}`}>
-                                        {matchPct}%
-                                    </span>
-                                    <span className="tm-match-meta">Translation Memory</span>
-                                </div>
-                                
-                                <div className="tm-match-body">
-                                    {/* Si en el futuro tu API devuelve el segmento original (ej. m.source), aparecerá aquí */}
-                                    {m.source && <div className="tm-match-source">{m.source}</div>}
-                                    <div className="tm-match-target">{m.target}</div>
-                                </div>
-                            </li>
-                        );
-                    })}
+                    {tmMatches.map((m) => (
+                        <li
+                            key={m.tuId}
+                            className={`tm-match-card ${!isReadOnly ? 'tm-clickable' : ''}`}
+                            // Solo rellena el cuadro de texto: el usuario siempre decide si guarda/revisa
+                            onClick={() => {
+                                if (!isReadOnly) setCurrentTranslation(m.target);
+                            }}
+                            title={!isReadOnly ? 'Haz clic para usar esta traducción' : ''}
+                        >
+                            <div className="tm-match-header">
+                                <span className={`tm-match-badge ${getMatchColorClass(m)}`}>
+                                    {getMatchLabel(m)}
+                                </span>
+                                <span className="tm-match-meta">
+                                    Usada {m.usoCount} {m.usoCount === 1 ? 'vez' : 'veces'}
+                                </span>
+                            </div>
+
+                            <div className="tm-match-body">
+                                <div className="tm-match-source">{renderDiff(m)}</div>
+                                <div className="tm-match-target">{m.target}</div>
+
+                                {m.placeableWarning && (
+                                    <div className="tm-match-warning">
+                                        ⚠ Revisa números, fechas o importes: no se han podido adaptar todos.
+                                    </div>
+                                )}
+                                {m.placeablesAdapted && !m.placeableWarning && (
+                                    <div className="tm-match-note">
+                                        Placeables adaptados al segmento actual.
+                                    </div>
+                                )}
+                            </div>
+                        </li>
+                    ))}
                 </ul>
             )}
         </div>
