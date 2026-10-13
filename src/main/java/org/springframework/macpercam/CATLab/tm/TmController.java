@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.v3.oas.annotations.Parameter;
@@ -92,8 +92,9 @@ public class TmController {
 
     // #region match
     @GetMapping ("/segmento/{segmentoId}/matches")
-    public List<TmMatchDTO> getMatchesForSegmento(@PathVariable Integer segmentoId) {
-        return tmService.buscarCoincidencias(segmentoId);
+    public List<TmMatchDTO> getMatchesForSegmento(@PathVariable Integer segmentoId, 
+            @RequestParam(name = "umbral", defaultValue = "70") Integer umbral) {
+        return tmService.buscarCoincidencias(segmentoId, umbral);
     }
     // #endregion match
 
