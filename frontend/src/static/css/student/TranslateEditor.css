@@ -65,9 +65,8 @@
 .segment-card.status-draft { border-right-color: #B3B3B3; }
 .segment-card.status-traduced { border-right-color: #549464; }
 .segment-card.status-revised { border-right-color: #3F33CD; }
-.segment-card.status-corrected {
-    border-right-color: #ec0c0c;
-}
+.segment-card.status-correct   { border-right-color: #86efac; }
+.segment-card.status-incorrect { border-right-color: #fca5a5; }
 
 /* ETIQUETA TEXTUAL DE ESTADO */
 .segment-status-badge {
@@ -98,10 +97,16 @@
     border: 1px solid #a5b4fc;
 }
 
-.segment-status-badge.status-corrected {
-    background-color: #fee0e0;
-    color: #ec0c0c;
-    border: 1px solid #fd9393;
+.segment-status-badge.status-correct {
+    background-color: #dcfce7;
+    color: #15803d;
+    border: 1px solid #86efac;
+}
+
+.segment-status-badge.status-incorrect {
+    background-color: #fee2e2;
+    color: #b91c1c;
+    border: 1px solid #fca5a5;
 }
 
 .segment-collapsed {
@@ -954,3 +959,5 @@
     font-size: 1.05rem;
     font-weight: 500;
 }
+
+

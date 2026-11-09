@@ -106,7 +106,8 @@ public class SecurityConfiguration {
 			 .requestMatchers("/api/proyectos/**").hasAnyAuthority(ESTUDIANTE, ADMIN)
 
 			 .requestMatchers("/api/segmentos/feedback/**").hasAnyAuthority(ADMIN, PROFESOR)
-			 .requestMatchers("/api/segmentos/marcarCorregido/**").hasAnyAuthority(ADMIN, PROFESOR)
+			 .requestMatchers("/api/segmentos/marcarCorrecto/**").hasAnyAuthority(ADMIN, PROFESOR)
+			 .requestMatchers("/api/segmentos/marcarIncorrecto/**").hasAnyAuthority(ADMIN, PROFESOR)
 			 .requestMatchers("/api/segmentos/volverAPublicado/**").hasAnyAuthority(ADMIN, PROFESOR)
 
 			 .requestMatchers(HttpMethod.PUT, "/api/segmentos/**").hasAnyAuthority(ADMIN, ESTUDIANTE)

@@ -5,5 +5,6 @@ public enum EstadoSegmento {
     TRADUCIDO,
     REVISADO,
     PUBLICADO,
-    CORREGIDO
+    CORRECTO,
+    INCORRECTO
 }

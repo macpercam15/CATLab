@@ -49,9 +49,14 @@ public class SegmentoController {
         return segmentoService.marcarRevisado(segmentoId);
     }
 
-    @PutMapping("/marcarCorregido/{segmentoId}")
-    public Segmento marcarCorregido(@PathVariable Integer segmentoId) {
-        return segmentoService.marcarCorregido(segmentoId);
+    @PutMapping ("/marcarCorrecto/{segmentoId}")
+    public Segmento marcarCorrecto(@PathVariable Integer segmentoId) {
+        return segmentoService.marcarCorrecto(segmentoId);
+    }
+
+    @PutMapping ("/marcarIncorrecto/{segmentoId}")
+    public Segmento marcarIncorrecto(@PathVariable Integer segmentoId) {
+        return segmentoService.marcarIncorrecto(segmentoId);
     }
 
     @PutMapping("/volverAPublicado/{segmentoId}")

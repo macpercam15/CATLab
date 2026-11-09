@@ -135,21 +135,36 @@ public class SegmentoService {
 
     // TODO: de revisado a pendiente y de pendiente a acepatdo en colaborativo
 
+
     @Transactional()
-    public Segmento marcarCorregido(Integer id) {
+    public Segmento marcarCorrecto(Integer id) {
         Segmento segmento = findById(id);
-        if (!segmento.getEstado().equals(EstadoSegmento.PUBLICADO)) {
-            throw new IllegalStateException("El segmento no está en estado PUBLICADO.");
+        if (!segmento.getEstado().equals(EstadoSegmento.PUBLICADO) && !segmento.getEstado().equals(EstadoSegmento.INCORRECTO)) {
+            throw new IllegalStateException("This segment cannot be evaluated.");
         }
-        segmento.setEstado(EstadoSegmento.CORREGIDO);
+        segmento.setEstado(EstadoSegmento.CORRECTO);
+        return segmentoRepository.save(segmento);
+    }
+
+    @Transactional()
+    public Segmento marcarIncorrecto(Integer id) {
+        Segmento segmento = findById(id);
+        if (!segmento.getEstado().equals(EstadoSegmento.PUBLICADO) && !segmento.getEstado().equals(EstadoSegmento.CORRECTO)) {
+            throw new IllegalStateException("This segment cannot be evaluated.");
+        }
+        if (segmento.getFeedback() == null || segmento.getFeedback().isBlank()) {
+            throw new IllegalStateException("Feedback is required to mark the segment as INCORRECT.");
+        }
+
+        segmento.setEstado(EstadoSegmento.INCORRECTO);
         return segmentoRepository.save(segmento);
     }
 
     @Transactional()
     public Segmento volverAPublicado(Integer id) {
         Segmento segmento = findById(id);
-        if (!segmento.getEstado().equals(EstadoSegmento.CORREGIDO)) {
-            throw new IllegalStateException("El segmento no está en estado CORREGIDO.");
+        if (!segmento.getEstado().equals(EstadoSegmento.INCORRECTO) && !segmento.getEstado().equals(EstadoSegmento.CORRECTO)) {
+            throw new IllegalStateException("This segment is not evaluated yet.");
         }
         segmento.setEstado(EstadoSegmento.PUBLICADO);
         return segmentoRepository.save(segmento);

@@ -8,9 +8,13 @@ const TEACHER_STATUS_CONFIG = {
         colorClass: 'status-pending',
         label: 'Pending'
     },
-    CORREGIDO: {
-        colorClass: 'status-graded',
-        label: 'Graded'
+    CORRECTO:   { 
+        colorClass: 'status-correct',   
+        label: 'Correct' 
+    },
+    INCORRECTO: { 
+        colorClass: 'status-incorrect', 
+        label: 'Incorrect' 
     },
     BORRADOR: {
         colorClass: 'status-pending',
@@ -180,7 +184,7 @@ export default function TeacherFeedbackEditor() {
     const handleSaveFeedback = async (segmentId, text) => {
         // Bloquear cualquier modificación si el proyecto está corregido
         if (isProjectGraded) {
-            return;
+            return false;
         }
 
         const jwt = tokenService.getLocalAccessToken();
@@ -209,6 +213,8 @@ export default function TeacherFeedbackEditor() {
                     'Feedback saved successfully',
                     'success'
                 );
+
+                return true;
             } else {
                 const errorText = await res.text();
 
@@ -219,6 +225,7 @@ export default function TeacherFeedbackEditor() {
                     ),
                     'error'
                 );
+                return false;
             }
         } catch (error) {
             console.error('Error saving feedback:', error);
@@ -227,67 +234,60 @@ export default function TeacherFeedbackEditor() {
                 'Server connection error',
                 'error'
             );
+
+            return false;
+
         } finally {
             setIsSavingFeedback(false);
         }
     };
 
-    const handleSegmentStatusGraded = async (e, segment) => {
+    const handleSegmentGrade = async (e, segment, verdict) => {
         e.stopPropagation();
+        if (isProjectGraded) return;
 
-        if (isProjectGraded) {
+        const jwt = tokenService.getLocalAccessToken();
+        const savedFeedback = segment.feedback || segment.comentario || '';
+        const isOpen = expandedId === segment.id;
+        const feedbackToUse = isOpen ? currentFeedback : savedFeedback;
+
+        // INCORRECTO exige feedback: si falta, abrimos el segmento para que lo escriba
+        if (verdict === 'INCORRECTO' && !feedbackToUse.trim()) {
+            if (!isOpen) {
+                setExpandedId(segment.id);
+                setCurrentFeedback(savedFeedback);
+            }
+            showToast('Feedback is required to mark a segment as Incorrect.', 'error');
             return;
         }
 
-        const jwt = tokenService.getLocalAccessToken();
-
-        if (
-            expandedId === segment.id &&
-            currentFeedback !==
-                (segment.feedback || segment.comentario || '')
-        ) {
-            await handleSaveFeedback(
-                segment.id,
-                currentFeedback
-            );
+        // Guardar primero el feedback si se ha modificado
+        if (isOpen && feedbackToUse !== savedFeedback) {
+            const saved = await handleSaveFeedback(segment.id, feedbackToUse);
+            if (!saved) return;
         }
 
+        const endpoint = verdict === 'CORRECTO' ? 'marcarCorrecto' : 'marcarIncorrecto';
+
         try {
-            const res = await fetch(
-                `/api/segmentos/marcarCorregido/${segment.id}`,
-                {
-                    method: 'PUT',
-                    headers: {
-                        Authorization: `Bearer ${jwt}`,
-                        'Content-Type': 'application/json'
-                    }
+            const res = await fetch(`/api/segmentos/${endpoint}/${segment.id}`, {
+                method: 'PUT',
+                headers: {
+                    Authorization: `Bearer ${jwt}`,
+                    'Content-Type': 'application/json'
                 }
-            );
+            });
 
             if (res.ok) {
                 await fetchSegments();
                 setExpandedId(null);
             } else {
                 const errorText = await res.text();
-
-                showToast(
-                    parseErrorMessage(
-                        errorText,
-                        'Could not mark segment as Graded.'
-                    ),
-                    'error'
-                );
+                showToast(parseErrorMessage(errorText, 'Could not grade segment.'), 'error');
             }
         } catch (error) {
-            console.error(
-                'Error marking segment as graded:',
-                error
-            );
-
-            showToast(
-                'Server connection error',
-                'error'
-            );
+            console.error('Error grading segment:', error);
+            showToast('Server connection error', 'error');
         }
     };
 
@@ -338,17 +338,6 @@ export default function TeacherFeedbackEditor() {
         }
     };
 
-    const handleSegmentStatusToggle = (e, segment) => {
-        if (isProjectGraded) {
-            return;
-        }
-
-        if (segment.estado === 'CORREGIDO') {
-            handleSegmentStatusPublished(e, segment);
-        } else {
-            handleSegmentStatusGraded(e, segment);
-        }
-    };
 
     const handleProjectStatusToggle = async () => {
         if (isProjectGraded) {
@@ -408,6 +397,44 @@ export default function TeacherFeedbackEditor() {
         }
     };
 
+    const renderGradeButton = (segment) => {
+        const isGraded =
+            segment.estado === 'CORRECTO' ||
+            segment.estado === 'INCORRECTO';
+
+        if (isGraded) {
+            return (
+                <button
+                    className="status-action-btn btn-catlab-white"
+                    onClick={(e) => handleSegmentStatusPublished(e, segment)}
+                >
+                    Cancel
+                </button>
+            );
+        }
+
+        return (
+            <>
+                <button
+                    className="status-action-btn btn-catlab-icon btn-correct"
+                    onClick={(e) => handleSegmentGrade(e, segment, 'CORRECTO')}
+                    title="Mark Correct"
+                    aria-label="Mark Correct"
+                >
+                    ✓
+                </button>
+                <button
+                    className="status-action-btn btn-catlab-icon btn-incorrect"
+                    onClick={(e) => handleSegmentGrade(e, segment, 'INCORRECTO')}
+                    title="Mark Incorrect"
+                    aria-label="Mark Incorrect"
+                >
+                    ✕
+                </button>
+            </>
+        );
+    };
+
     return (
         <div className="translate-page teacher-editor-page">
 
@@ -446,8 +473,8 @@ export default function TeacherFeedbackEditor() {
                 {segments.map((segment) => {
 
                     const statusKey =
-                        segment.estado === 'CORREGIDO'
-                            ? 'CORREGIDO'
+                        segment.estado === 'CORRECTO' || segment.estado === 'INCORRECTO'
+                            ? segment.estado
                             : 'PUBLICADO';
 
                     const config =
@@ -523,8 +550,6 @@ export default function TeacherFeedbackEditor() {
                     const isExpanded =
                         expandedId === segment.id;
 
-                    const isGraded =
-                        segment.estado === 'CORREGIDO';
 
                     return (
                         <div
@@ -579,23 +604,7 @@ export default function TeacherFeedbackEditor() {
                                             {config.label}
                                         </span>
 
-                                        <button
-                                            className={`status-action-btn ${
-                                                isGraded
-                                                    ? 'btn-catlab-white'
-                                                    : 'btn-catlab-green'
-                                            }`}
-                                            onClick={(e) =>
-                                                handleSegmentStatusToggle(
-                                                    e,
-                                                    segment
-                                                )
-                                            }
-                                        >
-                                            {isGraded
-                                                ? 'Cancel'
-                                                : 'Grade'}
-                                        </button>
+                                        {renderGradeButton(segment)}
 
                                     </div>
 
@@ -655,23 +664,7 @@ export default function TeacherFeedbackEditor() {
                                                     {config.label}
                                                 </span>
 
-                                                <button
-                                                    className={`status-action-btn ${
-                                                        isGraded
-                                                            ? 'btn-catlab-white'
-                                                            : 'btn-catlab-green'
-                                                    }`}
-                                                    onClick={(e) =>
-                                                        handleSegmentStatusToggle(
-                                                            e,
-                                                            segment
-                                                        )
-                                                    }
-                                                >
-                                                    {isGraded
-                                                        ? 'Cancel'
-                                                        : 'Grade'}
-                                                </button>
+                                                {renderGradeButton(segment)}
 
                                             </div>
 
@@ -716,7 +709,7 @@ export default function TeacherFeedbackEditor() {
                                                     }
 
                                                 }}
-                                                placeholder="Type feedback for this segment (Enter to save, Shift+Enter for new line)..."
+                                                placeholder="Feedback (optional if Correct, required if Incorrect). Enter to save, Shift+Enter for new line..."
                                                 rows={2}
                                                 autoFocus
                                             />

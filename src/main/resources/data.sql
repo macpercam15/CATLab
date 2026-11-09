@@ -77,9 +77,9 @@ INSERT INTO segmentos (id, texto_original, estado, proyecto_id) VALUES
 (11,'segmento 2 del proyecto 4', 'PUBLICADO', 4), 
 (12,'segmento 3 del proyecto 4', 'PUBLICADO', 4),
 
-(13,'segmento 1 del proyecto 5', 'CORREGIDO', 5), 
-(14,'segmento 2 del proyecto 5', 'CORREGIDO', 5), 
-(15,'segmento 3 del proyecto 5', 'CORREGIDO', 5);
+(13,'segmento 1 del proyecto 5', 'CORRECTO', 5), 
+(14,'segmento 2 del proyecto 5', 'CORRECTO', 5), 
+(15,'segmento 3 del proyecto 5', 'CORRECTO', 5);
 
 
 

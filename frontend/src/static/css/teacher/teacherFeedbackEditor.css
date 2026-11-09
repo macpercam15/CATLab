@@ -88,3 +88,78 @@
     color: #1f2937;
     white-space: pre-wrap;
 }
+
+.segment-card.status-correct   { border-right-color: #86efac; }
+.segment-card.status-incorrect { border-right-color: #fca5a5; }
+
+.segment-status-badge.status-correct {
+    background-color: #dcfce7;
+    color: #15803d;
+    border: 1px solid #86efac;
+}
+
+.segment-status-badge.status-incorrect {
+    background-color: #fee2e2;
+    color: #b91c1c;
+    border: 1px solid #fca5a5;
+}
+
+:root {
+    /* Botón Correcto (Tic) */
+    --btn-correct-bg: #15803d;
+    --btn-correct-hover-bg: #86efac;
+    --btn-correct-color: #ffffff;
+    --btn-correct-shadow: rgba(22, 163, 74, 0.35);
+
+    /* Botón Incorrecto (X) */
+    --btn-incorrect-bg: #b91c1c;
+    --btn-incorrect-hover-bg: #fca5a5;
+    --btn-incorrect-color: #ffffff;
+    --btn-incorrect-shadow: rgba(220, 38, 38, 0.35);
+}
+
+/* Estilos base para los botones circulares con icono */
+.btn-catlab-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: none;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    padding: 0;
+    line-height: 1;
+}
+
+/* Efecto al presionar (click) */
+.btn-catlab-icon:active {
+    transform: scale(0.92);
+}
+
+/* Botón Correcto (Tic) */
+.btn-correct {
+    background-color: var(--btn-correct-bg);
+    color: var(--btn-correct-color);
+}
+
+.btn-correct:hover {
+    background-color: var(--btn-correct-hover-bg);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px var(--btn-correct-shadow);
+}
+
+/* Botón Incorrecto (X) */
+.btn-incorrect {
+    background-color: var(--btn-incorrect-bg);
+    color: var(--btn-incorrect-color);
+}
+
+.btn-incorrect:hover {
+    background-color: var(--btn-incorrect-hover-bg);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px var(--btn-incorrect-shadow);
+}

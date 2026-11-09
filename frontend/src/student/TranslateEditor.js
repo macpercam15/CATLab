@@ -33,10 +33,14 @@ const STATUS_CONFIG = {
         colorClass: 'status-published',
         label: 'Published'
     },
-    CORREGIDO: {
-        colorClass: 'status-corrected',
-        label: 'Corrected'
-    }
+    CORRECTO:   { 
+        colorClass: 'status-correct',   
+        label: 'Correct' 
+    },
+    INCORRECTO: { 
+        colorClass: 'status-incorrect', 
+        label: 'Incorrect' 
+    },
 };
 
 export default function TranslateEditor() {

@@ -276,7 +276,7 @@ public class ProyectoService {
             throw new IllegalStateException("Solo se pueden marcar como corregidos proyectos en estado PUBLICADO.");
         }
         List<Segmento> segmentos = segmentoService.findByProyectoId(id);
-        if (!segmentos.stream().allMatch(s -> s.getEstado() == EstadoSegmento.CORREGIDO)){
+        if (!segmentos.stream().allMatch(s -> s.getEstado() == EstadoSegmento.CORRECTO || s.getEstado() == EstadoSegmento.INCORRECTO)){
             throw new IllegalStateException("Proyects must have all segments in state GRADED.");
         }
 
