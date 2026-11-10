@@ -11,6 +11,7 @@ import org.springframework.macpercam.CATLab.proyecto.idioma.Idioma;
 import org.springframework.macpercam.CATLab.tm.Tm;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -31,6 +32,9 @@ public class Proyecto extends NamedEntity{
 
     @Enumerated(EnumType.STRING)
     private EstadoProyecto estado;
+
+    @Column(nullable = false, columnDefinition = "boolean default true")
+    private Boolean permitirReedicion = true;
 
     @OneToOne(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "glosario_id", referencedColumnName = "id")

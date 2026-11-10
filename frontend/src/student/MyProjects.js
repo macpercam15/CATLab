@@ -20,7 +20,9 @@ const getActionsByStatus = (project, isCollaborative) => {
         case 'PUBLICADO':
             return ['View'];
         case 'CORREGIDO':
-            return ['View', 'Re-edit'];
+            return project?.permitirReedicion == false
+                ? ['View']
+                : ['View', 'Re-edit'] 
         default:
             return isCollaborative ? ['Colaborativo'] : ['Open'];
     }

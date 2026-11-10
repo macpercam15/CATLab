@@ -224,8 +224,8 @@ public class ProyectoService {
             throw new IllegalStateException("Solo se pueden publicar proyectos en estado BORRADOR.");
         }
         List<Segmento> segmentos = segmentoService.findByProyectoId(id);
-        if (!segmentos.stream().allMatch(s -> s.getEstado() == EstadoSegmento.REVISADO)){
-            throw new IllegalStateException("Projects must have all segments revised before publishing    .");
+        if (!segmentos.stream().allMatch(s -> s.getEstado() == EstadoSegmento.REVISADO || s.getEstado() == EstadoSegmento.CORRECTO)) {
+            throw new IllegalStateException(" Projects must have all segments revised before publishing.");
         }
         
         p.setEstado(EstadoProyecto.PUBLICADO);
@@ -249,11 +249,14 @@ public class ProyectoService {
     public Proyecto reeditarProyecto(Integer id) {
         Proyecto p = proyectoRp.findById(id).orElseThrow(() -> new ResourceNotFoundException("Proyecto", "ID", id));
         if (p.getEstado() != EstadoProyecto.CORREGIDO) {
-            throw new IllegalStateException("Solo se pueden reeditar proyectos en estado CORREGIDO.");
+            throw new IllegalStateException("This action can only be performed on projects in state GRADED.");
+        }
+        if (!p.getPermitirReedicion()) {
+            throw new IllegalStateException("Re-editing is off for this project.");
         }
         p.setEstado(EstadoProyecto.BORRADOR);
         List<Segmento> segmentos = segmentoService.findByProyectoId(id);
-        segmentos.stream().forEach(s -> {s.setEstado(EstadoSegmento.BORRADOR);});
+        segmentos.stream().filter(s -> s.getEstado().equals(EstadoSegmento.INCORRECTO)).forEach(s -> {s.setEstado(EstadoSegmento.BORRADOR);});
 
         return proyectoRp.save(p);
     }
@@ -280,6 +283,11 @@ public class ProyectoService {
             throw new IllegalStateException("Proyects must have all segments in state GRADED.");
         }
 
+        boolean todoCorrecto = segmentos.stream().allMatch(s -> s.getEstado() == EstadoSegmento.CORRECTO);
+        if (todoCorrecto) {
+            p.setPermitirReedicion(false);
+        }
+
         p.setEstado(EstadoProyecto.CORREGIDO);
         
         return proyectoRp.save(p);
@@ -293,6 +301,27 @@ public class ProyectoService {
             throw new IllegalStateException("Solo se pueden cancelar proyectos en estado CORREGIDO.");
         }
         p.setEstado(EstadoProyecto.PUBLICADO);
+        return proyectoRp.save(p);
+    }
+
+    @Transactional()
+    public Proyecto cambiarPermisoEdicion(Integer id){
+        Proyecto p = proyectoRp.findById(id).orElseThrow(() -> 
+            new ResourceNotFoundException("Proyecto", "ID", id));
+        
+        if (p.getEstado() != EstadoProyecto.PUBLICADO){
+            throw new IllegalStateException("This action can only be performed on PUBLISHED projects.");
+        }
+        List <Segmento> segmentos = segmentoService.findByProyectoId(id);
+        boolean todoCorrecto = !segmentos.isEmpty() && 
+            segmentos.stream().allMatch(s -> s.getEstado() == EstadoSegmento.CORRECTO);
+
+        if (todoCorrecto) {
+            throw new IllegalStateException("Cannot change editing permission for projects with all segments marked as CORRECT.");
+        }
+
+        Boolean permisoActual = p.getPermitirReedicion();
+        p.setPermitirReedicion(!permisoActual);
         return proyectoRp.save(p);
     }
 
@@ -319,6 +348,8 @@ public class ProyectoService {
     }
 
     // #endregion IDIOMA
+
+
 
 
 }

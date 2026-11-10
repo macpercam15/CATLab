@@ -228,6 +228,7 @@ export default function TranslateEditor() {
     const handleExpand = (segment) => {
         if (
             isProjectPublished ||
+            segment.estado === 'CORRECTO' ||
             expandedId === segment.id
         ) {
             return;
@@ -1064,7 +1065,7 @@ export default function TranslateEditor() {
                         segment.feedback ||
                         segment.comentario;
 
-                    if (isProjectCorrected) {
+                    if (isProjectCorrected || segment.estado === 'CORRECTO') {
                         return (
                             <div
                                 key={segment.id}

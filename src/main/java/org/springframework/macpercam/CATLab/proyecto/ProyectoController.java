@@ -110,6 +110,11 @@ public class ProyectoController {
         return proyectoService.cancelarCorregido(id);
     }
 
+    @PutMapping (value = "/profesor/change-permission/{id}")
+    public Proyecto cambiarPermisoEdicion(@PathVariable Integer id) {
+        return proyectoService.cambiarPermisoEdicion(id);
+    }
+
 // #endregion PROFESORES
 
 // #region IDIOMAS

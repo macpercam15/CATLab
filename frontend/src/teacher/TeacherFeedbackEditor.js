@@ -397,6 +397,55 @@ export default function TeacherFeedbackEditor() {
         }
     };
 
+    const allSegmentsCorrect = segments.length > 0 && segments.every(s => s.estado === 'CORRECTO');
+
+    const allowReedit = !allSegmentsCorrect && project?.permitirReedicion !== false;
+
+    const handleReeditToggle = async () => {
+        if (isProjectGraded || allSegmentsCorrect) {
+            return;
+        }
+
+        const jwt = tokenService.getLocalAccessToken();
+
+        try {
+            const res = await fetch(
+                `/api/proyectos/profesor/change-permission/${projectId}`,
+                {
+                    method: 'PUT',
+                    headers: {
+                        Authorization: `Bearer ${jwt}`,
+                        'Content-Type': 'application/json'
+                    }
+                }
+            );
+
+            if (res.ok) {
+                await fetchProjectData();
+            } else {
+                const errorText = await res.text();
+
+                showToast(
+                    parseErrorMessage(
+                        errorText,
+                        'Could not update project re-editing permission.'
+                    ),
+                    'error'
+                );
+            }
+        } catch (error) {
+            console.error(
+                'Error updating project re-editing permission:',
+                error
+            );
+
+            showToast(
+                'Server connection error',
+                'error'
+            );
+        }
+    };
+
     const renderGradeButton = (segment) => {
         const isGraded =
             segment.estado === 'CORRECTO' ||
@@ -774,6 +823,29 @@ export default function TeacherFeedbackEditor() {
             {/* BOTÓN DE MARCAR PROYECTO COMO CORREGIDO */}
             {!isProjectGraded && (
                 <div className="publish-container">
+
+                    <button
+                        type="button"
+                        role="switch"
+                        aria-checked={allowReedit}
+                        disabled={allSegmentsCorrect}
+                        className={`reedit-toggle ${allowReedit ? 'on' : 'off'}`}
+                        onClick={handleReeditToggle}
+                        title={
+                            allSegmentsCorrect
+                                ? 'Re-editing is not avaliable because all segments are marked as CORRECT.'
+                                : allowReedit
+                                    ? 'The student will be able to re-edit after grading'
+                                    : 'The student will NOT be able to re-edit after grading'
+                        }
+                    >
+                        <span className="reedit-toggle-track">
+                            <span className="reedit-toggle-thumb" />
+                        </span>
+                        <span className="reedit-toggle-label">
+                            Re-edit: {allowReedit ? 'On' : 'Off'}
+                        </span>
+                    </button>
 
                     <button
                         className="status-action-btn btn-catlab-green publish-project-btn"
