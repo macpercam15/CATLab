@@ -143,7 +143,9 @@ public class SegmentoService {
             throw new IllegalStateException("This segment cannot be evaluated.");
         }
         segmento.setEstado(EstadoSegmento.CORRECTO);
-        return segmentoRepository.save(segmento);
+        Segmento guardado = segmentoRepository.save(segmento);
+        tmService.aprobarDesdeSegmento(guardado);
+        return guardado;
     }
 
     @Transactional()
@@ -157,7 +159,9 @@ public class SegmentoService {
         }
 
         segmento.setEstado(EstadoSegmento.INCORRECTO);
-        return segmentoRepository.save(segmento);
+        Segmento guardado = segmentoRepository.save(segmento);
+        tmService.rechazarDesdeSegmento(guardado);
+        return guardado;
     }
 
     @Transactional()
@@ -167,6 +171,8 @@ public class SegmentoService {
             throw new IllegalStateException("This segment is not evaluated yet.");
         }
         segmento.setEstado(EstadoSegmento.PUBLICADO);
+        Segmento guardado = segmentoRepository.save(segmento);
+        tmService.restaurarDesdeSegmento(guardado);
         return segmentoRepository.save(segmento);
     }
 

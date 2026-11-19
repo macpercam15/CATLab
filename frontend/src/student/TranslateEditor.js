@@ -235,6 +235,7 @@ export default function TranslateEditor() {
         }
 
         setExpandedId(segment.id);
+        console.log('Expanding segment:', segment.tuId);
 
         setCurrentTranslation(
             segment.textoTraducido || ''

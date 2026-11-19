@@ -125,11 +125,13 @@ public class TmService {
         // }
         tu.setOrigen(editTuDTO.getOrigen());
         tu.setDestino(editTuDTO.getDestino());
+        tu.setEstadoTu(EstadoTu.SIN_REVISAR);
         tu.setUltimaActualizacion(LocalDateTime.now());
         return tuRepo.save(tu);
     }
 
-    @Transactional void deleteTu(Integer tuId) {
+    @Transactional 
+    public void deleteTu(Integer tuId) {
         Tu tu = tuRepo.findById(tuId).orElseThrow(() -> new RuntimeException("TU not found with id: " + tuId));
         tuRepo.delete(tu);
     }
@@ -152,6 +154,7 @@ public class TmService {
         tu.setTm(tm);
         tu.setUsoCount(0);
         tu.setUltimaActualizacion(LocalDateTime.now());
+        tu.setEstadoTu(EstadoTu.SIN_REVISAR);
         return tuRepo.save(tu);
     }
 
@@ -254,6 +257,10 @@ public class TmService {
 
     private record Candidato(TmMatchDTO dto, Tu tu) {}
 
+    private static int pesoEstado(Tu tu) {                                   // <-- nuevo
+    return tu.getEstadoTu() == EstadoTu.APROBADO ? 1 : 0;
+}
+
     @Transactional(readOnly = true)
     public List<TmMatchDTO> buscarCoincidencias(Integer segmentoId){
         return buscarCoincidencias(segmentoId, UMBRAL_POR_DEFECTO);
@@ -284,6 +291,7 @@ public class TmService {
  
         for (Tu tu : tuRepo.findByTmId(tm.getId())) {
             // Orientamos la UT al sentido del proyecto
+            if (tu.getEstadoTu() == EstadoTu.DENEGADO) continue;
             String utSource = directo ? tu.getOrigen() : tu.getDestino();
             String utTarget = directo ? tu.getDestino() : tu.getOrigen();
             if (utSource == null || utTarget == null || utSource.isBlank()) continue;
@@ -311,6 +319,8 @@ public class TmService {
             String tipo;
             if (pct == 100) tipo = mismosPlaceables ? "EXACT" : "PLACEABLES";
             else tipo = "FUZZY";
+
+            EstadoTu estadoTu = tu.getEstadoTu() == null ? EstadoTu.SIN_REVISAR : tu.getEstadoTu();
  
             candidatos.add(new Candidato(new TmMatchDTO(
                 tu.getId(),
@@ -323,12 +333,14 @@ public class TmService {
                 adap.aviso(),
                 usos(tu),
                 tu.getUltimaActualizacion(),
-                TmText.diff(utTokens, segTokens)
+                TmText.diff(utTokens, segTokens),
+                estadoTu.name()
             ), tu));
         }
- 
+        
         Comparator<Candidato> orden = Comparator
             .comparingInt((Candidato c) -> c.dto().getMatchPercentage()).reversed()
+            .thenComparing(Comparator.comparingInt((Candidato c) -> pesoEstado(c.tu())).reversed())
             .thenComparing((Candidato c) -> c.dto().getUltimaActualizacion(),
                 Comparator.nullsLast(Comparator.reverseOrder()))
             .thenComparing((Candidato c) -> c.dto().getUsoCount(), Comparator.reverseOrder());
@@ -343,5 +355,45 @@ public class TmService {
         return resultado;
     }
     // //#endregion Level 2
+
+    // //#region Level 3
+    @Transactional
+    public void aprobarDesdeSegmento(Segmento segmento) {
+        Tu tu = segmento.getTuId();
+        if (tu == null) return;
+        tu.setEstadoTu(EstadoTu.APROBADO);
+        tuRepo.save(tu);
+    }
+
+    @Transactional
+    public void rechazarDesdeSegmento(Segmento segmento) {
+        Tu tu = segmento.getTuId();
+        if (tu == null) return;
+        // Una UT ya aprobada por un profesor no se pisa por el rechazo de otro segmento
+        if (tu.getEstadoTu() == EstadoTu.APROBADO) return;
+        tu.setEstadoTu(EstadoTu.DENEGADO);
+        tuRepo.save(tu);
+    }
+
+    // El profesor deshace su evaluación
+    @Transactional
+    public void restaurarDesdeSegmento(Segmento segmento) {
+        Tu tu = segmento.getTuId();
+        if (tu == null) return;
+        tu.setEstadoTu(EstadoTu.SIN_REVISAR);
+        tuRepo.save(tu);
+    }
+
+    // Gestión de TMs: el dueño de la TM decide qué hacer con una UT
+    @Transactional
+    public Tu ignorarRechazo (Integer tuId) {
+        Tu tu = tuRepo.findById(tuId).orElseThrow(() -> new RuntimeException("TU not found with id: " + tuId));
+        if (tu.getEstadoTu() != EstadoTu.DENEGADO) {
+            throw new IllegalStateException("Only rejected TUs can be restored.");
+        }
+        tu.setEstadoTu(EstadoTu.SIN_REVISAR);
+        return tuRepo.save(tu);
+    }
+    // //#endregion Level 3
 
 }

@@ -6,6 +6,8 @@ import org.springframework.macpercam.CATLab.model.BaseEntity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
@@ -35,9 +37,15 @@ public class Tu extends BaseEntity{
     @Column(name = "ultima_actualizacion")
     LocalDateTime ultimaActualizacion;
 
+    @Enumerated (EnumType.STRING)
+    @Column (nullable = false, columnDefinition = "varchar(20) default 'SIN_REVISAR'")
+    EstadoTu estadoTu = EstadoTu.SIN_REVISAR;
+
+
     @PrePersist 
     void prePersist() {
         if (usoCount == null)  usoCount = 0;
+        if (estadoTu == null) estadoTu = EstadoTu.SIN_REVISAR;
         if (ultimaActualizacion == null) ultimaActualizacion = LocalDateTime.now();  
     }
 }

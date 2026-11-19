@@ -458,4 +458,9 @@
         border-radius: 3px;
         padding: 0 2px;
     }
+
+    .tu-status { font-size: 1rem; font-weight: bold; }
+    .tu-status-approved   { color: #15803d; }
+    .tu-status-unreviewed { color: #6b7280; }
+    .tu-status-rejected   { color: #b91c1c; }
 }

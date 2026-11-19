@@ -24,6 +24,8 @@ public class TmMatchDTO {
     private int usoCount;
     private LocalDateTime ultimaActualizacion;
     private List<DiffPart> diff;
+    private String estado;
+
 
 
     @Getter

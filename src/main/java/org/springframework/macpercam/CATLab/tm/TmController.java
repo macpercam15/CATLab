@@ -88,6 +88,11 @@ public class TmController {
     public Tu createTu(@PathVariable Integer tmId, @RequestBody EditTuDTO tu) {
         return tmService.createTu(tmId, tu);
     }
+
+    @PutMapping ("/tu/ignorar-rechazo/{tuId}")
+    public Tu ignoreRejection(@PathVariable Integer tuId) {
+        return tmService.ignorarRechazo(tuId);
+    }
     // #endregion CRUD - TUs
 
     // #region match

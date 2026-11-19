@@ -133,6 +133,23 @@ export default function MyTus() {
         }
     };
 
+    const handleIgnoreRejection = async (tu) => {
+        try {
+            const response = await fetch(`/api/tm/tu/ignorar-rechazo/${tu.id}`, {
+                method: 'PUT',
+                headers: { 'Authorization': `Bearer ${jwt}` },
+            });
+            if (response.ok) {
+                const updated = await response.json();
+                setTus(tus.map(t => t.id === updated.id ? updated : t));
+            } else {
+                alert('Error al ignorar el rechazo');
+            }
+        } catch (error) {
+            alert('Error al conectar con el servidor.');
+        }
+    };
+
     const confirmDelete = async () => {
         if (!tuToDelete) return;
 
@@ -155,6 +172,10 @@ export default function MyTus() {
 
     const idiomaA = tmDetails?.idiomaA?.codigo || 'A';
     const idiomaB = tmDetails?.idiomaB?.codigo || 'B';
+
+    const sortedTus = [...tus].sort(
+        (a, b) => (b.estado === 'REJECTED') - (a.estado === 'REJECTED')
+    );
 
     return (
         <div className="tm-page">
@@ -185,7 +206,7 @@ export default function MyTus() {
                     <p className="tm-message">There are no translation units in this memory.</p>
                 ) : (
                     <div className="tu-list">
-                        {tus.map((tu) => (
+                        {sortedTus.map((tu) => (
                             <div className="tm-item" key={tu.id}>
                                 
                                 <div className="tu-content-wrapper">
@@ -205,21 +226,25 @@ export default function MyTus() {
                                             {tu.usoCount ?? 0} {(tu.usoCount ?? 0) === 1 ? 'time' : 'times'}
                                         </p>
                                     </div>
+
+                                    <div className="tu-text-block">
+                                        <span className="tu-label">Status</span>
+                                        <span className={`tu-status tu-status-${(tu.estadoTu || 'UNREVIEWED').toLowerCase()}`}>
+                                            {tu.estadoTu === 'DENEGADO' ? 'Pending review'
+                                                : tu.estadoTu === 'APROBADO' ? 'Approved'
+                                                : 'Unreviewed'}
+                                        </span>
+                                    </div>
                                 </div>
 
                                 <div className="tm-item-actions">
-                                    <button 
-                                        className="tm-btn tm-btn-secondary" 
-                                        onClick={() => openEditModal(tu)}
-                                    >
-                                        Edit
-                                    </button>
-                                    <button 
-                                        className="tm-btn tm-btn-danger" 
-                                        onClick={() => setTuToDelete(tu)}
-                                    >
-                                        Delete
-                                    </button>
+                                    {tu.estado === 'REJECTED' && (
+                                        <button className="tm-btn tm-btn-secondary" onClick={() => handleIgnoreRejection(tu)}>
+                                            Ignore
+                                        </button>
+                                    )}
+                                    <button className="tm-btn tm-btn-secondary" onClick={() => openEditModal(tu)}>Edit</button>
+                                    <button className="tm-btn tm-btn-danger" onClick={() => setTuToDelete(tu)}>Delete</button>
                                 </div>
                                 
                             </div>
